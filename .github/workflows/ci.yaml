@@ -3,10 +3,10 @@ name: "Continuous Integration"
 on:
   push:
     branches:
-      - main
+      - 0.x
   pull_request:
     branches:
-      - main
+      - 0.x
 
 jobs:
   eslint:
