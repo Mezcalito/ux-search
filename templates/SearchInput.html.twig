@@ -1,0 +1,8 @@
+{% block content %}
+    <input {{ attributes.defaults({
+        'class': 'ux-search-search-input ux-search-input',
+        'type': 'search',
+        'data-model': 'debounce(400)|query.queryString',
+        'placeholder': 'search.placeholder'|trans(domain='mezcalito_ux_search')
+    }) }}>
+{% endblock %}

@@ -1,0 +1,47 @@
+<fieldset {{ attributes.defaults({
+    class: 'ux-search-facet ux-search-refinement-list',
+    'data-skip-morph': true,
+    'data-controller': 'ux-search--refinement-list',
+    'data-ux-search--refinement-list-limit-value': this.limit,
+    'data-ux-search--refinement-list-show-more-label-value': 'show_more'|trans(domain='mezcalito_ux_search'),
+    'data-ux-search--refinement-list-show-less-label-value': 'show_less'|trans(domain='mezcalito_ux_search')
+}) }}>
+    <legend class="ux-search-facet__title ux-search-refinement-list__title">{% block label %}{{ label }}{% endblock %}</legend>
+    {% block list %}
+        <ul class="ux-search-refinement-list__list">
+            {%- for key,value in distribution.values %}
+                <li
+                    class="ux-search-refinement-list__item{{ loop.index > this.limit ? ' ux-search-refinement-list__item--exceed-limit' }}"
+                >
+                    <input
+                        class="ux-search-refinement-list__input"
+                        value="{{ key }}"
+                        type="checkbox"
+                        id="{{ property }}-{{ key }}"
+                        {%- if distribution.isChecked(key) %} checked {% endif -%}
+                        data-action="live#action"
+                        data-live-action-param="toggleFacetTerm"
+                        data-live-property-param="{{ property }}"
+                        data-live-value-param="{{ key }}"
+                    >
+                    <label class="ux-search-refinement-list__label" for="{{ property }}-{{ key }}">
+                        <span class="ux-search-refinement-list__label-text">{{ key }}</span>
+                        <span class="ux-search-refinement-list__count">{{ value }}</span>
+                    </label>
+                </li>
+            {% endfor -%}
+        </ul>
+    {% endblock %}
+    {% if distribution.values|length > this.limit %}
+        {% block show_more %}
+            <button
+                class="ux-search-refinement-list__show-more"
+                type="button"
+                data-ux-search--refinement-list-target="toggle"
+                data-action="ux-search--refinement-list#toggleShowMore"
+            >
+                {{ 'show_more'|trans(domain='mezcalito_ux_search') }}
+            </button>
+        {% endblock %}
+    {% endif %}
+</fieldset>

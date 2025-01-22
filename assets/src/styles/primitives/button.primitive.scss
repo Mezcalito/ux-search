@@ -1,0 +1,20 @@
+.ux-search-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  background-color: var(--ux-search-color-primary);
+  color: var(--ux-search-color-primary-text);
+  border: none;
+  accent-color: var(--ux-search-color-accent);
+  border-radius: var(--ux-search-rounded-md);
+  padding: 8px 12px;
+  min-height: 36px;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  &:focus {
+    outline-color: var(--ux-search-color-accent);
+  }
+}

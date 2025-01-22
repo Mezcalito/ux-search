@@ -1,0 +1,42 @@
+services:
+  php:
+    build: $PWD/.infrastructure/frankenphp
+    restart: on-failure
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost, caddy:80}
+    volumes:
+      - ./:/srv/app
+    ports:
+      # HTTP
+      - target: 80
+        published: ${HTTP_PORT:-80}
+        protocol: tcp
+      # HTTPS
+      - target: 443
+        published: ${HTTPS_PORT:-443}
+        protocol: tcp
+      # HTTP/3
+      - target: 443
+        published: ${HTTP3_PORT:-443}
+        protocol: udp
+
+  node:
+    build: $PWD/.infrastructure/node
+    restart: on-failure
+    volumes:
+      - ./:/srv/app:rw,cached
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: uxsearch_meilisearch
+    restart: on-failure
+    volumes:
+      - search_data:/meili_data
+    environment:
+      - MEILI_MASTER_KEY=secret
+      - MEILI_NO_ANALYTICS=true
+    ports:
+      - "7700:7700"
+
+volumes:
+  search_data: ~

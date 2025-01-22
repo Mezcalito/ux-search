@@ -1,0 +1,49 @@
+<fieldset {{ attributes.defaults({
+    'class': 'ux-search-facet ux-search-range-input',
+    'data-skip-morph': true
+}) }}>
+    <legend class="ux-search-facet__title">{% block label %}{{ label }}{% endblock %}</legend>
+    {% block form %}
+        <form
+            class="ux-search-range-input__form"
+            data-action="submit->ux-search#updateFacetRange:prevent"
+            data-ux-search-property-param="{{ property }}"
+            data-ux-search-range-min-param="{{ facetStat.min }}"
+            data-ux-search-range-max-param="{{ facetStat.max }}"
+        >
+            <div class="ux-search-range-input__box">
+                <label class="ux-search-range-input__label ux-search-sr-only" for="{{ property }}-min">{{ 'range.min'|trans(domain='mezcalito_ux_search') }}</label>
+                <input
+                    class="ux-search-range-input__input ux-search-input"
+                    type="number"
+                    min="{{ facetStat.min }}"
+                    max="{{ facetStat.max }}"
+                    id="{{ property }}-min"
+                    name="{{ property }}-min"
+                    placeholder="{{ facetStat.min }}"
+                    value="{{ facetStat.userMin }}"
+                    step="any"
+                >
+            </div>
+            <div class="ux-search-range-input__box">
+                <label class="ux-search-range-input__label ux-search-sr-only" for="{{ property }}-max">{{ 'range.max'|trans(domain='mezcalito_ux_search') }}</label>
+                <input
+                    class="ux-search-range-input__input ux-search-input"
+                    type="number"
+                    min="{{ facetStat.min }}"
+                    max="{{ facetStat.max }}"
+                    id="{{ property }}-max"
+                    name="{{ property }}-max"
+                    placeholder="{{ facetStat.max }}"
+                    value="{{ facetStat.userMax }}"
+                    step="any"
+                >
+            </div>
+            {% block submit %}
+                <button class="ux-search-range-input__submit ux-search-button" type="submit">
+                    {{ 'go'|trans(domain='mezcalito_ux_search') }}
+                </button>
+            {% endblock %}
+        </form>
+    {% endblock %}
+</fieldset>

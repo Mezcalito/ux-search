@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["dom", "ES2022"],
+
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+
+    "rootDir": "assets/src",
+    "outDir": "assets/dist",
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "removeComments": true,
+    "sourceMap": false,
+
+    "declaration": true,
+    "declarationDir": "assets/dist",
+    "declarationMap": false,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "strictPropertyInitialization": false,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "paths": {
+      "@symfony/ux-live-component": ["./vendor/symfony/ux-live-component/assets/dist/live_controller.d.ts"],
+      "@symfony/ux-live-component/*": ["./vendor/symfony/ux-live-component/assets/dist/*"]
+    }
+  },
+  "include": [
+    "assets/src/**/*.ts",
+    "vendor/symfony/ux-live-component/assets/dist/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "assets/dist"
+  ]
+}

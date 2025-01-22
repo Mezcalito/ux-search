@@ -1,0 +1,71 @@
+# Layout
+
+The `Layout` is the root wrapper component for all components
+
+## Block available
+
+| name       |
+|------------|
+| content    |
+| form       |
+| toolbar    |
+| facets     |
+| listing    |
+| stats      |
+| hits       |
+| pagination |
+
+## Default layout
+
+```twig
+<div {{ attributes.defaults({
+    'class': 'ux-search',
+    'data-controller': 'ux-search',
+    'data-loading': 'addClass(ux-search--is-loading)'
+}) }}>
+    {% block content %}
+        <div class="ux-search__inner">
+            <div class="ux-search__form">
+                {% block form %}
+                    <twig:Mezcalito:UxSearch:SearchInput />
+                {% endblock %}
+            </div>
+        
+            <div class="ux-search__toolbar">
+                {% block toolbar %}
+                    <twig:Mezcalito:UxSearch:CurrentRefinements/>
+                    <twig:Mezcalito:UxSearch:ClearRefinements />
+                    <twig:Mezcalito:UxSearch:HitsPerPage/>
+                    <twig:Mezcalito:UxSearch:SortBy/>
+                {% endblock %}
+            </div>
+        
+            <div class="ux-search__facets">
+                {% block facets %}
+                    {% for facet in search.facets %}
+                        <twig:Mezcalito:UxSearch:Facet :property="facet.property" />
+                    {% endfor %}
+                {% endblock %}
+            </div>
+        
+            <div class="ux-search__listing">
+                {% block listing %}
+                    <div class="ux-search__stats">
+                        {% block stats %}
+                            <twig:Mezcalito:UxSearch:TotalHits/>
+                        {% endblock %}
+                    </div>
+            
+                    {% block hits %}
+                        <twig:Mezcalito:UxSearch:Hits />
+                    {% endblock %}
+            
+                    {% block pagination %}
+                        <twig:Mezcalito:UxSearch:Pagination />
+                    {% endblock %}
+                {% endblock %}
+            </div>
+        </div>
+    {% endblock %}
+</div>
+```

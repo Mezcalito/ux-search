@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+use Mezcalito\UxSearchBundle\Tests\TestApplication\Kernel;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+
+require_once dirname(__DIR__).'/../../vendor/autoload_runtime.php';
+
+return function (array $context) {
+    return new Application(new Kernel('dev', true));
+};

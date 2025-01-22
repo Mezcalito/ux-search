@@ -1,0 +1,156 @@
+name: "Continuous Integration"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint -- --max-warnings 0
+
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: PHP-CS-Fixer
+        run: php vendor/bin/php-cs-fixer fix --dry-run --diff --no-ansi
+
+  phpstan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: PHPStan
+        run: php vendor/bin/phpstan analyse
+
+  rector:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: RectorPHP
+        run: php vendor/bin/rector process --dry-run
+
+  phpunit:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Latest Symfony version support
+          -   os: ubuntu-latest
+              php_version: "8.3"
+              symfony_version: "7.2.*"
+              stability: "stable"
+          # LTS Symfony version support
+          -   os: ubuntu-latest
+              php_version: "8.3"
+              symfony_version: "6.4.*"
+              stability: "stable"
+          # Upcoming Symfony versions
+          -   os: ubuntu-latest
+              php_version: "8.3"
+              symfony_version: "7.3.x-dev"
+              stability: "dev"
+          # Latest Symfony version support with lastest PHP Version
+          -   os: ubuntu-latest
+              php_version: "8.4"
+              symfony_version: "7.2.*"
+              stability: "stable"
+          # LTS Symfony version support with lastest PHP Version
+          -   os: ubuntu-latest
+              php_version: "8.4"
+              symfony_version: "6.4.*"
+              stability: "stable"
+          # Upcoming Symfony versions with lastest PHP Version
+          -   os: ubuntu-latest
+              php_version: "8.4"
+              symfony_version: "7.3.x-dev"
+              stability: "dev"
+
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      -   uses: actions/checkout@v4
+
+      -   name: Setup PHP, with composer and extensions
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: ${{ matrix.php_version }}
+            coverage: none
+
+      -   name: symfony/flex is required to install the correct symfony version
+          if: ${{ matrix.symfony_version }}
+          run: |
+            composer global config --no-plugins allow-plugins.symfony/flex true
+            composer global require --no-progress --no-scripts --no-plugins symfony/flex
+
+      -   name: Configure Composer stability
+          run: |
+            composer config minimum-stability ${{ matrix.stability }}
+
+      -   name: Configure Symfony version for symfony/flex
+          if: ${{ matrix.symfony_version }}
+          run: composer config extra.symfony.require "${{ matrix.symfony_version }}"
+
+      -   name: Install dependencies
+          run: |
+            composer update --prefer-dist --no-progress ${{ matrix.composer_args }}
+
+      -   name: Test PHPUnit
+          run: |
+            vendor/bin/phpunit

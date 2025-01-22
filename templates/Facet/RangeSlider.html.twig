@@ -1,0 +1,76 @@
+<fieldset {{ attributes.defaults({
+    'class': 'ux-search-facet ux-search-range-slider',
+    'data-controller': 'ux-search-range-slider',
+    'data-ux-search-range-slider-leading-value': this.leading|default(''),
+    'data-ux-search-range-slider-trailing-value': this.trailing|default(''),
+    'data-skip-morph': true
+}) }}>
+    <legend class="ux-search-facet__title">{{ label }}</legend>
+    <form
+        class="ux-search-range-slider__form"
+        data-ux-search-range-slider-target="form"
+        data-action="submit->ux-search#updateFacetRange:prevent"
+        data-ux-search-property-param="{{ property }}"
+        data-ux-search-range-min-param="{{ facetStat.min }}"
+        data-ux-search-range-max-param="{{ facetStat.max }}"
+    >
+        <input
+            id="{{ property }}-min"
+            name="{{ property }}-min"
+            aria-label="Minimum {{ property }}"
+            aria-describedby="{{ property }}-min-value"
+            class="ux-search-range-slider__input ux-search-range-slider__input--min"
+            type="range"
+            min="{{ facetStat.min }}"
+            max="{{ facetStat.max }}"
+            placeholder="{{ facetStat.min }}"
+            value="{{ (facetStat.userMin is not null) ? facetStat.userMin : facetStat.min }}"
+            step="{{ this.step }}"
+            data-ux-search-range-slider-target="minInput"
+            data-action="
+                input->ux-search-range-slider#updateCeil
+                focus->ux-search-range-slider#updateCeil
+                mousedown->ux-search-range-slider#updateCeil
+                touchstart->ux-search-range-slider#updateCeil
+                change->ux-search-range-slider#submit
+            "
+        />
+        <input
+            id="{{ property }}-max"
+            name="{{ property }}-max"
+            aria-label="Maximum {{ property }}"
+            aria-describedby="{{ property }}-max-value"
+            class="ux-search-range-slider__input ux-search-range-slider__input--max"
+            type="range"
+            min="{{ facetStat.min }}"
+            max="{{ facetStat.max }}"
+            placeholder="{{ facetStat.max }}"
+            value="{{ (facetStat.userMax is not null) ? facetStat.userMax : facetStat.max }}"
+            step="{{ this.step }}"
+            data-ux-search-range-slider-target="maxInput"
+            data-action="
+                input->ux-search-range-slider#updateFloor
+                focus->ux-search-range-slider#updateFloor
+                mousedown->ux-search-range-slider#updateFloor
+                touchstart->ux-search-range-slider#updateFloor
+                change->ux-search-range-slider#submit
+            "
+        />
+    </form>
+    <div class="ux-search-range-slider__values">
+        <span
+            id="{{ property }}-min-value"
+            class="ux-search-range-slider__value ux-search-range-slider__value--min"
+            data-ux-search-range-slider-target="minValue"
+        >
+            {{ this.leading ~ facetStat.userMin|default(facetStat.min) ~ this.trailing }}
+        </span>
+        <span
+            id="{{ property }}-max-value"
+            class="ux-search-range-slider__value ux-search-range-slider__value--max"
+            data-ux-search-range-slider-target="maxValue"
+        >
+            {{ this.leading ~ facetStat.userMax|default(facetStat.max) ~ this.trailing }}
+        </span>
+    </div>
+</fieldset>

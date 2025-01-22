@@ -1,0 +1,33 @@
+:root {
+  --ux-search-color-text: #000000;
+  --ux-search-color-text-soft: #b1b1b1;
+  --ux-search-color-background: #f0f0f0;
+  --ux-search-color-border: #000000;
+  --ux-search-color-border-soft: #b6b8b6;
+  --ux-search-color-primary: #0f0f0f;
+  --ux-search-color-primary-text: #ffffff;
+  --ux-search-color-secondary: #daefda;
+  --ux-search-color-secondary-text: #000000;
+  --ux-search-color-accent: #13c952;
+  --ux-search-color-accent-hover: #15e15d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ux-search-color-text: #ffffff;
+    --ux-search-color-text-soft: #7c7c7c;
+    --ux-search-color-background: #1d1d1d;
+    --ux-search-color-border: #797979;
+    --ux-search-color-border-soft: #313231;
+    --ux-search-color-primary: #f0f0f0;
+    --ux-search-color-primary-text: #0f0f0f;
+    --ux-search-color-secondary: #2d3d2b;
+    --ux-search-color-secondary-text: #ffffff;
+    --ux-search-color-accent: #36ec76;
+    --ux-search-color-accent-hover: #31da6c;
+  }
+}
+
+.ux-search {
+  color: var(--ux-search-color-text);
+}

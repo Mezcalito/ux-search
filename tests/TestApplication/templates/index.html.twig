@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}Demo{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+
+        {# Style for demo #}
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: black;
+                }
+            }
+
+            .container {
+                max-width: 92rem;
+                padding: 0 2rem;
+                margin: 2rem auto;
+            }
+
+            .menu {
+                display: flex;
+                gap: 2rem;
+                justify-content: center;
+            }
+
+            .menu li a {
+                color: black;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                .menu li a  {
+                    color: white;
+                }
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+
+            <style>
+                .menu {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    list-style: none;
+                    padding: 0;
+                    margin: 0 0 32px 0;
+                    font-family: sans-serif;
+                }
+
+                .menu a {
+                    display: inline-block;
+                    padding: 8px 12px;
+                    color: var(--ux-search-color-text);
+                    text-decoration: none;
+                    border-radius: var(--ux-search-rounded-md);
+                }
+
+                .menu a.active {
+                    background-color: var(--ux-search-color-background);
+                    font-weight: bold;
+                }
+            </style>
+
+            <ul class="menu">
+                {% for item in [
+                    {'name': 'meilisearch', 'label': 'Meilisearch'},
+                    {'name': 'doctrine', 'label': 'Doctrine'}
+                ] %}
+                    <li>
+                        <a href="{{ path('index', {'name': item.name}) }}"
+                           class="{{ app.request.get('name') == item.name ? 'active' : '' }}">
+                            {{ item.label }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <twig:Mezcalito:UxSearch:Layout :name="name" />
+        </div>
+    </body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "controllers": {
+    "@symfony/ux-live-component": {
+      "live": {
+        "enabled": true,
+        "fetch": "eager",
+        "autoimport": {
+          "@symfony/ux-live-component/dist/live.min.css": true
+        }
+      }
+    },
+    "@mezcalito/ux-search-bundle": {
+      "ux-search": {
+        "enabled": true,
+        "fetch": "eager",
+        "autoimport": {
+          "@mezcalito/ux-search-bundle/dist/default.min.css": true
+        }
+      },
+      "ux-search--refinement-list": {
+        "enabled": true,
+        "fetch": "eager"
+      },
+      "ux-search-range-slider": {
+        "enabled": true,
+        "fetch": "eager"
+      }
+    }
+  },
+  "entrypoints": []
+}

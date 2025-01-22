@@ -1,0 +1,17 @@
+.ux-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid var(--ux-search-color-border-soft);
+  border-radius: var(--ux-search-rounded-md);
+  min-height: 36px;
+  font-size: 14px;
+  padding: 8px 12px;
+  color: var(--ux-search-color-text);
+
+  accent-color: var(--ux-search-color-accent);
+
+  &:focus {
+    outline-color: var(--ux-search-color-accent);;
+  }
+}

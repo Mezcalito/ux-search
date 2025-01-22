@@ -1,0 +1,41 @@
+.ux-search-select {
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  color: var(--ux-search-color-text);
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    width: 100%;
+    background-color: transparent;
+    color: var(--ux-search-color-text);
+    border: 1px solid var(--ux-search-color-border-soft);
+    padding: 8px (10px + 24px + 10px) 8px 12px;
+    font-family: inherit;
+    margin: 0;
+    border-radius: var(--ux-search-rounded-md);
+    box-sizing: border-box;
+    transition: all ease .2s;
+    white-space: nowrap;
+    font-size: 14px;
+    cursor: pointer;
+    min-height: 36px;
+
+    &:focus {
+      outline-color: var(--ux-search-color-accent);
+    }
+  }
+
+  svg {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -12px;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+  }
+}

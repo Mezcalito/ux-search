@@ -1,0 +1,46 @@
+{
+  "name": "@mezcalito/ux-search-bundle",
+  "description": "Search interface for Symfony application",
+  "main": "dist/controller.js",
+  "types": "dist/controller.d.ts",
+  "version": "1.0.0",
+  "license": "MIT",
+  "symfony": {
+    "controllers": {
+      "ux-search": {
+        "main": "dist/controller.js",
+        "name": "ux-search",
+        "webpackMode": "eager",
+        "fetch": "eager",
+        "enabled": true,
+        "autoimport": {
+          "@mezcalito/ux-search-bundle/dist/default.min.css": true
+        }
+      },
+      "ux-search--refinement-list": {
+        "main": "dist/controllers/refinement-list_controller.js",
+        "name": "ux-search--refinement-list",
+        "webpackMode": "eager",
+        "fetch": "eager",
+        "enabled": true
+      },
+      "ux-search-range-slider": {
+        "main": "dist/controllers/range-slider_controller.js",
+        "name": "ux-search-range-slider",
+        "webpackMode": "eager",
+        "fetch": "eager",
+        "enabled": true
+      }
+    },
+    "importmap": {
+      "@hotwired/stimulus": "^3.2.0",
+      "@mezcalito/ux-search-bundle": "path:%PACKAGE%/dist/controller.js"
+    }
+  },
+  "peerDependencies": {
+    "@hotwired/stimulus": "^3.2.0"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.2.0"
+  }
+}

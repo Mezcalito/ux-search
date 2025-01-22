@@ -1,0 +1,59 @@
+{
+  "name": "mezcalito/ux-search-bundle",
+  "type": "symfony-bundle",
+  "description": "Search components collection",
+  "keywords": [
+    "symfony-ux", "listing", "search", "meilisearch", "faceted search"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=8.3",
+    "nyholm/psr7": "^1.0",
+    "phpdocumentor/reflection-docblock": "^5.4",
+    "symfony/asset": "^6.4|^7.0",
+    "symfony/config": "^6.4|^7.0",
+    "symfony/dependency-injection": "^6.4|^7.0",
+    "symfony/http-client": "^6.4|^7.0",
+    "symfony/serializer": "^6.4|^7.0",
+    "symfony/ux-live-component": "^2.20",
+    "symfony/ux-twig-component": "^2.20",
+    "twig/twig": "^3.8"
+  },
+  "require-dev": {
+    "doctrine/doctrine-bundle": "^2.13",
+    "doctrine/orm": "^3.3",
+    "friendsofphp/php-cs-fixer": "^3.64",
+    "meilisearch/meilisearch-php": "^1.10",
+    "phpstan/phpstan": "^1.12",
+    "phpstan/phpstan-symfony": "^1.4",
+    "phpunit/phpunit": "^11.4",
+    "rector/rector": "^1.2",
+    "symfony/asset-mapper": "^6.4|^7.0",
+    "symfony/framework-bundle": "^6.4|^7.0",
+    "symfony/runtime": "^6.4|^7.0",
+    "symfony/translation": "^7.2",
+    "symfony/web-profiler-bundle": "^6.4|^7.0"
+  },
+  "suggest": {
+    "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter",
+    "doctrine/doctrine-bundle": "Needed to use Orm adapter"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "symfony/runtime": true,
+      "php-http/discovery": true
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Mezcalito\\UxSearchBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mezcalito\\UxSearchBundle\\Tests\\": "tests",
+      "Mezcalito\\UxSearchBundle\\Tests\\TestApplication\\": "tests/TestApplication/src"
+    }
+  }
+}

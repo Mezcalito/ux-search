@@ -1,0 +1,23 @@
+.ux-search-hits {
+  .ux-search--is-loading & {
+    opacity: 0.5;
+  }
+}
+
+.ux-search-hits__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  grid-gap: 1rem;
+}
+
+.ux-search-hits__item {
+  display: block;
+  border: 1px solid var(--ux-search-color-border-soft);
+  border-radius: var(--ux-search-rounded-md);
+  padding: 8px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline-color: var(--ux-search-color-accent);
+  }
+}

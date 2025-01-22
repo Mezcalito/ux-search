@@ -1,0 +1,66 @@
+.ux-search {
+  font-family: sans-serif;
+}
+
+.ux-search__inner {
+  display: grid;
+  grid-template-columns:280px 1fr;
+  grid-column-gap: 32px;
+}
+
+.ux-search__form {
+  grid-column: 1 / -1;
+  margin-bottom: 24px;
+}
+
+.ux-search__toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  gap: 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .ux-search__toolbar {
+    flex-direction: column;
+  }
+  .ux-search__toolbar .ux-search-clear-refinements {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .ux-search__toolbar .ux-search-sort-by {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.ux-search__facets {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 30.5px;
+}
+
+@media screen and (max-width: 768px) {
+  .ux-search__facets {
+    display: none;
+  }
+}
+
+.ux-search-sort-by {
+  margin-left: auto;
+}
+
+.ux-search__listing {
+  @media screen and (max-width: 768px) {
+    grid-column: 1 / -1;
+  }
+}
+
+.ux-search__stats {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}

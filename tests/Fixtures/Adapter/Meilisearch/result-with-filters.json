@@ -1,0 +1,266 @@
+{
+  "results": [
+    {
+      "indexUid": "test",
+      "hits": [
+        {
+          "id": 1,
+          "name": "Frosty Peak Ale",
+          "price": 7.25,
+          "color": "Blonde",
+          "brewery": "Windy Hills Brewery",
+          "style": "Mountain Lager",
+          "country": "Canada",
+          "alcohol_percentage": 5.6,
+          "_rankingScore": 1
+        },
+        {
+          "id": 2,
+          "name": "Golden Trail IPA",
+          "price": 6.8,
+          "color": "Amber",
+          "brewery": "Nomad Brewers",
+          "style": "Summit IPA",
+          "country": "United States",
+          "alcohol_percentage": 6.3,
+          "_rankingScore": 1
+        },
+        {
+          "id": 4,
+          "name": "Copper Ridge Lager",
+          "price": 5.5,
+          "color": "Amber",
+          "brewery": "Cliffside Craft",
+          "style": "Spiced Amber",
+          "country": "Germany",
+          "alcohol_percentage": 4.9,
+          "_rankingScore": 1
+        },
+        {
+          "id": 8,
+          "name": "Hazy Meadow Blonde",
+          "price": 5.95,
+          "color": "Blonde",
+          "brewery": "Breezy Fields Brewery",
+          "style": "Blonde Ale",
+          "country": "Netherlands",
+          "alcohol_percentage": 4.8,
+          "_rankingScore": 1
+        },
+        {
+          "id": 11,
+          "name": "Amber Waves Ale",
+          "price": 7,
+          "color": "Amber",
+          "brewery": "Windy Hills Brewery",
+          "style": "Summit IPA",
+          "country": "United States",
+          "alcohol_percentage": 5.5,
+          "_rankingScore": 1
+        },
+        {
+          "id": 12,
+          "name": "Golden Horizon Lager",
+          "price": 6.5,
+          "color": "Blonde",
+          "brewery": "Nomad Brewers",
+          "style": "Blonde Ale",
+          "country": "Australia",
+          "alcohol_percentage": 4.8,
+          "_rankingScore": 1
+        },
+        {
+          "id": 14,
+          "name": "Copper Dawn Ale",
+          "price": 5.75,
+          "color": "Amber",
+          "brewery": "Cliffside Craft",
+          "style": "Mountain Lager",
+          "country": "Germany",
+          "alcohol_percentage": 5.1,
+          "_rankingScore": 1
+        },
+        {
+          "id": 15,
+          "name": "Sunset Ridge IPA",
+          "price": 7.35,
+          "color": "Amber",
+          "brewery": "Seaside Brews",
+          "style": "Summit IPA",
+          "country": "Canada",
+          "alcohol_percentage": 6.5,
+          "_rankingScore": 1
+        },
+        {
+          "id": 16,
+          "name": "Misty Morning Pale",
+          "price": 6.45,
+          "color": "Blonde",
+          "brewery": "Golden Leaf Brewery",
+          "style": "Garde Pale Ale",
+          "country": "France",
+          "alcohol_percentage": 5.2,
+          "_rankingScore": 1
+        },
+        {
+          "id": 18,
+          "name": "Breezy Coast Blonde",
+          "price": 6.15,
+          "color": "Blonde",
+          "brewery": "Breezy Fields Brewery",
+          "style": "Blonde Ale",
+          "country": "Netherlands",
+          "alcohol_percentage": 5,
+          "_rankingScore": 1
+        },
+        {
+          "id": 19,
+          "name": "Scarlet Sun Amber",
+          "price": 6.95,
+          "color": "Amber",
+          "brewery": "Scarlet Sun Brewing",
+          "style": "Spiced Amber",
+          "country": "Italy",
+          "alcohol_percentage": 6.3,
+          "_rankingScore": 1
+        },
+        {
+          "id": 21,
+          "name": "Whispering Pines Lager",
+          "price": 5.95,
+          "color": "Blonde",
+          "brewery": "Windy Hills Brewery",
+          "style": "Mountain Lager",
+          "country": "Germany",
+          "alcohol_percentage": 5.2,
+          "_rankingScore": 1
+        }
+      ],
+      "query": "",
+      "processingTimeMs": 0,
+      "hitsPerPage": 12,
+      "page": 1,
+      "totalPages": 6,
+      "totalHits": 61,
+      "facetDistribution": {
+        "color": {
+          "Amber": 36,
+          "Blonde": 25
+        },
+        "price": {
+          "7": 2,
+          "5.5": 2,
+          "5.6": 1,
+          "5.65": 1,
+          "5.75": 3,
+          "5.8": 1,
+          "5.85": 2,
+          "5.9": 1,
+          "5.95": 3,
+          "6.05": 1,
+          "6.1": 2,
+          "6.15": 3,
+          "6.2": 2,
+          "6.25": 1,
+          "6.3": 1,
+          "6.35": 2,
+          "6.4": 2,
+          "6.45": 2,
+          "6.5": 2,
+          "6.75": 1,
+          "6.8": 3,
+          "6.85": 1,
+          "6.9": 2,
+          "6.95": 3,
+          "7.05": 2,
+          "7.1": 2,
+          "7.25": 4,
+          "7.3": 1,
+          "7.35": 2,
+          "7.45": 2,
+          "7.55": 1,
+          "7.6": 1,
+          "7.65": 1,
+          "7.8": 1
+        }
+      },
+      "facetStats": {
+        "price": {
+          "min": 5.5,
+          "max": 7.8
+        }
+      }
+    },
+    {
+      "indexUid": "test",
+      "hits": [],
+      "query": "",
+      "processingTimeMs": 0,
+      "limit": 0,
+      "offset": 0,
+      "estimatedTotalHits": 84,
+      "facetDistribution": {
+        "color": {
+          "Amber": 36,
+          "Blonde": 25,
+          "Brown": 11,
+          "Red": 12
+        }
+      },
+      "facetStats": []
+    },
+    {
+      "indexUid": "test",
+      "hits": [],
+      "query": "",
+      "processingTimeMs": 0,
+      "limit": 0,
+      "offset": 0,
+      "estimatedTotalHits": 61,
+      "facetDistribution": {
+        "price": {
+          "7": 2,
+          "5.5": 2,
+          "5.6": 1,
+          "5.65": 1,
+          "5.75": 3,
+          "5.8": 1,
+          "5.85": 2,
+          "5.9": 1,
+          "5.95": 3,
+          "6.05": 1,
+          "6.1": 2,
+          "6.15": 3,
+          "6.2": 2,
+          "6.25": 1,
+          "6.3": 1,
+          "6.35": 2,
+          "6.4": 2,
+          "6.45": 2,
+          "6.5": 2,
+          "6.75": 1,
+          "6.8": 3,
+          "6.85": 1,
+          "6.9": 2,
+          "6.95": 3,
+          "7.05": 2,
+          "7.1": 2,
+          "7.25": 4,
+          "7.3": 1,
+          "7.35": 2,
+          "7.45": 2,
+          "7.55": 1,
+          "7.6": 1,
+          "7.65": 1,
+          "7.8": 1
+        }
+      },
+      "facetStats": {
+        "price": {
+          "min": 5.5,
+          "max": 7.8
+        }
+      }
+    }
+  ]
+}

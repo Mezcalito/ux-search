@@ -1,0 +1,10 @@
+{
+	frankenphp
+	order php_server before file_server
+}
+
+{$SERVER_NAME} {
+    root * /srv/app/tests/TestApplication/public
+	encode zstd gzip
+	php_server
+}
