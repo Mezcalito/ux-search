@@ -15,6 +15,7 @@
     "symfony/config": "^6.4|^7.0",
     "symfony/dependency-injection": "^6.4|^7.0",
     "symfony/http-client": "^6.4|^7.0",
+    "symfony/options-resolver": "^6.4|^7.0",
     "symfony/serializer": "^6.4|^7.0",
     "symfony/ux-live-component": "^2.20",
     "symfony/ux-twig-component": "^2.20",
