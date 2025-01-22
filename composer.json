@@ -1,7 +1,8 @@
 {
   "name": "mezcalito/ux-search",
   "type": "symfony-bundle",
-  "description": "Search components collection",
+  "description": "Effortless search and faceted search with Symfony UX and Mezcalito UX Search",
+  "homepage": "https://github.com/Mezcalito/ux-search",
   "keywords": [
     "symfony-ux", "listing", "search", "meilisearch", "faceted search"
   ],
