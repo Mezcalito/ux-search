@@ -1,5 +1,5 @@
 {
-  "name": "@mezcalito/ux-search-bundle",
+  "name": "@mezcalito/ux-search",
   "description": "Search interface for Symfony application",
   "main": "dist/controller.js",
   "types": "dist/controller.d.ts",
@@ -14,7 +14,7 @@
         "fetch": "eager",
         "enabled": true,
         "autoimport": {
-          "@mezcalito/ux-search-bundle/dist/default.min.css": true
+          "@mezcalito/ux-search/dist/default.min.css": true
         }
       },
       "ux-search--refinement-list": {
@@ -34,7 +34,7 @@
     },
     "importmap": {
       "@hotwired/stimulus": "^3.2.0",
-      "@mezcalito/ux-search-bundle": "path:%PACKAGE%/dist/controller.js"
+      "@mezcalito/ux-search": "path:%PACKAGE%/dist/controller.js"
     }
   },
   "peerDependencies": {
