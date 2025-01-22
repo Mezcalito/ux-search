@@ -1,5 +1,5 @@
 {
-  "name": "mezcalito/ux-search-bundle",
+  "name": "mezcalito/ux-search",
   "type": "symfony-bundle",
   "description": "Search components collection",
   "keywords": [
