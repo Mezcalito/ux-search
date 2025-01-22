@@ -1,0 +1,14 @@
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.infrastructure export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/assets/src export-ignore
+/Makefile export-ignore
+/package.json export-ignore
+/phpstan.dist.neon export-ignore
+/phpunit.xml.dist export-ignore
+/rector.php export-ignore
+/rollup.config.js export-ignore
+/tests export-ignore
+/tsconfig.json export-ignore
