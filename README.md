@@ -116,8 +116,8 @@ class MeilisearchSearch extends AbstractSearch
     {
         $this
             ->addFacet('type', 'Type')
-            ->addFacet('price', 'Price', RangeInput::class))
-            ->addFacet('price', 'Price', null, ['limit' => 20]))
+            ->addFacet('price', 'Price', RangeInput::class)
+            ->addFacet('price', 'Price', null, ['limit' => 20])
         ;
     }
 }
@@ -163,7 +163,7 @@ For example, you can modify the `ResultSet` on the `PostSearchEvent` to enrich a
     {
         $this 
             // ...
-            ->addEventListener(PostSearchEvent::class, function (PreSearchEvent $event) {
+            ->addEventListener(PreSearchEvent::class, function (PreSearchEvent $event) {
                 // $event->getSearch();   
                 // $event->getQuery();   
             })
