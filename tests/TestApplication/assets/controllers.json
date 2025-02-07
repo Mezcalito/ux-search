@@ -9,12 +9,12 @@
         }
       }
     },
-    "@mezcalito/ux-search-bundle": {
+    "@mezcalito/ux-search": {
       "ux-search": {
         "enabled": true,
         "fetch": "eager",
         "autoimport": {
-          "@mezcalito/ux-search-bundle/dist/default.min.css": true
+          "@mezcalito/ux-search/dist/default.min.css": true
         }
       },
       "ux-search--refinement-list": {
