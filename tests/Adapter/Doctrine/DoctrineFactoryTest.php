@@ -15,6 +15,7 @@ namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineFactory;
 use Mezcalito\UxSearchBundle\Exception\DoctrineAdapterException;
@@ -63,7 +64,7 @@ class DoctrineFactoryTest extends TestCase
 
     public function testCreateAdapterThrowsDoctrineAdapterExceptionForInvalidManager(): void
     {
-        $invalidManager = new \stdClass();
+        $invalidManager = $this->createMock(ObjectManager::class);
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $managerRegistryMock->expects($this->once())
             ->method('getManager')
