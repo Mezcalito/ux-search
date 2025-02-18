@@ -32,6 +32,7 @@
     "rector/rector": "^1.2",
     "symfony/asset-mapper": "^6.4|^7.0",
     "symfony/framework-bundle": "^6.4|^7.0",
+    "symfony/maker-bundle": "^1.62",
     "symfony/runtime": "^6.4|^7.0",
     "symfony/translation": "^7.2",
     "symfony/web-profiler-bundle": "^6.4|^7.0"
