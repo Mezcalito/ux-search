@@ -17,6 +17,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Mezcalito\UxSearchBundle\MezcalitoUxSearchBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -42,6 +43,7 @@ final class Kernel extends SymfonyKernel
             new WebProfilerBundle(),
             new DoctrineBundle(),
             new MezcalitoUxSearchBundle(),
+            new MakerBundle(),
         ];
     }
 

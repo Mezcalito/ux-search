@@ -20,6 +20,7 @@ use Mezcalito\UxSearchBundle\Adapter\Meilisearch\MeilisearchFactory;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\QueryBuilder;
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\EventSubscriber\ContextSubscriber;
+use Mezcalito\UxSearchBundle\Maker\MakeSearch;
 use Mezcalito\UxSearchBundle\Search\Searcher;
 use Mezcalito\UxSearchBundle\Search\SearchProvider;
 use Mezcalito\UxSearchBundle\Search\Url\DefaultUrlFormater;
@@ -120,5 +121,7 @@ return static function (ContainerConfigurator $container) {
         ->set(DefaultUrlFormater::class)
             ->arg('$urlGenerator', service(UrlGeneratorInterface::class))
             ->tag('mezcalito_ux_search.url_formater')
+        ->set('maker.maker.make_search', MakeSearch::class)
+            ->tag('maker.command')
     ;
 };
