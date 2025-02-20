@@ -4,7 +4,10 @@
 
 The Mezcalito UxSearch Bundle provides an easy-to-use classic search and faceted search system in your Symfony application using Twig Components and Live Components. It allows you to create and manage multiple search, each with its unique configuration. Currently, the bundle supports Doctrine and Meilisearch adapter.
 
-![Effortless search and faceted search with Symfony UX and Mezcalito UX Search](docs/image/preview.png)
+[![Effortless search and faceted search with Symfony UX and Mezcalito UX Search](docs/image/preview.png)](https://ux-search.mezcalito.dev/)
+
+[View demo](https://ux-search.mezcalito.dev/demo)
+
 
 ## Installation
 
