@@ -15,6 +15,7 @@ namespace Mezcalito\UxSearchBundle\Adapter\Doctrine;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
@@ -44,9 +45,9 @@ readonly class DoctrineAdapter implements AdapterInterface
     {
         $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
-        $results = $helper->getResultsQuery()->getQuery()->getResult();
+        $paginator = new Paginator($helper->getResultsQuery()->getQuery(), fetchJoinCollection: true);
         $hits = [];
-        foreach ($results as $item) {
+        foreach ($paginator as $item) {
             $hits[] = new Hit($item, 1);
         }
 

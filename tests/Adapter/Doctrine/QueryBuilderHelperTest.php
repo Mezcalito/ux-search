@@ -32,7 +32,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
     {
         $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
     public function testTotalResultsWithFilterQuery()
@@ -43,7 +43,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $dql = $qb->getQuery()->getDQL();
         $params = $qb->getParameter('o_brand_terms');
 
-        $this->assertEquals('SELECT count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
+        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
         $this->assertEquals(['A', 'B'], $params->getValue());
     }
 

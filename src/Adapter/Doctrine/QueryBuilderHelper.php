@@ -36,7 +36,7 @@ readonly class QueryBuilderHelper
     public function getTotalResultsQuery(): QueryBuilder
     {
         $qb = $this->createBaseQueryBuilder()
-            ->select(\sprintf('count(%s) AS total', $this->getIdentifierField()));
+            ->select(\sprintf('count(DISTINCT (%s)) AS total', $this->getIdentifierField()));
 
         $this->applyQueryString($qb);
 
