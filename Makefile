@@ -3,6 +3,7 @@ DOCKER_COMP = docker compose
 
 # Docker containers
 PHP_CONT  = $(DOCKER_COMP) exec -w /srv/app php
+PHP_CONT_APP  = $(DOCKER_COMP) exec -w /srv/app/tests/TestApplication php
 NODE_CONT = $(DOCKER_COMP) run --rm -w /srv/app node
 
 # Executables
@@ -35,7 +36,18 @@ php: ## Connect to the PHP container
 node: ## Connect to the Node container
 	@$(NODE_CONT) sh
 
+## —— Test app —————————————————————————————————————————————————————————————————
+
+install:
+	@$(PHP_CONT) composer install
+	@$(PHP_CONT_APP) bin/console importmap:install
+	@$(PHP_CONT_APP) mkdir -p var
+	@$(PHP_CONT_APP) bin/console doctrine:schema:update --force
+	@$(PHP_CONT_APP) bin/console app:load-doctrine-fixture
+	@$(PHP_CONT_APP) bin/console app:load-meilisearch-fixture
+
 ## —— Assets —————————————————————————————————————————————————————————————————
+
 assets/install:
 	@$(NPM) install
 
