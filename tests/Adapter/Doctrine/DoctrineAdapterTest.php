@@ -16,6 +16,7 @@ namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
+use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\CategoryEnum;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo;
 
 class DoctrineAdapterTest extends AbstractDoctrineTestCase
@@ -53,14 +54,16 @@ class DoctrineAdapterTest extends AbstractDoctrineTestCase
     public function testSearchWithFilter(): void
     {
         $this->createDatabase([
-            new Foo('A', '1', 10),
-            new Foo('A', '1', 13),  // filtered
-            new Foo('B', '2', 12),  // filtered
-            new Foo('C', '2', 13),  // filtered
+            new Foo('A', '1', 10, CategoryEnum::PHARMACY),
+            new Foo('A', '1', 13, CategoryEnum::PHARMACY),  // filtered
+            new Foo('B', '2', 12, CategoryEnum::PHARMACY),  // filtered
+            new Foo('C', '2', 13, CategoryEnum::PHARMACY),  // filtered
+            new Foo('D', '2', 25, CategoryEnum::GRILL), // filtered
         ]);
 
         $this->query->addActiveFilter(new RangeFilter('o.price', 10, 12));
         $this->query->addActiveFilter(new TermFilter('o.type', ['A']));
+        $this->query->addActiveFilter(new TermFilter('o.category', [CategoryEnum::PHARMACY]));
 
         $resultSet = $this->adapter->search($this->query, $this->search);
 
