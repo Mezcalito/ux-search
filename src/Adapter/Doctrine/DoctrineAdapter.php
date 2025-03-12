@@ -93,10 +93,12 @@ readonly class DoctrineAdapter implements AdapterInterface
             $uncheckedFacets = [];
             $qb = $helper->getFacetTermQuery($facet);
             foreach ($qb->getQuery()->getArrayResult() as $row) {
-                if (\in_array($row['value'], $checkedValues)) {
-                    $checkedFacets[$row['value']] = $row['total'];
+                $rowValue = $row['value'] instanceof \BackedEnum ? $row['value']->value : $row['value'];
+
+                if (\in_array($rowValue, $checkedValues)) {
+                    $checkedFacets[$rowValue] = $row['total'];
                 } else {
-                    $uncheckedFacets[$row['value']] = $row['total'];
+                    $uncheckedFacets[$rowValue] = $row['total'];
                 }
             }
 

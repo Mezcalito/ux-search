@@ -27,6 +27,7 @@ class Foo
         #[ORM\Column] public ?string $type = null,
         #[ORM\Column] public ?string $brand = null,
         #[ORM\Column] public ?float $price = null,
+        #[ORM\Column(nullable: true)] public ?CategoryEnum $category = null,
     ) {
     }
 }
