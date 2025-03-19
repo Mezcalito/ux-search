@@ -17,12 +17,13 @@ use Meilisearch\Client;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\MeilisearchAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\MeilisearchFactory;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
 
 class MeilisearchFactoryTest extends TestCase
 {
     public function testSupportReturnsTrueForMeilisearchDsn(): void
     {
-        $factory = new MeilisearchFactory();
+        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
 
         $this->assertTrue($factory->support('meilisearch://localhost:7700'));
         $this->assertFalse($factory->support('algolia://localhost:7700'));
@@ -31,6 +32,7 @@ class MeilisearchFactoryTest extends TestCase
     public function testCreateAdapterReturnsMeilisearchAdapter(): void
     {
         $factory = $this->getMockBuilder(MeilisearchFactory::class)
+            ->disableOriginalConstructor()
             ->onlyMethods(['createClient'])
             ->getMock();
 
@@ -51,10 +53,18 @@ class MeilisearchFactoryTest extends TestCase
             $this->markTestSkipped('Meilisearch Client is not installed.');
         }
 
-        $factory = new MeilisearchFactory();
+        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
 
         $dsn = 'meilisearch://user@localhost:7700?tls=true';
         $client = $factory->createClient($dsn);
+
+        $this->assertInstanceOf(Client::class, $client);
+    }
+
+    public function testCreateClientWithOptionalHttpClient(): void
+    {
+        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
+        $client = $factory->createClient('meilisearch://localhost:7700');
 
         $this->assertInstanceOf(Client::class, $client);
     }

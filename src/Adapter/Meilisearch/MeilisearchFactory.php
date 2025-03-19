@@ -16,9 +16,14 @@ namespace Mezcalito\UxSearchBundle\Adapter\Meilisearch;
 use Meilisearch\Client;
 use Mezcalito\UxSearchBundle\Adapter\AdapterFactoryInterface;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
+use Psr\Http\Client\ClientInterface;
 
 readonly class MeilisearchFactory implements AdapterFactoryInterface
 {
+    public function __construct(private ClientInterface $httpClient)
+    {
+    }
+
     public function support(string $dsn): bool
     {
         return str_starts_with($dsn, 'meilisearch');
@@ -46,6 +51,6 @@ readonly class MeilisearchFactory implements AdapterFactoryInterface
             $parsedDsn['port'] ?? '7700',
         );
 
-        return new Client($url, $parsedDsn['user'] ?? null);
+        return new Client($url, $parsedDsn['user'] ?? null, $this->httpClient);
     }
 }
