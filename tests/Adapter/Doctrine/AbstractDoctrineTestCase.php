@@ -22,6 +22,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Bar;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\FooSearch;
 use PHPUnit\Framework\TestCase;
@@ -68,8 +69,10 @@ abstract class AbstractDoctrineTestCase extends TestCase
     protected function createDatabase(array $data = []): void
     {
         $schemaTool = new SchemaTool($this->entityManager);
-        $class = $this->entityManager->getClassMetadata(Foo::class);
-        $schemaTool->createSchema([$class]);
+        $schemaTool->createSchema([
+            $this->entityManager->getClassMetadata(Foo::class),
+            $this->entityManager->getClassMetadata(Bar::class),
+        ]);
 
         foreach ($data as $foo) {
             $this->entityManager->persist($foo);

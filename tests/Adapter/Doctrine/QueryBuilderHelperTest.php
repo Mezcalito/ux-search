@@ -37,7 +37,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testTotalResultsWithFilterQuery()
     {
-        $this->query->addActiveFilter(new TermFilter('o.brand', ['A', 'B']));
+        $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
         $qb = $this->helper->getTotalResultsQuery();
 
         $dql = $qb->getQuery()->getDQL();
@@ -69,7 +69,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testResultsQueryWithFilter()
     {
-        $this->query->addActiveFilter(new RangeFilter('o.price', 10, 100));
+        $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
         $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
 
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.price <= :o_price_max  AND o.price >= :o_price_min ORDER BY o.price asc', $dql);
@@ -77,21 +77,30 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testFacetTermQuery()
     {
-        $this->query->addActiveFilter(new TermFilter('o.brand', ['A', 'B']));
-        $this->query->addActiveFilter(new RangeFilter('o.price', 10, 100));
+        $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
+        $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
 
         $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT o.brand as value, count(o.brand) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total desc', $dql);
+        $this->assertEquals('SELECT o.brand as value, count(o.brand) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total desc', $dql);
     }
 
     public function testFacetStatsQuery()
     {
-        $this->query->addActiveFilter(new TermFilter('o.brand', ['A', 'B']));
-        $this->query->addActiveFilter(new RangeFilter('o.price', 10, 100));
+        $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
+        $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
 
         $dql = $this->helper->getFacetStatsQuery($this->search->getFacet('o.price'))->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT min(o.price) as min, max(o.price) AS max FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
+        $this->assertEquals('SELECT min(o.price) as min, max(o.price) AS max FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min', $dql);
+    }
+
+    public function testFacetTermSubEntityQuery()
+    {
+        $this->query->addActiveFilter(new TermFilter('bar.name', ['A']));
+
+        $dql = $this->helper->getFacetTermQuery($this->search->getFacet('bar.name'))->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT bar.name as value, count(bar.name) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar GROUP BY bar.name ORDER BY total desc', $dql);
     }
 }

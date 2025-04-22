@@ -64,10 +64,14 @@ readonly class QueryBuilderHelper
     public function getFacetTermQuery(Facet $facet): QueryBuilder
     {
         $qb = $this->createBaseQueryBuilder();
+
+        [$alias, $property] = $this->extractAliasAndProperty($facet->getProperty());
+        $this->updateQueryBuilderAssociations($qb, $alias);
+
         $qb
-            ->select(\sprintf('%s as value, count(%s) AS total', $facet->getProperty(), $facet->getProperty()))
+            ->select(\sprintf('%s.%s as value, count(%s.%s) AS total', $alias, $property, $alias, $property))
             ->orderBy('total', 'desc')
-            ->groupBy($facet->getProperty())
+            ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
 
         $this->applyQueryString($qb);
@@ -86,8 +90,12 @@ readonly class QueryBuilderHelper
     public function getFacetStatsQuery(mixed $facet): QueryBuilder
     {
         $qb = $this->createBaseQueryBuilder();
+
+        [$alias, $property] = $this->extractAliasAndProperty($facet->getProperty());
+        $this->updateQueryBuilderAssociations($qb, $alias);
+
         $qb
-            ->select(\sprintf('min(%s) as min, max(%s) AS max', $facet->getProperty(), $facet->getProperty()));
+            ->select(\sprintf('min(%s.%s) as min, max(%s.%s) AS max', $alias, $property, $alias, $property));
 
         $this->applyQueryString($qb);
 
@@ -113,6 +121,27 @@ readonly class QueryBuilderHelper
         return $qb;
     }
 
+    private function extractAliasAndProperty(string $property): array
+    {
+        if (str_contains($property, '.')) {
+            return explode('.', $property);
+        }
+
+        return ['o', $property];
+    }
+
+    private function updateQueryBuilderAssociations(QueryBuilder $qb, string $alias): void
+    {
+        if ('o' === $alias) {
+            return;
+        }
+
+        $metadata = $this->manager->getClassMetadata($this->search->getIndexName());
+        if (\array_key_exists($alias, $metadata->associationMappings) && !\in_array($alias, $qb->getAllAliases(), true)) {
+            $qb->leftJoin('o.'.$alias, $alias);
+        }
+    }
+
     private function getIdentifierField(): string
     {
         $metadata = $this->manager->getClassMetadata($this->search->getIndexName());
@@ -125,22 +154,25 @@ readonly class QueryBuilderHelper
 
     private function applyFilter(QueryBuilder $qb, FilterInterface $filter)
     {
-        if ($filter instanceof TermFilter && $filter->hasValues()) {
-            $parameterName = u(\sprintf('%s_terms', $filter->getProperty()))->snake()->toString();
+        [$alias, $property] = $this->extractAliasAndProperty($filter->getProperty());
+        $this->updateQueryBuilderAssociations($qb, $alias);
 
-            $qb->andWhere(\sprintf('%s in (:%s)', $filter->getProperty(), $parameterName));
+        if ($filter instanceof TermFilter && $filter->hasValues()) {
+            $parameterName = u(\sprintf('%s_%s_terms', $alias, $property))->snake()->toString();
+
+            $qb->andWhere(\sprintf('%s.%s in (:%s)', $alias, $property, $parameterName));
             $qb->setParameter($parameterName, array_values($filter->getValues()));
         }
 
         if ($filter instanceof RangeFilter && $filter->getMax()) {
-            $parameterName = u(\sprintf('%s_max', $filter->getProperty()))->snake()->toString();
-            $qb->andWhere(\sprintf('%s <= :%s ', $filter->getProperty(), $parameterName));
+            $parameterName = u(\sprintf('%s_%s_max', $alias, $property))->snake()->toString();
+            $qb->andWhere(\sprintf('%s.%s <= :%s ', $alias, $property, $parameterName));
             $qb->setParameter($parameterName, $filter->getMax());
         }
 
         if ($filter instanceof RangeFilter && $filter->getMin()) {
-            $parameterName = u(\sprintf('%s_min', $filter->getProperty()))->snake()->toString();
-            $qb->andWhere(\sprintf('%s >= :%s', $filter->getProperty(), $parameterName));
+            $parameterName = u(\sprintf('%s_%s_min', $alias, $property))->snake()->toString();
+            $qb->andWhere(\sprintf('%s.%s >= :%s', $alias, $property, $parameterName));
             $qb->setParameter($parameterName, $filter->getMin());
         }
     }
