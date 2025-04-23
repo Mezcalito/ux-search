@@ -26,6 +26,7 @@ class FooSearch extends AbstractSearch
             ->addFacet('o.type', 'Type')
             ->addFacet('o.brand', 'Brand')
             ->addFacet('o.price', 'Price', RangeInput::class)
+            ->addFacet('bar.name', 'Name')
             ->addAvailableSort('o.price:asc', 'Price ↑')
             ->addAvailableSort('o.price:desc', 'Price ↓')
         ;

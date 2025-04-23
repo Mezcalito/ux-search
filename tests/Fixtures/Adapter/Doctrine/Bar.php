@@ -16,7 +16,7 @@ namespace Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Foo
+class Bar
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,11 +24,7 @@ class Foo
     public ?int $id = null;
 
     public function __construct(
-        #[ORM\Column] public ?string $type = null,
-        #[ORM\Column] public ?string $brand = null,
-        #[ORM\Column] public ?float $price = null,
-        #[ORM\Column(nullable: true)] public ?CategoryEnum $category = null,
-        #[ORM\ManyToOne] #[ORM\JoinColumn(nullable: true)] public ?Bar $bar = null,
+        #[ORM\Column] public ?string $name = null,
     ) {
     }
 }
