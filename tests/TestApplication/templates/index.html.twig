@@ -79,7 +79,8 @@
             <ul class="menu">
                 {% for item in [
                     {'name': 'meilisearch', 'label': 'Meilisearch'},
-                    {'name': 'doctrine', 'label': 'Doctrine'}
+                    {'name': 'doctrine', 'label': 'Doctrine'},
+                    {'name': 'algolia', 'label': 'Algolia'}
                 ] %}
                     <li>
                         <a href="{{ path('index', {'name': item.name}) }}"

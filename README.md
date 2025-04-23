@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Mezcalito UxSearch Bundle provides an easy-to-use classic search and faceted search system in your Symfony application using Twig Components and Live Components. It allows you to create and manage multiple search, each with its unique configuration. Currently, the bundle supports Doctrine and Meilisearch adapter.
+The Mezcalito UxSearch Bundle provides an easy-to-use classic search and faceted search system in your Symfony application using Twig Components and Live Components. It allows you to create and manage multiple search, each with its unique configuration. Currently, the bundle supports Doctrine, Algolia and Meilisearch adapter.
 
 [![Effortless search and faceted search with Symfony UX and Mezcalito UX Search](docs/image/preview.png)](https://ux-search.mezcalito.dev/)
 
@@ -48,15 +48,19 @@ mezcalito_ux_search:
 
 ### Available adapter
 
-For now, only 2 adapters are available: [Meilisearch](https://www.meilisearch.com) and [Doctrine](https://www.doctrine-project.org/projects/orm.html).
+For now, 3 adapters are available: [Algolia](https://www.algolia.com), [Meilisearch](https://www.meilisearch.com) and [Doctrine](https://www.doctrine-project.org/projects/orm.html).
 
 | Adapter     | DSN                              |
 |-------------|----------------------------------|
+| Algolia     | algolia://appId@apiKey           |
 | Meilisearch | meilisearch://key@localhost:7700 |
 | Doctrine    | doctrine://default               |
 
+You can read the documentation part that concerns your adapter to learn about the configuration options available.
 
-Read the [Meilisearch part](docs/usage/meilisearch.md) docs and the [Doctrine part](docs/usage/doctrine.md) docs to learn about the configuration options available for each adapter.
+- [Algolia](docs/usage/algolia.md)
+- [Meilisearch](docs/usage/meilisearch.md)
+- [Doctrine](docs/usage/doctrine.md)
 
 You can also [create your own Adapter](docs/create-own-adapter.md) to use other provider.
 
@@ -68,7 +72,7 @@ To use the bundle, create your first `Search`. To do this, just use the `make:se
 php bin/console make:search
 ```
 
-In the case of Meilisearch, you need to specify the name of the index to use, and for Doctrine, the FQCN of the entity to use.
+In the case of Algolia or Meilisearch, you need to specify the name of the index to use, and for Doctrine, the FQCN of the entity to use.
 
 By default, the name of your search will be the name of your class with the `Search` suffix removed. You can change this by specifying a custom name.
 
