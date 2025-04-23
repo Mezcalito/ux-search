@@ -9,7 +9,7 @@
 | CROP_LENGTH_PARAM             | cropLength            | int      | 10            |
 | CROP_MARKER_PARAM             | cropMarker            | string   | ...           |
 | ATTRIBUTES_TO_HIGHLIGHT_PARAM | attributesToHighlight | string[] | []            |
-| HIGHLIGHT_PRE_TAG_PARAM       | highlightPreTag       | string   | <em>          |
-| HIGHLIGHT_POST_TAG_PARAM      | highlightPostTag      | string   | </em>         |
+| HIGHLIGHT_PRE_TAG_PARAM       | highlightPreTag       | string   | &lt;em&gt;    |
+| HIGHLIGHT_POST_TAG_PARAM      | highlightPostTag      | string   | &lt;/em&gt;   |
 
 If you need more inforamtion about this configuration check [Meilisearch documentation](https://www.meilisearch.com/docs/reference/api/search#body)
