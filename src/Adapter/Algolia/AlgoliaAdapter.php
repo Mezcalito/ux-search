@@ -14,20 +14,14 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Adapter\Algolia;
 
 use Algolia\AlgoliaSearch\SearchClient;
-use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
-use Mezcalito\UxSearchBundle\Search\Facet;
-use Mezcalito\UxSearchBundle\Search\Filter\FilterInterface;
-use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
-use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
+use Mezcalito\UxSearchBundle\Adapter\AbstractAdapter;
 use Mezcalito\UxSearchBundle\Search\Query;
-use Mezcalito\UxSearchBundle\Search\ResultSet\FacetStat;
-use Mezcalito\UxSearchBundle\Search\ResultSet\FacetTermDistribution;
 use Mezcalito\UxSearchBundle\Search\ResultSet\Hit;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-readonly class AlgoliaAdapter implements AdapterInterface
+class AlgoliaAdapter extends AbstractAdapter
 {
     public const string ADVANCED_SYNTAX_PARAM = 'advancedSyntax';
 
@@ -68,9 +62,19 @@ readonly class AlgoliaAdapter implements AdapterInterface
     public const string SYNONYMS_PARAM = 'synonyms';
 
     public function __construct(
-        private SearchClient $client,
-        private QueryBuilder $queryBuilder,
+        private readonly SearchClient $client,
+        private readonly QueryBuilder $queryBuilder,
     ) {
+    }
+
+    public function getFacetDistributionKey(): string
+    {
+        return 'facets';
+    }
+
+    public function getFacetStatsKey(): string
+    {
+        return 'facets_stats';
     }
 
     public function search(Query $query, SearchInterface $search): ResultSet
@@ -86,69 +90,7 @@ readonly class AlgoliaAdapter implements AdapterInterface
             $hits[] = new Hit($hit, $hit['_rankingInfo']['userScore']);
         }
 
-        $mergedFacets = array_reduce($results['results'], function ($carry, $result) {
-            if (isset($result['facets'])) {
-                foreach ($result['facets'] as $facetKey => $facetValues) {
-                    $carry[$facetKey] = $facetValues;
-                }
-            }
-
-            return $carry;
-        }, []);
-
-        $mergedFacetStats = array_reduce($results['results'], function ($carry, $result) {
-            if (isset($result['facets_stats'])) {
-                foreach ($result['facets_stats'] as $facetKey => $facetStat) {
-                    $carry[$facetKey] = $facetStat;
-                }
-            }
-
-            return $carry;
-        }, []);
-
-        $facetsDistributions = [];
-
-        foreach ($search->getFacets() as $facet) {
-            $filter = $query->getActiveFilter($facet->getProperty());
-            $facetsDistributions[$facet->getProperty()] = $this->hydrateTermDistribution($mergedFacets, $facet, $filter);
-
-            if (!isset($mergedFacetStats[$facet->getProperty()])) {
-                $mergedFacetStats[$facet->getProperty()] = ['min' => 0, 'max' => 0];
-            }
-        }
-
-        foreach ($facetsDistributions as $property => $distribution) {
-            if ($distribution instanceof FacetTermDistribution) {
-                $values = $distribution->getValues();
-                $checkedValues = $distribution->getCheckedValues();
-
-                $checkedFacets = [];
-                $uncheckedFacets = [];
-
-                foreach ($values as $key => $value) {
-                    if (\in_array($key, $checkedValues)) {
-                        $checkedFacets[$key] = $value;
-                    } else {
-                        $uncheckedFacets[$key] = $value;
-                    }
-                }
-
-                $sortedFacets = $checkedFacets + $uncheckedFacets;
-
-                $distribution->setValues($sortedFacets);
-            }
-        }
-
-        $facetStats = [];
-        foreach ($mergedFacetStats as $property => $values) {
-            $filter = $query->getActiveFilter($property);
-            if ($filter instanceof RangeFilter) {
-                $userMin = $filter->getMin();
-                $userMax = $filter->getMax();
-            }
-
-            $facetStats[] = new FacetStat($property, $values['min'], $values['max'], $userMin ?? null, $userMax ?? null);
-        }
+        [$facetsDistributions, $facetStats] = $this->getFacets($results, $search, $query);
 
         return (new ResultSet())
             ->setIndexUid($resultsToProcess['index'])
@@ -224,21 +166,5 @@ readonly class AlgoliaAdapter implements AdapterInterface
         $resolver->setAllowedValues(self::MAX_VALUES_PER_FACET_PARAM, fn (int $value): bool => $value <= 1000);
         $resolver->setAllowedValues(self::QUERY_TYPE_PARAM, ['prefixAll', 'prefixLast', 'prefixNone']);
         $resolver->setAllowedValues(self::SORT_FACET_VALUES_BY_PARAM, ['count', 'alpha']);
-    }
-
-    private function hydrateTermDistribution(array $mergedFacetDistribution, Facet $facet, ?FilterInterface $filter): FacetTermDistribution
-    {
-        $values = $mergedFacetDistribution[$facet->getProperty()] ?? [];
-
-        $termDistribution = (new FacetTermDistribution())
-            ->setProperty($facet->getProperty())
-            ->setValues($values)
-        ;
-
-        if ($filter instanceof TermFilter) {
-            $termDistribution->setCheckedValues($filter->getValues());
-        }
-
-        return $termDistribution;
     }
 }
