@@ -22,6 +22,7 @@
     "twig/twig": "^3.8"
   },
   "require-dev": {
+    "algolia/search-bundle": "^6.0|^7.0",
     "doctrine/doctrine-bundle": "^2.13",
     "doctrine/orm": "^3.3",
     "friendsofphp/php-cs-fixer": "^3.64",
@@ -38,8 +39,9 @@
     "symfony/web-profiler-bundle": "^6.4|^7.0"
   },
   "suggest": {
-    "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter",
-    "doctrine/doctrine-bundle": "Needed to use Orm adapter"
+    "algolia/search-bundle": "Needed to use Algolia adapter",
+    "doctrine/doctrine-bundle": "Needed to use Orm adapter",
+    "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter"
   },
   "config": {
     "sort-packages": true,

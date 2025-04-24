@@ -15,6 +15,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Mezcalito\UxSearchBundle\Adapter\AdapterProvider;
+use Mezcalito\UxSearchBundle\Adapter\Algolia\AlgoliaFactory;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineFactory;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\MeilisearchFactory;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\QueryBuilder;
@@ -48,6 +49,7 @@ return static function (ContainerConfigurator $container) {
         ->set(MeilisearchFactory::class)
             ->arg('$httpClient', service('psr18.http_client'))
             ->tag('mezcalito_ux_search.adapter_factory')
+        ->set(AlgoliaFactory::class)->tag('mezcalito_ux_search.adapter_factory')
         ->set(Searcher::class)
             ->arg('$adapterProvider', service(AdapterProvider::class))
             ->arg('$contextProvider', service(ContextProvider::class))
