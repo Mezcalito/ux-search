@@ -45,7 +45,7 @@ class RegisterSearchPassTest extends TestCase
 
         $updatedDefinition = $container->getDefinition(SearchProvider::class);
 
-        $iteratorArgument = $updatedDefinition->getArgument('$searchs');
+        $iteratorArgument = $updatedDefinition->getArgument('$searches');
         $this->assertInstanceOf(IteratorArgument::class, $iteratorArgument);
 
         $arguments = $iteratorArgument->getValues();
@@ -69,7 +69,7 @@ class RegisterSearchPassTest extends TestCase
 
         $updatedDefinition = $container->getDefinition(SearchProvider::class);
 
-        $argument = $updatedDefinition->getArgument('$searchs');
+        $argument = $updatedDefinition->getArgument('$searches');
         $this->assertInstanceOf(IteratorArgument::class, $argument);
         $this->assertEmpty($argument->getValues());
     }

@@ -18,14 +18,14 @@ use Mezcalito\UxSearchBundle\Exception\SearchException;
 readonly class SearchProvider
 {
     public function __construct(
-        private iterable $searchs,
+        private iterable $searches,
     ) {
     }
 
     public function getSearch(string $name): SearchInterface
     {
         /** @var SearchInterface $search */
-        foreach ($this->searchs as $searchName => $search) {
+        foreach ($this->searches as $searchName => $search) {
             if ($name === $searchName) {
                 return $search;
             }

@@ -34,7 +34,7 @@ class RegisterSearchPass implements CompilerPassInterface
 
         $container
             ->getDefinition(SearchProvider::class)
-            ->setArgument('$searchs', new IteratorArgument($listSearchTypes))
+            ->setArgument('$searches', new IteratorArgument($listSearchTypes))
         ;
     }
 }
