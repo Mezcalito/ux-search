@@ -27,6 +27,11 @@
     &:focus {
       outline-color: var(--ux-search-color-accent);
     }
+
+    option {
+      background: var(--ux-search-color-background);
+      color: var(--ux-search-color-text);
+    }
   }
 
   svg {
