@@ -20,7 +20,7 @@ use Psr\Http\Client\ClientInterface;
 
 readonly class MeilisearchFactory implements AdapterFactoryInterface
 {
-    public function __construct(private ClientInterface $httpClient)
+    public function __construct(private ?ClientInterface $httpClient = null)
     {
     }
 
