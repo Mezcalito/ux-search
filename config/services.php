@@ -47,7 +47,6 @@ return static function (ContainerConfigurator $container) {
             ->arg('$managerRegistry', service(ManagerRegistry::class)->nullOnInvalid())
             ->tag('mezcalito_ux_search.adapter_factory')
         ->set(MeilisearchFactory::class)
-            ->arg('$httpClient', service('psr18.http_client'))
             ->tag('mezcalito_ux_search.adapter_factory')
         ->set(AlgoliaFactory::class)->tag('mezcalito_ux_search.adapter_factory')
         ->set(Searcher::class)
