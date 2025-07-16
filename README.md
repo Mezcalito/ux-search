@@ -86,7 +86,7 @@ Feel free to check the documentation to [customize your search](docs/usage/custo
 
 To render a search in your Twig template, you can use the `Mezcalito:UxSearch:Layout`, you will then have a default rendering provided by the bundle.
 
-### Using compnent function
+### Using component function
 ```twig
 {{ component('Mezcalito:UxSearch:Layout', { name: 'listing' }) }}
 ```
