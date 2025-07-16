@@ -36,7 +36,11 @@ class Layout
     use ComponentToolsTrait;
     use DefaultActionTrait;
 
-    #[LiveProp(writable: ['queryString', 'activeSort', 'activeHitsPerPage'], useSerializerForHydration: true)]
+    #[LiveProp(
+        writable: ['queryString', 'activeSort', 'activeHitsPerPage'],
+        useSerializerForHydration: true,
+        onUpdated: ['queryString' => 'resetCurrentPage', 'activeSort' => 'resetCurrentPage', 'activeHitsPerPage' => 'resetCurrentPage']
+    )]
     public ?Query $query = null;
 
     #[LiveProp]
@@ -87,6 +91,11 @@ class Layout
     public function changeCurrentPage(#[LiveArg] int $page): void
     {
         $this->query->setCurrentPage($page);
+    }
+
+    public function resetCurrentPage(string|int|null $previousValue): void
+    {
+        $this->query->setCurrentPage(1);
     }
 
     #[LiveAction]
