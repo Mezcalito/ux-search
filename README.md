@@ -52,7 +52,7 @@ For now, 3 adapters are available: [Algolia](https://www.algolia.com), [Meilisea
 
 | Adapter     | DSN                              |
 |-------------|----------------------------------|
-| Algolia     | algolia://appId@apiKey           |
+| Algolia     | algolia://apiKey@appId           |
 | Meilisearch | meilisearch://key@localhost:7700 |
 | Doctrine    | doctrine://default               |
 
