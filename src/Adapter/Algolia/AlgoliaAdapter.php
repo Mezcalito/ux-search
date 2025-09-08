@@ -49,6 +49,8 @@ class AlgoliaAdapter extends AbstractAdapter
 
     public const string ENABLE_PERSONALIZATION_PARAM = 'enablePersonalization';
 
+    public const string FACETING_AFTER_DISTINCT_PARAM = 'facetingAfterDistinct';
+
     public const string HIGHLIGHT_POST_TAG_PARAM = 'highlightPostTag';
 
     public const string HIGHLIGHT_PRE_TAG_PARAM = 'highlightPreTag';
@@ -117,6 +119,7 @@ class AlgoliaAdapter extends AbstractAdapter
             self::DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES_PARAM => [],
             self::ENABLE_AB_TEST_PARAM => true,
             self::ENABLE_PERSONALIZATION_PARAM => false,
+            self::FACETING_AFTER_DISTINCT_PARAM => false,
             self::HIGHLIGHT_POST_TAG_PARAM => '</em>',
             self::HIGHLIGHT_PRE_TAG_PARAM => '<em>',
             self::MAX_VALUES_PER_FACET_PARAM => 100,
@@ -138,6 +141,7 @@ class AlgoliaAdapter extends AbstractAdapter
         $resolver->setAllowedTypes(self::DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES_PARAM, 'string[]');
         $resolver->setAllowedTypes(self::ENABLE_AB_TEST_PARAM, 'bool');
         $resolver->setAllowedTypes(self::ENABLE_PERSONALIZATION_PARAM, 'bool');
+        $resolver->setAllowedTypes(self::FACETING_AFTER_DISTINCT_PARAM, 'bool');
         $resolver->setAllowedTypes(self::HIGHLIGHT_POST_TAG_PARAM, 'string');
         $resolver->setAllowedTypes(self::HIGHLIGHT_PRE_TAG_PARAM, 'string');
         $resolver->setAllowedTypes(self::MAX_VALUES_PER_FACET_PARAM, 'int');

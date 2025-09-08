@@ -62,6 +62,7 @@ class AlgoliaAdapterTest extends TestCase
             'disableTypoToleranceOnAttributes' => [],
             'enableABTest' => true,
             'enablePersonalization' => false,
+            'facetingAfterDistinct' => false,
             'highlightPostTag' => '</em>',
             'highlightPreTag' => '<em>',
             'maxValuesPerFacet' => 100,

@@ -17,6 +17,7 @@
 | DISABLE_TYPO_TOLERANCE_ON_ATTRIBUTES_PARAM | disableTypoToleranceOnAttributes | string[] | []                                     |
 | ENABLE_AB_TEST_PARAM                       | enableABTest                     | bool     | true                                   |
 | ENABLE_PERSONALIZATION_PARAM               | enablePersonalization            | bool     | false                                  |
+| FACETING_AFTER_DISTINCT                    | facetingAfterDistinct            | bool     | false                                  |
 | HIGHLIGHT_POST_TAG_PARAM                   | highlightPostTag                 | string   | &lt;/em&gt;                            |
 | HIGHLIGHT_PRE_TAG_PARAM                    | highlightPreTag                  | string   | &lt;em&gt;                             |
 | MAX_VALUES_PER_FACET_PARAM                 | maxValuesPerFacet                | int      | 100                                    |
@@ -24,6 +25,6 @@
 | SORT_FACET_VALUES_BY_PARAM                 | sortFacetValuesBy                | string   | count                                  |
 | SYNONYMS_PARAM                             | synonyms                         | bool     | true                                   |
 
-If you need more inforamtion about this configuration check [Algolia documentation](https://www.meilisearch.com/docs/reference/api/search#body)
+If you need more inforamtion about this configuration check [Algolia documentation](https://www.algolia.com/doc/)
 
 
