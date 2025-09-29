@@ -10,7 +10,7 @@ export default class extends Controller<HTMLElement> {
   }
 
   connect() {
-    window.addEventListener('history:update', this.handleHistoryUpdate);
+    window.addEventListener('ux-search:url:update', this.handleHistoryUpdate);
   }
 
   private handleHistoryUpdate = (event: Event) => {
@@ -46,10 +46,15 @@ export default class extends Controller<HTMLElement> {
   }
 
   updateUrl(url: string) {
-    history.replaceState(history.state, '', url);
+    // Defer to avoid race conditions with Live Component internal history updates
+    Promise.resolve().then(() => {
+      if (window.location.href !== url) {
+        history.replaceState(history.state, '', url);
+      }
+    });
   }
 
   disconnect() {
-    window.removeEventListener('history:update', this.handleHistoryUpdate);
+    window.removeEventListener('ux-search:url:update', this.handleHistoryUpdate);
   }
 }
