@@ -83,7 +83,9 @@ class Layout
         $this->searcher->search($this->query, $this->search);
 
         if ($this->search->hasUrlRewriting()) {
-            $this->dispatchBrowserEvent('history:update', ['url' => $this->getUrlFormater()->generateUrl($this->currentRequest, $this->search, $this->query)]);
+            $this->dispatchBrowserEvent('ux-search:url:update', [
+                'url' => $this->getUrlFormater()->generateUrl($this->currentRequest, $this->search, $this->query),
+            ]);
         }
     }
 
