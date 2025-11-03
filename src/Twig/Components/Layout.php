@@ -51,7 +51,6 @@ class Layout
 
     public ?SearchInterface $search = null;
 
-    #[LiveProp(useSerializerForHydration: true)]
     public ?CurrentRequest $currentRequest = null;
 
     public function __construct(
@@ -80,6 +79,12 @@ class Layout
     public function onReRender(): void
     {
         $this->search = $this->getSearch($this->name)->create($this->options);
+        $this->currentRequest = CurrentRequest::fromRequest($this->requestStack->getMainRequest());
+
+        if ($this->search->hasUrlRewriting()) {
+            $this->getUrlFormater()->applyFilters($this->currentRequest, $this->search, $this->query);
+        }
+
         $this->searcher->search($this->query, $this->search);
 
         if ($this->search->hasUrlRewriting()) {
