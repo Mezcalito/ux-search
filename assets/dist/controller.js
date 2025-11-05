@@ -6,7 +6,7 @@ class controller extends Controller {
         this.component = await getComponent(this.element);
     }
     connect() {
-        window.addEventListener('history:update', this.handleHistoryUpdate);
+        window.addEventListener('ux-search:url:update', this.handleHistoryUpdate);
     }
     handleHistoryUpdate = (event) => {
         const customEvent = event;
@@ -32,10 +32,14 @@ class controller extends Controller {
         };
     }
     updateUrl(url) {
-        history.replaceState(history.state, '', url);
+        Promise.resolve().then(() => {
+            if (window.location.href !== url) {
+                history.replaceState(history.state, '', url);
+            }
+        });
     }
     disconnect() {
-        window.removeEventListener('history:update', this.handleHistoryUpdate);
+        window.removeEventListener('ux-search:url:update', this.handleHistoryUpdate);
     }
 }
 
