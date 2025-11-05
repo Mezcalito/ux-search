@@ -4,14 +4,53 @@
     'data-controller': 'ux-search--refinement-list',
     'data-ux-search--refinement-list-limit-value': this.limit,
     'data-ux-search--refinement-list-show-more-label-value': 'show_more'|trans(domain='mezcalito_ux_search'),
-    'data-ux-search--refinement-list-show-less-label-value': 'show_less'|trans(domain='mezcalito_ux_search')
+    'data-ux-search--refinement-list-show-less-label-value': 'show_less'|trans(domain='mezcalito_ux_search'),
+    'data-ux-search--refinement-list-sort-by-value': this.getSortBy,
+    'data-ux-search--refinement-list-property-value': property
 }) }}>
-    <legend class="ux-search-facet__title ux-search-refinement-list__title">{% block label %}{{ label }}{% endblock %}</legend>
+    <div class="ux-search-refinement-list__header">
+        <legend class="ux-search-facet__title ux-search-refinement-list__title">{% block label %}{{ label }}{% endblock %}</legend>
+        {% if enableSort and distribution.values is not empty %}
+            {% block sort %}
+                <div class="ux-search-refinement-list__sort">
+                    <select
+                        class="ux-search-refinement-list__sort-select"
+                        data-ux-search--refinement-list-target="sortSelect"
+                        data-action="change->ux-search--refinement-list#changeSort change->ux-search--refinement-list#syncLiveAction"
+                        aria-label="Sort {{ label }}"
+                    >
+                        <option value="count" {% if this.getSortBy == 'count' %}selected{% endif %}>By count</option>
+                        <option value="name" {% if this.getSortBy == 'name' %}selected{% endif %}>By name</option>
+                    </select>
+                </div>
+            {% endblock %}
+        {% endif %}
+    </div>
+    {% if enableSearch and distribution.values is not empty %}
+        {% block search %}
+            <div class="ux-search-refinement-list__search">
+                <input
+                    type="search"
+                    class="ux-search-refinement-list__search-input"
+                    placeholder="{{ searchPlaceholder ?: ('Search ' ~ label|lower) }}"
+                    data-ux-search--refinement-list-target="input"
+                    data-action="input->ux-search--refinement-list#filter"
+                    aria-label="Search {{ label }}"
+                >
+                <svg class="ux-search-refinement-list__search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        {% endblock %}
+    {% endif %}
     {% block list %}
         <ul class="ux-search-refinement-list__list">
             {%- for key,value in distribution.values %}
                 <li
                     class="ux-search-refinement-list__item{{ loop.index > this.limit ? ' ux-search-refinement-list__item--exceed-limit' }}"
+                    data-ux-search--refinement-list-target="item"
+                    data-facet-value="{{ key }}"
+                    data-facet-count="{{ value }}"
                 >
                     <input
                         class="ux-search-refinement-list__input"

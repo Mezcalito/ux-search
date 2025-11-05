@@ -118,10 +118,7 @@ final class DefaultUrlFormaterTest extends TestCase
             new Facet('o.type', 'accessories'),
             new Facet('o.popularity', 'popularity', RangeInput::class),
         ]);
-        $search->method('getAvailableSorts')->willReturn([
-            new Sort('popularity', 'Popularity'),
-            new Sort('price', 'Price'),
-        ]);
+        $search->method('getAvailableSorts')->willReturn([new Sort('popularity', 'Popularity')]);
 
         $formater->applyFilters($currentRequest, $search, $query);
 
@@ -184,6 +181,118 @@ final class DefaultUrlFormaterTest extends TestCase
             ->with(
                 'search_route',
                 ['extraParam' => 'value', 'sortBy' => 'price_asc', 'page' => 2],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+        $formater->generateUrl($currentRequest, $search, $query);
+    }
+
+    public function testGenerateUrlWithFacetSortPreferences(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', []);
+        $query = new Query();
+        $query->setFacetSortPreference('artists.names', 'name');
+        $query->setFacetSortPreference('labels.names', 'count');
+
+        $search = $this->createStub(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $urlGenerator->expects($this->once())
+            ->method('generate')
+            ->with(
+                'search_route',
+                [
+                    'facetSort' => [
+                        'artists.names' => 'name',
+                        'labels.names' => 'count',
+                    ],
+                ],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
+            ->willReturn('https://example.com/search?facetSort[artists.names]=name&facetSort[labels.names]=count')
+        ;
+
+        $result = $formater->generateUrl($currentRequest, $search, $query);
+
+        $this->assertSame('https://example.com/search?facetSort[artists.names]=name&facetSort[labels.names]=count', $result);
+    }
+
+    public function testApplyFiltersWithFacetSortPreferences(): void
+    {
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'facetSort' => [
+                'artists.names' => 'name',
+                'labels.names' => 'count',
+            ],
+        ]);
+
+        $query = new Query();
+        $search = $this->createStub(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertSame('name', $query->getFacetSortPreference('artists.names'));
+        $this->assertSame('count', $query->getFacetSortPreference('labels.names'));
+        $this->assertNull($query->getFacetSortPreference('nonexistent'));
+    }
+
+    public function testGenerateUrlWithoutFacetSortPreferences(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', []);
+        $query = new Query();
+
+        $search = $this->createStub(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $urlGenerator->expects($this->once())
+            ->method('generate')
+            ->with(
+                'search_route',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            )
+            ->willReturn('https://example.com/search')
+        ;
+
+        $result = $formater->generateUrl($currentRequest, $search, $query);
+
+        $this->assertSame('https://example.com/search', $result);
+    }
+
+    public function testClearParametersIncludesFacetSort(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'facetSort' => ['artists.names' => 'name'],
+            'extraParam' => 'value',
+        ]);
+
+        $search = $this->createStub(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $query = new Query();
+        $query->setFacetSortPreference('artists.names', 'count');
+
+        $urlGenerator->expects($this->once())
+            ->method('generate')
+            ->with(
+                'search_route',
+                [
+                    'extraParam' => 'value',
+                    'facetSort' => ['artists.names' => 'count'],
+                ],
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 

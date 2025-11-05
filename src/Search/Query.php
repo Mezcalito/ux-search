@@ -28,6 +28,9 @@ class Query
 
     private int $activeHitsPerPage = 12;
 
+    /** @var array<string, string> */
+    private array $facetSortPreferences = [];
+
     public function getQueryString(): string
     {
         return $this->queryString;
@@ -117,5 +120,35 @@ class Query
     public function removeActiveFilter(FilterInterface $filter): void
     {
         unset($this->activeFilters[$filter->getProperty()]);
+    }
+
+    public function setFacetSortPreference(string $property, string $sortBy): static
+    {
+        $this->facetSortPreferences[$property] = $sortBy;
+
+        return $this;
+    }
+
+    public function getFacetSortPreference(string $property): ?string
+    {
+        return $this->facetSortPreferences[$property] ?? null;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getFacetSortPreferences(): array
+    {
+        return $this->facetSortPreferences;
+    }
+
+    /**
+     * @param array<string, string> $facetSortPreferences
+     */
+    public function setFacetSortPreferences(array $facetSortPreferences): static
+    {
+        $this->facetSortPreferences = $facetSortPreferences;
+
+        return $this;
     }
 }
