@@ -34,8 +34,8 @@ class DoctrineSearch extends AbstractSearch
                 },
                 DoctrineAdapter::SEARCH_FIELDS => ['o.name', 'o.brand'],
             ])
-            ->addFacet('o.type', 'Type')
-            ->addFacet('o.brand', 'Brand')
+            ->addFacet('o.type', 'Type', props: ['enableSearch' => true, 'enableSort' => true])
+            ->addFacet('o.brand', 'Brand', props: ['enableSearch' => true, 'searchPlaceholder' => 'Find a brand...', 'enableSort' => true])
             ->addFacet('o.rating', 'Rating')
             ->addFacet('o.priceRange', 'Price range')
             ->addFacet('o.price', 'Price', RangeInput::class)
