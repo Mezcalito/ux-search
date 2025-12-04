@@ -11,5 +11,6 @@
 | ATTRIBUTES_TO_HIGHLIGHT_PARAM | attributesToHighlight | string[] | []            |
 | HIGHLIGHT_PRE_TAG_PARAM       | highlightPreTag       | string   | &lt;em&gt;    |
 | HIGHLIGHT_POST_TAG_PARAM      | highlightPostTag      | string   | &lt;/em&gt;   |
+| DISTINCT_PARAM                | distinct              | string   | null          |
 
 If you need more inforamtion about this configuration check [Meilisearch documentation](https://www.meilisearch.com/docs/reference/api/search#body)

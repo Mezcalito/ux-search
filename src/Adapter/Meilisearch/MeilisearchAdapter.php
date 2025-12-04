@@ -37,6 +37,8 @@ class MeilisearchAdapter extends AbstractAdapter
 
     public const string HIGHLIGHT_POST_TAG_PARAM = 'highlightPostTag';
 
+    public const string DISTINCT_PARAM = 'distinct';
+
     public function __construct(
         private readonly Client $client,
         private readonly QueryBuilder $queryBuilder,
@@ -87,6 +89,7 @@ class MeilisearchAdapter extends AbstractAdapter
             self::ATTRIBUTES_TO_HIGHLIGHT_PARAM => [],
             self::HIGHLIGHT_PRE_TAG_PARAM => '<em>',
             self::HIGHLIGHT_POST_TAG_PARAM => '</em>',
+            self::DISTINCT_PARAM => null,
         ]);
 
         $resolver->setAllowedTypes(self::ATTRIBUTES_TO_RETRIEVE_PARAM, 'string[]');
@@ -96,5 +99,6 @@ class MeilisearchAdapter extends AbstractAdapter
         $resolver->setAllowedTypes(self::ATTRIBUTES_TO_HIGHLIGHT_PARAM, 'string[]');
         $resolver->setAllowedTypes(self::HIGHLIGHT_PRE_TAG_PARAM, 'string');
         $resolver->setAllowedTypes(self::HIGHLIGHT_POST_TAG_PARAM, 'string');
+        $resolver->setAllowedTypes(self::DISTINCT_PARAM, ['null', 'string']);
     }
 }

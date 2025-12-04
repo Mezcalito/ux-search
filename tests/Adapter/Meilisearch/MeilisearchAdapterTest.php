@@ -56,6 +56,7 @@ class MeilisearchAdapterTest extends TestCase
             'attributesToHighlight' => [],
             'highlightPreTag' => '<em>',
             'highlightPostTag' => '</em>',
+            'distinct' => null,
         ]);
     }
 

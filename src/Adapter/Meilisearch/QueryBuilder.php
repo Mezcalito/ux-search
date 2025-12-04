@@ -55,6 +55,10 @@ class QueryBuilder
             ->setHighlightPostTag($options['highlightPostTag'])
         ;
 
+        if ($options['distinct']) {
+            $meilisearchQuery->setDistinct($options['distinct']);
+        }
+
         if ([] !== $displayedFacets) {
             $meilisearchQuery->setFacets($displayedFacets);
         }

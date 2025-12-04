@@ -46,6 +46,7 @@ class QueryBuilderTest extends TestCase
             MeilisearchAdapter::ATTRIBUTES_TO_HIGHLIGHT_PARAM => [],
             MeilisearchAdapter::HIGHLIGHT_PRE_TAG_PARAM => '<em>',
             MeilisearchAdapter::HIGHLIGHT_POST_TAG_PARAM => '</em>',
+            MeilisearchAdapter::DISTINCT_PARAM => 'product_id',
         ]);
     }
 
@@ -75,6 +76,7 @@ class QueryBuilderTest extends TestCase
             'attributesToHighlight' => [],
             'highlightPreTag' => '<em>',
             'highlightPostTag' => '</em>',
+            'distinct' => 'product_id',
         ], $searchQuery->toArray());
     }
 
@@ -103,6 +105,7 @@ class QueryBuilderTest extends TestCase
             'attributesToHighlight' => [],
             'highlightPreTag' => '<em>',
             'highlightPostTag' => '</em>',
+            'distinct' => 'product_id',
         ], $searchQuery->toArray());
     }
 
@@ -134,6 +137,7 @@ class QueryBuilderTest extends TestCase
             'attributesToHighlight' => [],
             'highlightPreTag' => '<em>',
             'highlightPostTag' => '</em>',
+            'distinct' => 'product_id',
         ], $searchQuery->toArray());
     }
 
@@ -167,6 +171,7 @@ class QueryBuilderTest extends TestCase
             'attributesToHighlight' => [],
             'highlightPreTag' => '<em>',
             'highlightPostTag' => '</em>',
+            'distinct' => 'product_id',
         ], $searchQuery->toArray());
     }
 
@@ -209,6 +214,7 @@ class QueryBuilderTest extends TestCase
             'highlightPostTag' => '</em>',
             'showRankingScore' => true,
             'facets' => ['color', 'price'],
+            'distinct' => 'product_id',
         ], $mainSearchQuery->toArray());
 
         $colorFacetQuery = $searchQueries[1];
