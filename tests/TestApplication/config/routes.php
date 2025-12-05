@@ -25,7 +25,7 @@ return function (RoutingConfigurator $routes) {
     $routes->import('@LiveComponentBundle/config/routes.php')->prefix('/_components');
 
     if ('dev' === $routes->env()) {
-        $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.xml')->prefix('/_wdt');
-        $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.xml')->prefix('/_profiler');
+        $routes->import('@WebProfilerBundle/Resources/config/routing/wdt.php')->prefix('/_wdt');
+        $routes->import('@WebProfilerBundle/Resources/config/routing/profiler.php')->prefix('/_profiler');
     }
 };

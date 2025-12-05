@@ -61,6 +61,8 @@ abstract class AbstractDoctrineTestCase extends TestCase
         $connectionParams = $dsnParser->parse('pdo-sqlite:///:memory:');
 
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, true);
+        $config->enableNativeLazyObjects(true);
+
         $connection = DriverManager::getConnection($connectionParams, $config);
 
         return new EntityManager($connection, $config);

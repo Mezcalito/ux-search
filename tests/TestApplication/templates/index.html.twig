@@ -84,7 +84,7 @@
                 ] %}
                     <li>
                         <a href="{{ path('index', {'name': item.name}) }}"
-                           class="{{ app.request.get('name') == item.name ? 'active' : '' }}">
+                           class="{{ app.request.query.get('name') == item.name ? 'active' : '' }}">
                             {{ item.label }}
                         </a>
                     </li>

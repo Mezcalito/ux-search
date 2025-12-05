@@ -32,3 +32,4 @@ tests/TestApplication/assets/vendor
 # TestApp
 # ======================================================================
 tests/TestApplication/var/data.db
+tests/TestApplication/config/reference.php
