@@ -10,8 +10,10 @@ class <?php echo $class_name; ?> extends AbstractSearch
 
     public function build(array $options = []): void
     {
-        // ->addFacet('type', 'Type', null, ['limit' => 2])
-        // ->addFacet('brand', 'Brand')
-        // ->addFacet('rating', 'Rating')
+        // $this
+        //    ->addFacet('type', 'Type', null, ['limit' => 2])
+        //    ->addFacet('brand', 'Brand')
+        //    ->addFacet('rating', 'Rating')
+        //;
     }
 }
