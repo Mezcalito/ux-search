@@ -27,7 +27,7 @@ class QueryBuilder
         $options = $search->getResolvedAdapterParameters();
 
         $hitsPerPage = $query->getActiveHitsPerPage();
-        $queries = [];
+        $queries = ['requests' => []];
 
         if ($query->getActiveSort()) {
             $indexName = $query->getActiveSort();
@@ -52,7 +52,7 @@ class QueryBuilder
             $algoliaQuery['facets'] = $displayedFacets;
         }
 
-        $queries[] = $algoliaQuery;
+        $queries['requests'][] = $algoliaQuery;
 
         $activeFilters = $query->getActiveFilters();
 
@@ -64,7 +64,7 @@ class QueryBuilder
                 }
             }
 
-            $queries[] = [
+            $queries['requests'][] = [
                 'indexName' => $indexName,
                 'query' => $query->getQueryString(),
                 'facets' => [$activeFilter->getProperty()],
