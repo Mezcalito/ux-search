@@ -22,7 +22,7 @@
     "twig/twig": "^3.8"
   },
   "require-dev": {
-    "algolia/search-bundle": "^6.0|^7.0",
+    "algolia/algoliasearch-client-php": "^4.37",
     "doctrine/doctrine-bundle": "^2.13",
     "doctrine/orm": "^3.3",
     "friendsofphp/php-cs-fixer": "^3.64",

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Algolia;
 
-use Algolia\AlgoliaSearch\SearchClient;
+use Algolia\AlgoliaSearch\Api\SearchClient;
 use Mezcalito\UxSearchBundle\Adapter\Algolia\AlgoliaAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Algolia\QueryBuilder;
 use Mezcalito\UxSearchBundle\Exception\ResultSetException;

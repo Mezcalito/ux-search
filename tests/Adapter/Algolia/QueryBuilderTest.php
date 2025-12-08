@@ -48,9 +48,9 @@ class QueryBuilderTest extends TestCase
         $result = $queryBuilder->build($query, $search);
 
         $this->assertIsArray($result);
-        $this->assertCount(3, $result); // 1 main query + 2 facet queries
-        $this->assertEquals('products', $result[0]['indexName']);
-        $this->assertStringContainsString('brand:"Apple" OR brand:"Samsung" AND price >= 100 AND price <= 500', $result[0]['filters']);
+        $this->assertCount(3, $result['requests']); // 1 main query + 2 facet queries
+        $this->assertEquals('products', $result['requests'][0]['indexName']);
+        $this->assertStringContainsString('brand:"Apple" OR brand:"Samsung" AND price >= 100 AND price <= 500', $result['requests'][0]['filters']);
     }
 
     public function testBuildWithActiveSorting(): void
@@ -66,7 +66,7 @@ class QueryBuilderTest extends TestCase
 
         $result = $queryBuilder->build($query, $search);
 
-        $this->assertEquals('products_price_asc', $result[0]['indexName']);
+        $this->assertEquals('products_price_asc', $result['requests'][0]['indexName']);
     }
 
     public function testBuildWithNoFilters(): void
@@ -84,6 +84,6 @@ class QueryBuilderTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals('products', $result[0]['indexName']);
+        $this->assertEquals('products', $result['requests'][0]['indexName']);
     }
 }
