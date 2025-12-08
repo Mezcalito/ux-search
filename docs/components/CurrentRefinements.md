@@ -1,15 +1,27 @@
-# CurrentRefinements
+# CurrentRefinements Component
 
-The `CurrentRefinements` component displays a list of refinements applied to the search.
+The `CurrentRefinements` component displays a list of all active filters and refinements applied to the current search, allowing users to see and remove individual filters.
 
-## Block available
+## Usage
 
-| name    | Description |
-|---------|-------------|
-| content | -           |
+```twig
+<twig:Mezcalito:UxSearch:CurrentRefinements />
+```
 
+## Available Variables
 
-## Default layout
+| Variable        | Type                | Description                                             |
+|-----------------|---------------------|---------------------------------------------------------|
+| `activeFilters` | array               | Array of active filter objects (term and range filters) |
+| `attributes`    | ComponentAttributes | HTML attributes for the container                       |
+
+## Blocks Available
+
+| Block Name | Description                                                                           |
+|------------|---------------------------------------------------------------------------------------|
+| `content`  | Main block wrapping all active refinements - override to change the overall structure |
+
+## Default Layout
 
 ```twig
 {% block content %}
@@ -39,7 +51,7 @@ The `CurrentRefinements` component displays a list of refinements applied to the
                     {% if active_filter.min is not null %}
                         <li class="ux-search-current-refinements__item">
                             <span class="ux-search-current-refinements__value">{{ active_filter.property }} >= {{ active_filter.min }}</span>
-                    
+
                             <button
                                     class="ux-search-current-refinements__remove"
                                     type="button"
@@ -53,11 +65,11 @@ The `CurrentRefinements` component displays a list of refinements applied to the
                             </button>
                         </li>
                     {% endif %}
-                    
+
                     {% if active_filter.max is not null %}
                         <li class="ux-search-current-refinements__item">
                             <span class="ux-search-current-refinements__value">{{ active_filter.property }} <= {{ active_filter.max }}</span>
-                    
+
                             <button
                                     class="ux-search-current-refinements__remove"
                                     type="button"
@@ -78,7 +90,8 @@ The `CurrentRefinements` component displays a list of refinements applied to the
 {% endblock %}
 ```
 
-## Default HTML output
+## Default HTML Output
+
 ```html
 <div class="ux-search-current-refinements">
     <ul class="ux-search-current-refinements__list">                                                            <li class="ux-search-current-refinements__item">
@@ -112,3 +125,27 @@ The `CurrentRefinements` component displays a list of refinements applied to the
     </ul>
 </div>
 ```
+
+## Helper Functions
+
+The component uses Twig functions to distinguish filter types:
+
+- `ux_search_is_term_filter(filter)` - Returns true if filter is a term/facet filter
+- `ux_search_is_range_filter(filter)` - Returns true if filter is a range filter
+
+## Styling
+
+Default classes:
+- `.ux-search-current-refinements` - Main container
+- `.ux-search-current-refinements__list` - List wrapper
+- `.ux-search-current-refinements__item` - Individual filter item
+- `.ux-search-current-refinements__value` - Filter value text
+- `.ux-search-current-refinements__remove` - Remove button
+
+## Related Components
+
+- [ClearRefinements](ClearRefinements.md) - Clear all filters at once
+- [Facet/RefinementList](Facet/RefinementList.md) - Select term filters
+- [Facet/RangeSlider](Facet/RangeSlider.md) - Select range filters
+- [Facet/RangeInput](Facet/RangeInput.md) - Input range filters
+- [Layout](Layout.md) - Root container (includes CurrentRefinements in toolbar)

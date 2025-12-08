@@ -1,180 +1,356 @@
 # Mezcalito UX Search
 
-## Overview
+[![Latest Version](https://img.shields.io/packagist/v/mezcalito/ux-search.svg)](https://packagist.org/packages/mezcalito/ux-search)
+[![License](https://img.shields.io/packagist/l/mezcalito/ux-search.svg)](https://github.com/mezcalito/ux-search/blob/main/LICENSE)
+[![PHP Version](https://img.shields.io/packagist/php-v/mezcalito/ux-search.svg)](https://packagist.org/packages/mezcalito/ux-search)
 
-The Mezcalito UxSearch Bundle provides an easy-to-use classic search and faceted search system in your Symfony application using Twig Components and Live Components. It allows you to create and manage multiple search, each with its unique configuration. Currently, the bundle supports Doctrine, Algolia and Meilisearch adapter.
+A powerful, flexible, and easy-to-use search and faceted search system for Symfony applications, built with Twig Components and Live Components.
 
 [![Effortless search and faceted search with Symfony UX and Mezcalito UX Search](docs/image/preview.png)](https://ux-search.mezcalito.dev/)
 
-[View demo](https://ux-search.mezcalito.dev/demo)
+**[View Live Demo](https://ux-search.mezcalito.dev/demo)** | **[Documentation](docs/)** | **[Report Issues](https://github.com/mezcalito/ux-search/issues)**
+
+---
+
+## Why Use This Bundle?
+
+- **🚀 Quick Setup**: Get a working search in minutes with the maker command
+- **🔌 Multiple Adapters**: Support for Algolia, Meilisearch, and Doctrine ORM
+- **🎨 Fully Customizable**: Override templates and components to match your design
+- **⚡ Live Updates**: Built with Symfony UX Live Components for reactive UI
+- **🎯 Faceted Search**: Rich filtering with refinement lists, range sliders, and more
+- **📦 Production Ready**: Used in production with comprehensive test coverage
+
+## Features
+
+- **Multiple Search Configurations**: Create and manage multiple searches, each with its own unique configuration
+- **Flexible Adapters**:
+  - **Algolia**: Cloud-based search with advanced features
+  - **Meilisearch**: Self-hosted open-source search engine
+  - **Doctrine ORM**: Use your existing database for small datasets
+- **Rich UI Components**: Pre-built components for search input, facets, pagination, sorting, and more
+- **Faceted Navigation**: Multiple facet types (refinement lists, range inputs, range sliders)
+- **Live Components**: Real-time updates without page reloads
+- **Event System**: Customize search behavior with pre/post search events
+- **SEO Friendly**: URL rewriting support for search parameters
+- **Customizable**: Override any template or extend any component
+
+## Requirements
+
+- PHP 8.3 or higher
+- Symfony 6.4+ or 7.0+ or 8.0+
+- Symfony UX (Live Components, Twig Components)
 
 
 ## Installation
 
-Add [mezcalito/ux-search](https://packagist.org/packages/mezcalito/ux-search) to your composer.json file:
+Install the bundle via Composer:
 
 ```bash
 composer require mezcalito/ux-search
 ```
 
-## Register and configure the bundle
-
-If you are using Symfony Flex, the following steps should be done automatically. Otherwise, follow the instructions.
-
-### Register the bundle
-
-Inside `config/bundles.php`, add the following line:
+If you're **not** using Symfony Flex, you'll need to manually register the bundle in `config/bundles.php`:
 
 ```php
 // config/bundles.php
-
 return [
     // ...
     Mezcalito\UxSearchBundle\MezcalitoUxSearchBundle::class => ['all' => true],
 ];
 ```
 
-## Configuration
-To configure the bundle, add the following configuration to your `config/packages/mezcalito_ux_search.yaml` file. 
-This example demonstrates how to set up a Meiliseach adapter:
+## Quick Start
+
+### 1. Configure an Adapter
+
+Create a configuration file `config/packages/mezcalito_ux_search.yaml`:
 
 ```yaml
 mezcalito_ux_search:
     default_adapter: 'default'
     adapters:
         default: '%env(MEZCALITO_UX_SEARCH_DEFAULT_DSN)%'
-        orm: '%env(MEZCALITO_UX_SEARCH_ORM_DSN)%'
 ```
 
-### Available adapter
+Add the DSN to your `.env` file (choose one):
 
-For now, 3 adapters are available: [Algolia](https://www.algolia.com), [Meilisearch](https://www.meilisearch.com) and [Doctrine](https://www.doctrine-project.org/projects/orm.html).
+```bash
+# For Algolia
+MEZCALITO_UX_SEARCH_DEFAULT_DSN=algolia://YOUR_API_KEY@YOUR_APP_ID
 
-| Adapter     | DSN                              |
-|-------------|----------------------------------|
-| Algolia     | algolia://apiKey@appId           |
-| Meilisearch | meilisearch://key@localhost:7700 |
-| Doctrine    | doctrine://default               |
+# For Meilisearch
+MEZCALITO_UX_SEARCH_DEFAULT_DSN=meilisearch://YOUR_MASTER_KEY@localhost:7700
 
-You can read the documentation part that concerns your adapter to learn about the configuration options available.
+# For Doctrine ORM
+MEZCALITO_UX_SEARCH_DEFAULT_DSN=doctrine://default
+```
 
-- [Algolia](docs/usage/algolia.md)
-- [Meilisearch](docs/usage/meilisearch.md)
-- [Doctrine](docs/usage/doctrine.md)
+### 2. Create Your First Search
 
-You can also [create your own Adapter](docs/create-own-adapter.md) to use other provider.
-
-## Usage
-
-To use the bundle, create your first `Search`. To do this, just use the `make:search` command and follow indications.
+Use the maker command to generate a search class:
 
 ```bash
 php bin/console make:search
 ```
 
-In the case of Algolia or Meilisearch, you need to specify the name of the index to use, and for Doctrine, the FQCN of the entity to use.
+The command will ask you for:
+- **Index name**: For Algolia/Meilisearch, the index name. For Doctrine, the entity FQCN (e.g., `App\Entity\Product`)
+- **Search name** (optional): Custom name for your search (defaults to class name without "Search" suffix)
+- **Adapter** (optional): Which adapter to use (defaults to `default_adapter`)
 
-By default, the name of your search will be the name of your class with the `Search` suffix removed. You can change this by specifying a custom name.
+This creates a search class in `src/Search/` that you can customize.
 
-Also, by default, the Adapter used is the one specified in the configuration under `default_adapter`. You can specify the name of the Adapter to use, for example, if you have multiple `Search` instances that use different Adapters.
+### 3. Render the Search in Your Template
 
-After that, you have a fully functional simple search.
-Feel free to check the documentation to [customize your search](docs/usage/customize-your-search.md) (adding facets, sorting, ...) or if you prefer not to use the maker.
+In any Twig template:
 
-
-## Render a Search
-
-To render a search in your Twig template, you can use the `Mezcalito:UxSearch:Layout`, you will then have a default rendering provided by the bundle.
-
-### Using component function
 ```twig
-{{ component('Mezcalito:UxSearch:Layout', { name: 'listing' }) }}
+{# Using Twig component syntax #}
+<twig:Mezcalito:UxSearch:Layout name="product"/>
+
+{# Or using component function #}
+{{ component('Mezcalito:UxSearch:Layout', { name: 'product' }) }}
 ```
 
-### Using HTML-like Syntax
-```twig
-<twig:Mezcalito:UxSearch:Layout name="listing"/>
+That's it! You now have a working search with facets, pagination, and live updates. 🎉
+
+## Choosing an Adapter
+
+Three adapters are available, each with different strengths:
+
+| Adapter         | Best For                    | Performance | Cost    | Setup Complexity |
+|-----------------|-----------------------------|-------------|---------|------------------|
+| **Algolia**     | Production, large datasets  | ⭐⭐⭐         | 💰 Paid | Easy             |
+| **Meilisearch** | Self-hosted production      | ⭐⭐⭐         | 🆓 Free | Medium           |
+| **Doctrine**    | Development, small datasets | ⭐⭐          | 🆓 Free | Very Easy        |
+
+### Adapter DSN Format
+
+| Adapter     | DSN Format                     | Documentation                          |
+|-------------|--------------------------------|----------------------------------------|
+| Algolia     | `algolia://apiKey@appId`       | [View docs](docs/usage/algolia.md)     |
+| Meilisearch | `meilisearch://key@host:port`  | [View docs](docs/usage/meilisearch.md) |
+| Doctrine    | `doctrine://entityManagerName` | [View docs](docs/usage/doctrine.md)    |
+
+**Need another provider?** You can [create your own adapter](docs/create-own-adapter.md).
+
+## Customizing Your Search
+
+### Adding Facets, Sorting, and More
+
+Once you've created a search class, customize it by editing the `build()` method:
+
+```php
+use Mezcalito\UxSearchBundle\Search\AbstractSearch;
+use Mezcalito\UxSearchBundle\Attribute\AsSearch;
+use Mezcalito\UxSearchBundle\Twig\Components\Facet\RangeInput;
+
+#[AsSearch(index: 'products', adapter: 'default')]
+class ProductSearch extends AbstractSearch
+{
+    public function build(array $options = []): void
+    {
+        // Add facets for filtering
+        $this->addFacet('brand', 'Brand');
+        $this->addFacet('category', 'Category');
+        $this->addFacet('price', 'Price', RangeInput::class);
+
+        // Add sorting options
+        $this->addAvailableSort('name', 'Name');
+        $this->addAvailableSort('price', 'Price');
+        $this->addAvailableSort('created_at', 'Newest');
+
+        // Configure pagination
+        $this->setAvailableHitsPerPage([12, 24, 48]);
+
+        // Adapter-specific parameters
+        $this->setAdapterParameters([
+            // Adapter-specific options here
+        ]);
+    }
+}
 ```
 
-In both cases, replace `listing` with the name of search configuration.
+📖 **[Full customization guide](docs/usage/customize-your-search.md)**
 
 
-### Default layout component
+### Customizing the UI
+
+The bundle provides a complete set of UI components that you can use individually or override:
+
+#### Core Components
+
+| Component       | Description                                             | Documentation                          |
+|-----------------|---------------------------------------------------------|----------------------------------------|
+| **Layout**      | Root wrapper component containing all search elements   | [Docs](docs/components/Layout.md)      |
+| **SearchInput** | Text search input with live updates                     | [Docs](docs/components/SearchInput.md) |
+| **Hits**        | Display search results with customizable item templates | [Docs](docs/components/Hits.md)        |
+| **Pagination**  | Navigate through search results                         | [Docs](docs/components/Pagination.md)  |
+
+#### Facet Components
+
+| Component          | Description                                   | Documentation                                   |
+|--------------------|-----------------------------------------------|-------------------------------------------------|
+| **RefinementList** | Checkbox/radio list for categorical filtering | [Docs](docs/components/Facet/RefinementList.md) |
+| **RangeInput**     | Min/max input fields for numeric ranges       | [Docs](docs/components/Facet/RangeInput.md)     |
+| **RangeSlider**    | Slider for numeric range filtering            | [Docs](docs/components/Facet/RangeSlider.md)    |
+
+#### Utility Components
+
+| Component              | Description                                | Documentation                                 |
+|------------------------|--------------------------------------------|-----------------------------------------------|
+| **CurrentRefinements** | Display active filters with remove buttons | [Docs](docs/components/CurrentRefinements.md) |
+| **ClearRefinements**   | Button to clear all active filters         | [Docs](docs/components/ClearRefinements.md)   |
+| **SortBy**             | Dropdown to change sort order              | [Docs](docs/components/SortBy.md)             |
+| **TotalHits**          | Display total number of results            | [Docs](docs/components/TotalHits.md)          |
+
+### Overriding Templates
+
+You can override any component template by creating a file in your app's `templates/` directory:
+
+```
+templates/
+└── components/
+    └── Mezcalito/
+        └── UxSearch/
+            ├── Layout.html.twig          # Override the main layout
+            ├── SearchInput.html.twig     # Override search input
+            ├── Hits.html.twig            # Override results display
+            └── Facet/
+                └── RefinementList.html.twig
+```
+
+### Custom Hit Template
+
+The most common customization is the hit (result item) template. Override `Hits.html.twig`:
+
 ```twig
-<div {{ attributes.defaults({
-  'class': 'ux-search',
-  'data-controller': 'ux-search',
-  'data-loading': 'addClass(ux-search--is-loading)'
-}) }}>
-    {% block content %}
-        <div class="ux-search__inner">
-            <div class="ux-search__form">
-                {% block form %}
-                    <twig:Mezcalito:UxSearch:SearchInput />
-                {% endblock %}
-            </div>
-        
-            <div class="ux-search__toolbar">
-                {% block toolbar %}
-                    <twig:Mezcalito:UxSearch:CurrentRefinements/>
-                    <twig:Mezcalito:UxSearch:ClearRefinements />
-                    <twig:Mezcalito:UxSearch:SortBy/>
-                {% endblock %}
-            </div>
-        
-            <div class="ux-search__facets">
-                {% block facets %}
-                    {% for facet in search.facets %}
-                        <twig:Mezcalito:UxSearch:Facet :property="facet.property" />
-                    {% endfor %}
-                {% endblock %}
-            </div>
-        
-            <div class="ux-search__listing">
-                {% block listing %}
-                    <div class="ux-search__stats">
-                        {% block stats %}
-                            <twig:Mezcalito:UxSearch:TotalHits/>
-                        {% endblock %}
-                    </div>
-            
-                    {% block hits %}
-                        <twig:Mezcalito:UxSearch:Hits />
-                    {% endblock %}
-            
-                    {% block pagination %}
-                        <twig:Mezcalito:UxSearch:Pagination />
-                    {% endblock %}
-                {% endblock %}
-            </div>
-        </div>
-    {% endblock %}
+{# templates/components/Mezcalito/UxSearch/Hits.html.twig #}
+<div {{ attributes }}>
+    {% for hit in this.resultSet.hits %}
+        <article class="product-card">
+            <img src="{{ hit.image }}" alt="{{ hit.name }}">
+            <h3>{{ hit.name }}</h3>
+            <p class="price">{{ hit.price|format_currency('EUR') }}</p>
+            <a href="{{ path('product_show', {id: hit.id}) }}">View details</a>
+        </article>
+    {% endfor %}
 </div>
 ```
 
-### Customization
 
-You can tailor the behavior and appearance according to your needs by overriding default component or implementing custom logic. This allows you to adapt the bundle to your specific use cases and requirements.
+## Advanced Usage
 
-| Component name                                                  | Description                                                                               |
-|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| [Layout](docs/components/Layout.md)                             | The root wrapper component for all components                                             |
-| [CurrentRefinements](docs/components/CurrentRefinements.md)     | Displays a list of refinements applied to the search                                      |
-| [ClearRefinements](docs/components/ClearRefinements.md)         | Displays a button that lets users clean every refinement applied to the search            | 
-| [SearchInput](docs/components/SearchInput.md)                   | Let users perform a text-based query                                                      |
-| [SortBy](docs/components/SortBy.md)                             | Displays a list of sorting possibility, allowing a user to change the way hits are sorted |
-| [TotalHits](docs/components/TotalHits.md)                       | Displays the total number of matching hits                                                |
-| [Pagination](docs/components/Pagination.md)                     | Displays a pagination system which lets users change the current page of search results   |
-| [Facet/RangeInput](docs/components/Facet/RangeInput.md)         | Allows a user to select a numeric range using a minimum and maximum input.                |
-| [Facet/RangeSlider](docs/components/Facet/RangeSlider.md)       | Provides a user-friendly way to filter the results, based on a single numeric range       |
-| [Facet/RefinementList](docs/components/Facet/RefinementList.md) | Users can filter the dataset based on facets                                              |
-| [Hits](docs/components/Hits.md)                                 | Display a list of results.                                                                |
+### Event System
 
+Customize search behavior with event subscribers:
 
-## Issues and feature requests
+```php
+use Mezcalito\UxSearchBundle\Event\PreSearchEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-Please report issues and request features at https://github.com/mezcalito/ux-search/issues.
+class SearchSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            PreSearchEvent::class => 'onPreSearch',
+        ];
+    }
+
+    public function onPreSearch(PreSearchEvent $event): void
+    {
+        $query = $event->getQuery();
+        // Modify the query before search execution
+        $query->addFilter('status', 'published');
+    }
+}
+```
+
+📖 **[Event system documentation](docs/usage/customize-your-search.md#event-subscribers)**
+
+### Multiple Search Configurations
+
+You can have multiple search configurations in one application:
+
+```php
+// Product search with Algolia
+#[AsSearch(index: 'products', adapter: 'algolia')]
+class ProductSearch extends AbstractSearch { }
+
+// Blog search with Meilisearch
+#[AsSearch(index: 'posts', adapter: 'meilisearch')]
+class BlogSearch extends AbstractSearch { }
+
+// User search with Doctrine
+#[AsSearch(index: 'App\Entity\User', adapter: 'orm')]
+class UserSearch extends AbstractSearch { }
+```
+
+Each search can have its own adapter, facets, and configuration.
+
+## Documentation
+
+### Getting Started
+- [Installation & Quick Start](#installation)
+- [Choosing an Adapter](#choosing-an-adapter)
+- [Customizing Your Search](#customizing-your-search)
+
+### Adapters
+- [Algolia Configuration](docs/usage/algolia.md)
+- [Meilisearch Configuration](docs/usage/meilisearch.md)
+- [Doctrine Configuration](docs/usage/doctrine.md)
+- [Creating a Custom Adapter](docs/create-own-adapter.md)
+
+### Components
+- [Layout](docs/components/Layout.md) - Root wrapper
+- [SearchInput](docs/components/SearchInput.md) - Search box
+- [Hits](docs/components/Hits.md) - Results display
+- [Pagination](docs/components/Pagination.md) - Page navigation
+- [Facets](docs/components/) - All facet components
+- [View all components](docs/components/)
+
+### Advanced
+- [Customizing Your Search](docs/usage/customize-your-search.md) - Facets, sorting, events
+- [Component Customization](docs/components/) - Override templates and behavior
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Report bugs** - [Open an issue](https://github.com/mezcalito/ux-search/issues) with a clear description
+2. **Request features** - [Suggest new features](https://github.com/mezcalito/ux-search/issues) with use cases
+3. **Submit PRs** - Fork, create a feature branch, and submit a pull request
+4. **Improve docs** - Documentation improvements are always appreciated
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/mezcalito/ux-search.git
+cd ux-search
+
+# Start the Docker development environment
+make up
+
+# Install dependencies
+make install
+
+# Run tests
+make test
+
+# Run code quality checks
+make ci
+```
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/mezcalito/ux-search/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mezcalito/ux-search/discussions)
+- **Demo**: [Live Demo](https://ux-search.mezcalito.dev/demo)
 
 ## License
 
-This bundle is under the MIT license. For the whole copyright, see the LICENSE file distributed with this source code.
+This bundle is released under the [MIT License](LICENSE).
+

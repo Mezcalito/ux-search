@@ -1,16 +1,31 @@
-# Pagination
+# Pagination Component
 
-The `Pagination` component displays a pagination system which lets users change the current page of search results.
+The `Pagination` component displays a pagination system which lets users navigate through pages of search results. It includes intelligent ellipsis for large page counts and previous/next navigation.
 
-## Block available
+## Usage
 
-| name     | Description |
-|----------|-------------|
-| content  | -           |
-| hit      | -           |
-| noResult | -           |
+```twig
+<twig:Mezcalito:UxSearch:Pagination />
+```
 
-## Default layout
+## Available Variables
+
+| Variable     | Type                | Description                                          |
+|--------------|---------------------|------------------------------------------------------|
+| `page`       | int                 | Current page number (1-indexed)                      |
+| `totalPage`  | int                 | Total number of pages available                      |
+| `range`      | int                 | Number of pages to show on each side of current page |
+| `startRange` | int                 | Starting page number of visible range                |
+| `endRange`   | int                 | Ending page number of visible range                  |
+| `attributes` | ComponentAttributes | HTML attributes for the container                    |
+
+## Blocks Available
+
+| Block Name | Description                                                                             |
+|------------|-----------------------------------------------------------------------------------------|
+| `content`  | Main block wrapping the entire pagination navigation - override to change the structure |
+
+## Default Layout
 
 ```twig
 {%- block content %}
@@ -32,7 +47,7 @@ The `Pagination` component displays a pagination system which lets users change 
                         </a>
                     </li>
                 {% endif %}
-    
+
                 {% if startRange > range %}
                     {% for i in 1..range %}
                         <li class="ux-search-pagination__item">
@@ -40,7 +55,7 @@ The `Pagination` component displays a pagination system which lets users change 
                         </li>
                     {% endfor %}
                 {% endif %}
-    
+
                 {% if startRange - 1 == 1 %}
                     <li class="ux-search-pagination__item">
                         {{ _self.link(1, page) }}
@@ -54,13 +69,13 @@ The `Pagination` component displays a pagination system which lets users change 
                         {{ _self.elipsis() }}
                     </li>
                 {% endif %}
-    
+
                 {% for i in  startRange..endRange %}
                     <li class="ux-search-pagination__item">
                         {{ _self.link(i, page) }}
                     </li>
                 {% endfor %}
-    
+
                 <li class="ux-search-pagination__item">
                     {% if endRange + range <= totalPage - range %}
                         {{ _self.elipsis() }}
@@ -68,7 +83,7 @@ The `Pagination` component displays a pagination system which lets users change 
                         {{ _self.link(endRange + 1, page) }}
                     {% endif %}
                 </li>
-    
+
                 {% if endRange < totalPage %}
                     {% for i in (totalPage - range + 1)..totalPage %}
                         <li class="ux-search-pagination__item">
@@ -76,7 +91,7 @@ The `Pagination` component displays a pagination system which lets users change 
                         </li>
                     {% endfor %}
                 {% endif %}
-    
+
                 {% if page < totalPage %}
                     <li class="ux-search-pagination__item">
                         <a
@@ -118,7 +133,8 @@ The `Pagination` component displays a pagination system which lets users change 
 {% endblock -%}
 ```
 
-## Default HTML output
+## Default HTML Output
+
 ```html
 <nav class="ux-search-pagination">
     <ul class="ux-search-pagination__list">
@@ -134,7 +150,7 @@ The `Pagination` component displays a pagination system which lets users change 
                 1
             </a>
         </li>
-        
+
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=2" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="2">
                 2
@@ -150,13 +166,13 @@ The `Pagination` component displays a pagination system which lets users change 
                 5
             </a>
         </li>
-        
+
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=6" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="6">
                 6
             </a>
         </li>
-        
+
         <li class="ux-search-pagination__item">
             <span class="ux-search-pagination__link is-current">7</span>
         </li>
@@ -165,7 +181,7 @@ The `Pagination` component displays a pagination system which lets users change 
                 8
             </a>
         </li>
-        
+
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=9" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="9">
                 9
@@ -181,7 +197,7 @@ The `Pagination` component displays a pagination system which lets users change 
                 3333
             </a>
         </li>
-        
+
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=3334" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="3334">
                 3334
@@ -197,3 +213,20 @@ The `Pagination` component displays a pagination system which lets users change 
     </ul>
 </nav>
 ```
+
+## Styling
+
+Default classes:
+- `.ux-search-pagination` - Main navigation container
+- `.ux-search-pagination__list` - List wrapper
+- `.ux-search-pagination__item` - Individual list item
+- `.ux-search-pagination__link` - Link/button element
+- `.ux-search-pagination__link.is-current` - Current page indicator
+- `.ux-search-pagination__ellipsis` - Ellipsis indicator
+
+## Related Components
+
+- [HitsPerPage](HitsPerPage.md) - Control results per page
+- [TotalHits](TotalHits.md) - Show total results count
+- [Hits](Hits.md) - Display search results
+- [Layout](Layout.md) - Root container
