@@ -71,6 +71,7 @@ class MezcalitoUxSearchBundle extends AbstractBundle
             }
 
             $definition->addTag('mezcalito_ux_search.search', $tagAttributes);
+            $definition->addTag('kernel.reset', ['method' => 'reset']);
         });
 
         $builder->registerForAutoconfiguration(AdapterFactoryInterface::class)->addTag('mezcalito_ux_search.adapter_factory');
