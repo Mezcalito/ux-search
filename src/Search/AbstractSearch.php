@@ -18,8 +18,9 @@ use Mezcalito\UxSearchBundle\Exception\SearchException;
 use Mezcalito\UxSearchBundle\Search\Url\DefaultUrlFormater;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-abstract class AbstractSearch implements SearchInterface
+abstract class AbstractSearch implements SearchInterface, ResetInterface
 {
     /** @var int[] */
     private array $availableHitsPerPage = [12];
@@ -204,5 +205,13 @@ abstract class AbstractSearch implements SearchInterface
         $this->urlFormater = $urlFormater;
 
         return $this;
+    }
+
+    public function reset(): void
+    {
+        unset($this->availableSorts, $this->facets);
+
+        $this->availableSorts = [];
+        $this->facets = [];
     }
 }
