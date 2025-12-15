@@ -101,6 +101,29 @@ class Layout
     }
 
     #[LiveAction]
+    public function switchFacetTerm(#[LiveArg] string $property, #[LiveArg] string $value): void
+    {
+        $filter = $this->query->getActiveFilter($property);
+
+        if (!$filter instanceof TermFilter) {
+            $filter = new TermFilter($property);
+            $this->query->addActiveFilter($filter);
+        }
+
+        if ($filter->hasValue($value)) {
+            $filter->setValues([]);
+        } else {
+            $filter->setValues([$value]);
+        }
+
+        if (!$filter->hasValues()) {
+            $this->query->removeActiveFilter($filter);
+        }
+
+        $this->query->setCurrentPage(1);
+    }
+
+    #[LiveAction]
     public function toggleFacetTerm(#[LiveArg] string $property, #[LiveArg] string $value): void
     {
         $filter = $this->query->getActiveFilter($property);
