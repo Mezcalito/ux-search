@@ -40,7 +40,7 @@
     "symfony/web-profiler-bundle": "^6.4|^7.0|^8.0"
   },
   "suggest": {
-    "algolia/search-bundle": "Needed to use Algolia adapter",
+    "algolia/algoliasearch-client-php": "Needed to use Algolia adapter",
     "doctrine/doctrine-bundle": "Needed to use Orm adapter",
     "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter"
   },

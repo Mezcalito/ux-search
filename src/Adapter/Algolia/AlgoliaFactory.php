@@ -32,7 +32,7 @@ readonly class AlgoliaFactory implements AdapterFactoryInterface
     public function createClient(string $dsn): SearchClient
     {
         if (!class_exists(SearchClient::class)) {
-            throw new \LogicException(\sprintf('You cannot use the "%s" as Algolia, Client is not installed. Try running "composer require algolia/search-bundle".', self::class));
+            throw new \LogicException(\sprintf('You cannot use the "%s" as Algolia, Client is not installed. Try running "algolia/algoliasearch-client-php".', self::class));
         }
 
         $parsedDsn = parse_url($dsn);

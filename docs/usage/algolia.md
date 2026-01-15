@@ -253,10 +253,6 @@ use Mezcalito\UxSearchBundle\Event\PostSearchEvent;
 }, priority: 10)
 ```
 
-## Index Configuration
-
-Your Algolia index should be configured with:
-
 ## Performance Optimization
 
 ### Reduce Payload
