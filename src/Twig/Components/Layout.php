@@ -70,7 +70,12 @@ class Layout
         $this->currentRequest = CurrentRequest::fromRequest($this->requestStack->getMainRequest());
 
         if ($this->search->hasUrlRewriting()) {
-            $this->getUrlFormater()->applyFilters($this->currentRequest, $this->search, $this->query);
+            $mainRequest = $this->requestStack->getMainRequest();
+
+            if ($mainRequest && $mainRequest->attributes->has('_route')) {
+                $this->currentRequest = CurrentRequest::fromRequest($mainRequest);
+                $this->getUrlFormater()->applyFilters($this->currentRequest, $this->search, $this->query);
+            }
         }
 
         $this->searcher->search($this->query, $this->search);
@@ -82,7 +87,7 @@ class Layout
         $this->search = $this->getSearch($this->name)->create($this->options);
         $this->searcher->search($this->query, $this->search);
 
-        if ($this->search->hasUrlRewriting()) {
+        if ($this->search->hasUrlRewriting() && $this->currentRequest) {
             $this->dispatchBrowserEvent('ux-search:url:update', [
                 'url' => $this->getUrlFormater()->generateUrl($this->currentRequest, $this->search, $this->query),
             ]);
