@@ -67,7 +67,6 @@ class Layout
     {
         $this->search = $this->getSearch($data['name'])->create($data['options'] ?? []);
         $this->query = $this->getSearch($data['name'])->createQuery();
-        $this->currentRequest = CurrentRequest::fromRequest($this->requestStack->getMainRequest());
 
         if ($this->search->hasUrlRewriting()) {
             $mainRequest = $this->requestStack->getMainRequest();
