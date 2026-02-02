@@ -113,6 +113,6 @@ class Query
 
     public function removeActiveFilter(FilterInterface $filter): void
     {
-        $this->activeFilters = array_filter($this->activeFilters, fn (FilterInterface $activeFilter) => $activeFilter !== $filter);
+        $this->activeFilters = array_filter($this->activeFilters, static fn (FilterInterface $activeFilter) => $activeFilter !== $filter);
     }
 }

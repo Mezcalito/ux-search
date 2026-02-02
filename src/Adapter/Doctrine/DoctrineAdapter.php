@@ -66,7 +66,7 @@ readonly class DoctrineAdapter implements AdapterInterface
         $resolver->setDefaults([
             self::MAX_FACET_VALUES_PARAM => 100,
             self::QUERY_BUILDER_ALIAS => 'o',
-            self::QUERY_BUILDER => function (QueryBuilder $queryBuilder) {},
+            self::QUERY_BUILDER => static function (QueryBuilder $queryBuilder) {},
             self::SEARCH_FIELDS => [],
         ]);
 

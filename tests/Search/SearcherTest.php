@@ -45,7 +45,7 @@ class SearcherTest extends TestCase
 
         $preListenerCalled = false;
         $availableHitsPerPageOnPreSearch = null;
-        $preListener = function (PreSearchEvent $event) use (&$preListenerCalled, &$availableHitsPerPageOnPreSearch) {
+        $preListener = static function (PreSearchEvent $event) use (&$preListenerCalled, &$availableHitsPerPageOnPreSearch) {
             $preListenerCalled = true;
             $event->getQuery()->setQueryString('modified by preListener');
             $availableHitsPerPageOnPreSearch = $event->getSearch()->getAvailableHitsPerPage();

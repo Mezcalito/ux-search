@@ -100,7 +100,7 @@ class DefaultUrlFormater implements UrlFormaterInterface
     {
         $searchableParameterKeys = $this->getSearchableParameterKeys($search);
 
-        return array_filter($params, fn ($key) => !\in_array($key, $searchableParameterKeys), \ARRAY_FILTER_USE_KEY);
+        return array_filter($params, static fn ($key) => !\in_array($key, $searchableParameterKeys), \ARRAY_FILTER_USE_KEY);
     }
 
     private function getSearchableParameterKeys(SearchInterface $search): array

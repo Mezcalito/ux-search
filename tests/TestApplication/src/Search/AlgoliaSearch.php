@@ -38,7 +38,7 @@ class AlgoliaSearch extends AbstractSearch
             ->addAvailableSort('instant_search', 'Default')
             ->addAvailableSort('instant_search_price_asc', 'Price ↑')
             ->addAvailableSort('instant_search_price_desc', 'Price ↓')
-            ->addEventListener(PostSearchEvent::class, function (PostSearchEvent $event) {
+            ->addEventListener(PostSearchEvent::class, static function (PostSearchEvent $event) {
                 foreach ($event->getResultSet()->getHits() as $hit) {
                     $data = $hit->getData();
                     $data['name'] .= ' - POST Update';

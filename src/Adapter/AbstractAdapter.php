@@ -33,7 +33,7 @@ abstract class AbstractAdapter implements AdapterInterface
         $facetDistributionKey = $this->getFacetDistributionKey();
         $facetStatsKey = $this->getFacetStatsKey();
 
-        $mergedFacetDistribution = array_reduce($results['results'], function ($carry, $result) use ($facetDistributionKey) {
+        $mergedFacetDistribution = array_reduce($results['results'], static function ($carry, $result) use ($facetDistributionKey) {
             if (isset($result[$facetDistributionKey])) {
                 foreach ($result[$facetDistributionKey] as $facetKey => $facetValues) {
                     $carry[$facetKey] = $facetValues;
@@ -43,7 +43,7 @@ abstract class AbstractAdapter implements AdapterInterface
             return $carry;
         }, []);
 
-        $mergedFacetStats = array_reduce($results['results'], function ($carry, $result) use ($facetStatsKey) {
+        $mergedFacetStats = array_reduce($results['results'], static function ($carry, $result) use ($facetStatsKey) {
             if (isset($result[$facetStatsKey])) {
                 foreach ($result[$facetStatsKey] as $facetKey => $facetStat) {
                     $carry[$facetKey] = $facetStat;

@@ -46,7 +46,7 @@ class MezcalitoUxSearchBundle extends AbstractBundle
                     ->arrayPrototype()
                         ->beforeNormalization()
                             ->ifString()
-                            ->then(fn (string $v): array => ['dsn' => $v])
+                            ->then(static fn (string $v): array => ['dsn' => $v])
                         ->end()
                         ->children()
                             ->scalarNode('dsn')->isRequired()->end()

@@ -28,7 +28,7 @@ class AdapterFactoryPass implements CompilerPassInterface
     {
         $taggedServices = $container->findTaggedServiceIds('mezcalito_ux_search.adapter_factory');
 
-        $factories = array_map(fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices));
+        $factories = array_map(static fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices));
 
         $container
             ->getDefinition(AdapterProvider::class)

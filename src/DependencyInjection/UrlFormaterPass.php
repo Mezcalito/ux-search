@@ -30,7 +30,7 @@ class UrlFormaterPass implements CompilerPassInterface
 
         $formaters = array_combine(
             array_keys($taggedServices),
-            array_map(fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices))
+            array_map(static fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices))
         );
 
         $container

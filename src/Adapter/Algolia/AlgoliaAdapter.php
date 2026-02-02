@@ -149,7 +149,7 @@ class AlgoliaAdapter extends AbstractAdapter
         $resolver->setAllowedTypes(self::SORT_FACET_VALUES_BY_PARAM, 'string');
         $resolver->setAllowedTypes(self::SYNONYMS_PARAM, 'bool');
 
-        $resolver->setAllowedValues(self::ADVANCED_SYNTAX_FEATURES_PARAM, function (array $values) {
+        $resolver->setAllowedValues(self::ADVANCED_SYNTAX_FEATURES_PARAM, static function (array $values) {
             foreach ($values as $value) {
                 if (!\in_array($value, ['exactPhrase', 'excludeWords'])) {
                     return false;
@@ -158,7 +158,7 @@ class AlgoliaAdapter extends AbstractAdapter
 
             return true;
         });
-        $resolver->setAllowedValues(self::ALTERNATIVES_AS_EXACT_PARAM, function (array $values) {
+        $resolver->setAllowedValues(self::ALTERNATIVES_AS_EXACT_PARAM, static function (array $values) {
             foreach ($values as $value) {
                 if (!\in_array($value, ['ignoreConjugations', 'ignorePlurals', 'multiWordsSynonym', 'singleWordSynonym'])) {
                     return false;
@@ -167,7 +167,7 @@ class AlgoliaAdapter extends AbstractAdapter
 
             return true;
         });
-        $resolver->setAllowedValues(self::MAX_VALUES_PER_FACET_PARAM, fn (int $value): bool => $value <= 1000);
+        $resolver->setAllowedValues(self::MAX_VALUES_PER_FACET_PARAM, static fn (int $value): bool => $value <= 1000);
         $resolver->setAllowedValues(self::QUERY_TYPE_PARAM, ['prefixAll', 'prefixLast', 'prefixNone']);
         $resolver->setAllowedValues(self::SORT_FACET_VALUES_BY_PARAM, ['count', 'alpha']);
     }

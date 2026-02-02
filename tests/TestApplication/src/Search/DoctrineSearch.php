@@ -29,7 +29,7 @@ class DoctrineSearch extends AbstractSearch
             ->setAdapterParameters([
                 DoctrineAdapter::MAX_FACET_VALUES_PARAM => 30,
                 DoctrineAdapter::QUERY_BUILDER_ALIAS => 'o',
-                DoctrineAdapter::QUERY_BUILDER => function (QueryBuilder $queryBuilder) {
+                DoctrineAdapter::QUERY_BUILDER => static function (QueryBuilder $queryBuilder) {
                     $queryBuilder->andWhere('1 = 1');
                 },
                 DoctrineAdapter::SEARCH_FIELDS => ['o.name', 'o.brand'],

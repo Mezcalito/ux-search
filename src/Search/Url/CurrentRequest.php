@@ -25,7 +25,7 @@ readonly class CurrentRequest
 
     public static function fromRequest(Request $request): self
     {
-        $parameters = array_filter(array_merge($request->attributes->all(), $request->query->all()), fn ($key) => !str_starts_with((string) $key, '_'), \ARRAY_FILTER_USE_KEY);
+        $parameters = array_filter(array_merge($request->attributes->all(), $request->query->all()), static fn ($key) => !str_starts_with((string) $key, '_'), \ARRAY_FILTER_USE_KEY);
 
         return new self($request->attributes->get('_route'), $parameters);
     }

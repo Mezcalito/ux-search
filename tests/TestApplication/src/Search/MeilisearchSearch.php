@@ -43,7 +43,7 @@ class MeilisearchSearch extends AbstractSearch
             ->addAvailableSort('price:desc', 'Price ↓')
             ->addAvailableSort('popularity:asc', 'Popularity ↑')
             ->addAvailableSort('popularity:desc', 'Popularity ↓')
-            ->addEventListener(PostSearchEvent::class, function (PostSearchEvent $event) {
+            ->addEventListener(PostSearchEvent::class, static function (PostSearchEvent $event) {
                 foreach ($event->getResultSet()->getHits() as $hit) {
                     $data = $hit->getData();
                     $data['name'] .= ' - POST Update';

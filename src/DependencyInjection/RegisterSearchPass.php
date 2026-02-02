@@ -28,8 +28,8 @@ class RegisterSearchPass implements CompilerPassInterface
     {
         $taggedServices = $container->findTaggedServiceIds('mezcalito_ux_search.search');
         $listSearchTypes = array_combine(
-            array_map(fn ($attr) => $attr[0]['name'], $taggedServices),
-            array_map(fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices))
+            array_map(static fn ($attr) => $attr[0]['name'], $taggedServices),
+            array_map(static fn ($fqcn) => new Reference($fqcn), array_keys($taggedServices))
         );
 
         $container
