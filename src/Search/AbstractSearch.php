@@ -37,7 +37,7 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     private array $resolvedAdapterParameters = [];
 
-    private bool $urlRewritting = false;
+    private bool $urlRewriting = false;
 
     private ?string $urlFormater = null;
 
@@ -185,14 +185,14 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     public function enableUrlRewriting(): static
     {
-        $this->urlRewritting = true;
+        $this->urlRewriting = true;
 
         return $this;
     }
 
     public function hasUrlRewriting(): bool
     {
-        return $this->urlRewritting;
+        return $this->urlRewriting;
     }
 
     public function getUrlFormater(): string
