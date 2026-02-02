@@ -26,6 +26,10 @@ use Mezcalito\UxSearchBundle\Twig\Components\Layout;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 final class LayoutUrlRewritingTest extends TestCase
 {
@@ -39,7 +43,13 @@ final class LayoutUrlRewritingTest extends TestCase
         $layout->options = [];
         $layout->onReRender();
 
-        self::assertSame([], $layout->dispatchedEvents);
+        self::assertCount(1, $layout->dispatchedEvents);
+        self::assertSame('ux-search:query:update', $layout->dispatchedEvents[0][0]);
+
+        // Verify that ux-search:url:update is NOT dispatched
+        foreach ($layout->dispatchedEvents as $event) {
+            self::assertNotSame('ux-search:url:update', $event[0]);
+        }
     }
 
     public function testDispatchesNamespacedEventWhenEnabled(): void
@@ -52,10 +62,14 @@ final class LayoutUrlRewritingTest extends TestCase
         $layout->options = [];
         $layout->onReRender();
 
-        self::assertNotEmpty($layout->dispatchedEvents);
-        $last = end($layout->dispatchedEvents);
-        self::assertSame('ux-search:url:update', $last[0]);
-        self::assertSame(['url' => 'https://example.test/route?ok=1'], $last[1]);
+        self::assertCount(2, $layout->dispatchedEvents);
+
+        // First event should be ux-search:query:update
+        self::assertSame('ux-search:query:update', $layout->dispatchedEvents[0][0]);
+
+        // Second event should be ux-search:url:update
+        self::assertSame('ux-search:url:update', $layout->dispatchedEvents[1][0]);
+        self::assertSame(['url' => 'https://example.test/route?ok=1'], $layout->dispatchedEvents[1][1]);
     }
 
     private function createLayout(bool $enabled): TestableLayout
@@ -81,7 +95,20 @@ final class LayoutUrlRewritingTest extends TestCase
             TestUrlFormater::class => new TestUrlFormater(),
         ]);
 
-        return new TestableLayout($provider, $searcher, $stack, $urlFormaterProvider);
+        $normalizers = [
+            new ObjectNormalizer(
+                null,
+                null,
+                null,
+                new ReflectionExtractor()
+            ),
+        ];
+
+        $encoders = [new JsonEncoder()];
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        return new TestableLayout($provider, $searcher, $stack, $urlFormaterProvider, $serializer);
     }
 }
 

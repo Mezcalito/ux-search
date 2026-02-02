@@ -64,6 +64,7 @@ return static function (ContainerConfigurator $container) {
             ->arg('$searcher', service(Searcher::class))
             ->arg('$requestStack', service(RequestStack::class))
             ->arg('$urlFormaterProvider', service(UrlFormaterProvider::class))
+            ->arg('$serializer', service('serializer'))
             ->call('setLiveResponder', [service(LiveResponder::class)])
             ->tag('twig.component', [
                 'key' => 'Mezcalito:UxSearch:Layout',

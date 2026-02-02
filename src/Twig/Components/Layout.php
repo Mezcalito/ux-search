@@ -23,6 +23,8 @@ use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterInterface;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -59,6 +61,8 @@ class Layout
         private readonly Searcher $searcher,
         private readonly RequestStack $requestStack,
         private readonly UrlFormaterProvider $urlFormaterProvider,
+        /** @var Serializer */
+        private readonly SerializerInterface $serializer,
     ) {
     }
 
@@ -85,6 +89,8 @@ class Layout
     {
         $this->search = $this->getSearch($this->name)->create($this->options);
         $this->searcher->search($this->query, $this->search);
+
+        $this->dispatchBrowserEvent('ux-search:query:update', $this->serializer->normalize($this->query));
 
         if ($this->search->hasUrlRewriting() && $this->currentRequest) {
             $this->dispatchBrowserEvent('ux-search:url:update', [
