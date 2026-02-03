@@ -26,7 +26,7 @@ class Query
 
     private ?string $activeSort = null;
 
-    private ?int $activeHitsPerPage = 12;
+    private int $activeHitsPerPage = 12;
 
     public function getQueryString(): string
     {

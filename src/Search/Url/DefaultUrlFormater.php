@@ -89,7 +89,7 @@ class DefaultUrlFormater implements UrlFormaterInterface
 
             if ($value = $currentRequest->parameters[$propertyInUrl] ?? null) {
                 $values = explode('~~', (string) $value);
-                $values = array_filter($values, static fn ($v) => '' !== trim($v));
+                $values = array_filter($values, static fn ($v) => '' !== trim((string) $v));
                 $values = \array_slice($values, 0, 100);
 
                 if ([] !== $values) {

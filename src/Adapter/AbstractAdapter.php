@@ -65,25 +65,23 @@ abstract class AbstractAdapter implements AdapterInterface
         }
 
         foreach ($facetsDistributions as $property => $distribution) {
-            if ($distribution instanceof FacetTermDistribution) {
-                $values = $distribution->getValues();
-                $checkedValues = $distribution->getCheckedValues();
+            $values = $distribution->getValues();
+            $checkedValues = $distribution->getCheckedValues();
 
-                $checkedFacets = [];
-                $uncheckedFacets = [];
+            $checkedFacets = [];
+            $uncheckedFacets = [];
 
-                foreach ($values as $key => $value) {
-                    if (\in_array($key, $checkedValues)) {
-                        $checkedFacets[$key] = $value;
-                    } else {
-                        $uncheckedFacets[$key] = $value;
-                    }
+            foreach ($values as $key => $value) {
+                if (\in_array($key, $checkedValues)) {
+                    $checkedFacets[$key] = $value;
+                } else {
+                    $uncheckedFacets[$key] = $value;
                 }
-
-                $sortedFacets = $checkedFacets + $uncheckedFacets;
-
-                $distribution->setValues($sortedFacets);
             }
+
+            $sortedFacets = $checkedFacets + $uncheckedFacets;
+
+            $distribution->setValues($sortedFacets);
         }
 
         $facetStats = [];

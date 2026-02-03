@@ -33,7 +33,6 @@ class MezcalitoUxSearchBundle extends AbstractBundle
     {
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $definition->rootNode();
-        /* @phpstan-ignore-next-line */
         $rootNode
             ->children()
                 ->scalarNode('default_adapter')->defaultValue('default')->end()
