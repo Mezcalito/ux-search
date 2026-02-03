@@ -152,7 +152,7 @@ readonly class QueryBuilderHelper
         );
     }
 
-    private function applyFilter(QueryBuilder $qb, FilterInterface $filter)
+    private function applyFilter(QueryBuilder $qb, FilterInterface $filter): void
     {
         [$alias, $property] = $this->extractAliasAndProperty($filter->getProperty());
         $this->updateQueryBuilderAssociations($qb, $alias);
@@ -186,13 +186,22 @@ readonly class QueryBuilderHelper
 
     private function applySort(QueryBuilder $qb): void
     {
-        if ($this->query->getActiveSort()) {
-            [$sort, $order] = explode(':', $this->query->getActiveSort());
-            $qb->orderBy($sort, $order);
+        if (!$this->query->getActiveSort()) {
+            return;
         }
+
+        $activeSort = $this->query->getActiveSort();
+        $allowedSorts = array_map(static fn ($sort) => $sort->getKey(), $this->search->getAvailableSorts());
+
+        if (!\in_array($activeSort, $allowedSorts, true)) {
+            return;
+        }
+
+        [$sort, $order] = explode(':', $activeSort);
+        $qb->orderBy($sort, $order);
     }
 
-    private function applyQueryString(QueryBuilder $qb)
+    private function applyQueryString(QueryBuilder $qb): void
     {
         $fields = $this->search->getResolvedAdapterParameter(DoctrineAdapter::SEARCH_FIELDS);
         if ('' === $this->query->getQueryString() || 0 === \count($fields)) {

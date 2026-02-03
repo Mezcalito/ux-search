@@ -103,4 +103,31 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
         $this->assertEquals('SELECT bar.name as value, count(bar.name) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar GROUP BY bar.name ORDER BY total desc', $dql);
     }
+
+    public function testResultsQueryIgnoresInvalidSort()
+    {
+        $this->query->setActiveSort('o.id; DROP TABLE users--:asc');
+
+        $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+    }
+
+    public function testResultsQueryIgnoresNonWhitelistedSort()
+    {
+        $this->query->setActiveSort('o.secret_field:asc');
+
+        $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+    }
+
+    public function testResultsQueryAcceptsValidSort()
+    {
+        $this->query->setActiveSort('o.price:desc');
+
+        $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o ORDER BY o.price desc', $dql);
+    }
 }
