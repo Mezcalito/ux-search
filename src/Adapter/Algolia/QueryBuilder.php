@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Adapter\Algolia;
 
+use Mezcalito\UxSearchBundle\Exception\UnsupportedFilterException;
 use Mezcalito\UxSearchBundle\Search\Filter\FilterInterface;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
@@ -102,7 +103,7 @@ class QueryBuilder
 
                     break;
                 default:
-                    throw new \Exception(\sprintf('Facet filter "%s" not supported', $filter::class));
+                    throw UnsupportedFilterException::filterNotSupported($filter::class);
             }
         }
 
