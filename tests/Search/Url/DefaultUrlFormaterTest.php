@@ -117,6 +117,10 @@ final class DefaultUrlFormaterTest extends TestCase
             new Facet('o.type', 'accessories'),
             new Facet('o.popularity', 'popularity', RangeInput::class),
         ]);
+        $search->method('getAvailableSorts')->willReturn([
+            'popularity' => 'Popularity',
+            'price' => 'Price',
+        ]);
 
         $formater->applyFilters($currentRequest, $search, $query);
 
@@ -183,5 +187,187 @@ final class DefaultUrlFormaterTest extends TestCase
             );
 
         $formater->generateUrl($currentRequest, $search, $query);
+    }
+
+    public function testApplyFiltersWithInvalidSort(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'sortBy' => 'malicious_sort',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+        $search->method('getAvailableSorts')->willReturn([
+            'price' => 'Price',
+            'name' => 'Name',
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertNull($query->getActiveSort());
+    }
+
+    public function testApplyFiltersWithNegativePage(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'page' => '-5',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertSame(1, $query->getCurrentPage());
+    }
+
+    public function testApplyFiltersWithLongQueryString(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $longQuery = str_repeat('a', 1500);
+        $currentRequest = new CurrentRequest('search_route', [
+            'query' => $longQuery,
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertSame(1000, mb_strlen($query->getQueryString()));
+        $this->assertSame(str_repeat('a', 1000), $query->getQueryString());
+    }
+
+    public function testApplyFiltersWithEmptyTermValues(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'category' => 'books~~~~electronics',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([
+            new Facet('category', 'Category'),
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $filters = $query->getActiveFilters();
+        $this->assertCount(1, $filters);
+
+        /** @var TermFilter $termFilter */
+        $termFilter = $filters[0];
+
+        $this->assertSame(['books', 'electronics'], $termFilter->getValues());
+    }
+
+    public function testApplyFiltersWithTooManyTermValues(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $values = array_map(static fn ($i) => 'value'.$i, range(1, 150));
+        $currentRequest = new CurrentRequest('search_route', [
+            'category' => implode('~~', $values),
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([
+            new Facet('category', 'Category'),
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $filters = $query->getActiveFilters();
+        $this->assertCount(1, $filters);
+
+        /** @var TermFilter $termFilter */
+        $termFilter = $filters[0];
+
+        $this->assertCount(100, $termFilter->getValues());
+    }
+
+    public function testApplyFiltersWithInvalidRangeMinMax(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'priceMin' => '100',
+            'priceMax' => '50',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([
+            new Facet('price', 'Price', RangeInput::class),
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertCount(0, $query->getActiveFilters());
+    }
+
+    public function testApplyFiltersIgnoresNonExistentFacets(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'maliciousFacet' => 'value1~~value2',
+            'anotherBadFacet' => 'test',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([
+            new Facet('category', 'Category'),
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertCount(0, $query->getActiveFilters());
+    }
+
+    public function testApplyFiltersWithValidRangeValues(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $formater = new DefaultUrlFormater($urlGenerator);
+
+        $currentRequest = new CurrentRequest('search_route', [
+            'priceMin' => '10.5',
+            'priceMax' => '99.9',
+        ]);
+
+        $query = new Query();
+        $search = $this->createMock(SearchInterface::class);
+        $search->method('getFacets')->willReturn([
+            new Facet('price', 'Price', RangeInput::class),
+        ]);
+
+        $formater->applyFilters($currentRequest, $search, $query);
+
+        $this->assertCount(1, $query->getActiveFilters());
+
+        /** @var RangeFilter $rangeFilter */
+        $rangeFilter = $query->getActiveFilters()[0];
+        $this->assertInstanceOf(RangeFilter::class, $rangeFilter);
+        $this->assertSame(10.5, $rangeFilter->getMin());
+        $this->assertSame(99.9, $rangeFilter->getMax());
     }
 }
