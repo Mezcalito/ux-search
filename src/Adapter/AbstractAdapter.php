@@ -86,13 +86,16 @@ abstract class AbstractAdapter implements AdapterInterface
 
         $facetStats = [];
         foreach ($mergedFacetStats as $property => $values) {
+            $userMin = null;
+            $userMax = null;
+
             $filter = $query->getActiveFilter($property);
             if ($filter instanceof RangeFilter) {
                 $userMin = $filter->getMin();
                 $userMax = $filter->getMax();
             }
 
-            $facetStats[] = new FacetStat($property, $values['min'], $values['max'], $userMin ?? null, $userMax ?? null);
+            $facetStats[] = new FacetStat($property, $values['min'], $values['max'], $userMin, $userMax);
         }
 
         return [$facetsDistributions, $facetStats];
