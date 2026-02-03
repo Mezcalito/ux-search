@@ -133,26 +133,26 @@ final class DefaultUrlFormaterTest extends TestCase
         $this->assertCount(4, $filters);
 
         /** @var TermFilter $termFilter */
-        $termFilter = $filters[0];
+        $termFilter = $filters['category'];
         $this->assertInstanceOf(TermFilter::class, $termFilter);
         $this->assertSame('category', $termFilter->getProperty());
         $this->assertSame(['music', 'movies'], $termFilter->getValues());
 
         /** @var RangeFilter $rangeFilter */
-        $rangeFilter = $filters[1];
+        $rangeFilter = $filters['price'];
         $this->assertInstanceOf(RangeFilter::class, $rangeFilter);
         $this->assertSame('price', $rangeFilter->getProperty());
         $this->assertSame(20.0, $rangeFilter->getMin());
         $this->assertSame(200.0, $rangeFilter->getMax());
 
         /** @var TermFilter $termFilter */
-        $termFilter = $filters[2];
+        $termFilter = $filters['o.type'];
         $this->assertInstanceOf(TermFilter::class, $termFilter);
         $this->assertSame('o.type', $termFilter->getProperty());
         $this->assertSame(['accessories'], $termFilter->getValues());
 
         /** @var RangeFilter $rangeFilter */
-        $rangeFilter = $filters[3];
+        $rangeFilter = $filters['o.popularity'];
         $this->assertInstanceOf(RangeFilter::class, $rangeFilter);
         $this->assertSame('o.popularity', $rangeFilter->getProperty());
         $this->assertSame(0.0, $rangeFilter->getMin());
@@ -270,7 +270,7 @@ final class DefaultUrlFormaterTest extends TestCase
         $this->assertCount(1, $filters);
 
         /** @var TermFilter $termFilter */
-        $termFilter = $filters[0];
+        $termFilter = $filters['category'];
 
         $this->assertSame(['books', 'electronics'], $termFilter->getValues());
     }
@@ -297,7 +297,7 @@ final class DefaultUrlFormaterTest extends TestCase
         $this->assertCount(1, $filters);
 
         /** @var TermFilter $termFilter */
-        $termFilter = $filters[0];
+        $termFilter = $filters['category'];
 
         $this->assertCount(100, $termFilter->getValues());
     }
@@ -365,7 +365,7 @@ final class DefaultUrlFormaterTest extends TestCase
         $this->assertCount(1, $query->getActiveFilters());
 
         /** @var RangeFilter $rangeFilter */
-        $rangeFilter = $query->getActiveFilters()[0];
+        $rangeFilter = $query->getActiveFilters()['price'];
         $this->assertInstanceOf(RangeFilter::class, $rangeFilter);
         $this->assertSame(10.5, $rangeFilter->getMin());
         $this->assertSame(99.9, $rangeFilter->getMax());

@@ -47,32 +47,29 @@ class Query
 
     public function setActiveFilters(array $activeFilters): static
     {
-        $this->activeFilters = $activeFilters;
+        $this->activeFilters = [];
+        foreach ($activeFilters as $filter) {
+            $this->activeFilters[$filter->getProperty()] = $filter;
+        }
 
         return $this;
     }
 
     public function getActiveFilter(string $property): ?FilterInterface
     {
-        foreach ($this->activeFilters as $activeFilter) {
-            if ($activeFilter->getProperty() === $property) {
-                return $activeFilter;
-            }
-        }
-
-        return null;
+        return $this->activeFilters[$property] ?? null;
     }
 
     public function addActiveFilter(FilterInterface $filter): static
     {
-        $this->activeFilters[] = $filter;
+        $this->activeFilters[$filter->getProperty()] = $filter;
 
         return $this;
     }
 
     public function hasActiveFilter(string $property): bool
     {
-        return $this->getActiveFilter($property) instanceof FilterInterface;
+        return isset($this->activeFilters[$property]);
     }
 
     public function getCurrentPage(): int
@@ -113,6 +110,6 @@ class Query
 
     public function removeActiveFilter(FilterInterface $filter): void
     {
-        $this->activeFilters = array_filter($this->activeFilters, static fn (FilterInterface $activeFilter) => $activeFilter !== $filter);
+        unset($this->activeFilters[$filter->getProperty()]);
     }
 }
