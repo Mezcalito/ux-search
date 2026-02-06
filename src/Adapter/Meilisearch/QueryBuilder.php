@@ -105,11 +105,11 @@ class QueryBuilder
                     break;
                 case RangeFilter::class:
                     if (null !== $filter->getMin()) {
-                        $formated[] = \sprintf('%s >= %d', $filter->getProperty(), $filter->getMin());
+                        $formated[] = \sprintf('%s >= %s', $filter->getProperty(), $filter->getMin());
                     }
 
                     if (null !== $filter->getMax()) {
-                        $formated[] = \sprintf('%s <= %d', $filter->getProperty(), $filter->getMax());
+                        $formated[] = \sprintf('%s <= %s', $filter->getProperty(), $filter->getMax());
                     }
 
                     break;
