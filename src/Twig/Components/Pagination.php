@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
+use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class Pagination
@@ -42,7 +43,12 @@ class Pagination
     #[ExposeInTemplate]
     public function getTotalPage(): int
     {
-        return (int) ceil($this->contextProvider->getCurrentContext()->getResults()->getTotalResults() / $this->contextProvider->getCurrentContext()->getQuery()->getActiveHitsPerPage());
+        $results = $this->contextProvider->getCurrentContext()->getResults();
+        if (!$results instanceof ResultSet) {
+            return 0;
+        }
+
+        return (int) ceil($results->getTotalResults() / $this->contextProvider->getCurrentContext()->getQuery()->getActiveHitsPerPage());
     }
 
     #[ExposeInTemplate]

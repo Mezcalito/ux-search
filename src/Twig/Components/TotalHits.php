@@ -26,6 +26,8 @@ class TotalHits
     #[ExposeInTemplate]
     public function getTotalHits(): int
     {
-        return $this->contextProvider->getCurrentContext()->getResults()->getTotalResults();
+        $results = $this->contextProvider->getCurrentContext()->getResults();
+
+        return $results?->getTotalResults() ?? 0;
     }
 }
