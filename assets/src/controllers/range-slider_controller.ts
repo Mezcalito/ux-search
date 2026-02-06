@@ -45,24 +45,53 @@ export default class extends Controller<HTMLElement> {
   updateCeil = (): void => this.update('ceil');
 
   update(method: 'floor' | 'ceil' = 'ceil') {
-    const min = parseFloat(this.minInputTarget.min);
-    const max = parseFloat(this.maxInputTarget.max);
-    const step = parseFloat(this.minInputTarget.step);
-    const minValue = parseFloat(this.minInputTarget.value);
-    const maxValue = parseFloat(this.maxInputTarget.value);
+    const values = this.getSliderValues();
+    const { min, max } = values;
 
+    const thumbWidthVariable = this.getThumbWidthVariable();
+    const thumbWidth = parseFloat(thumbWidthVariable);
+    const thumbWidthUnit = thumbWidthVariable.replace(/^[\d.]+/, '');
+
+    // Calculate positions
+    const { mid, range } = this.calculatePositions(values, method);
+
+    // Update layout
+    this.updateLayout(mid, range, min, max, thumbWidthVariable);
+
+    // Update gradients
+    this.updateGradients(mid, min, max, values.minValue, values.maxValue, thumbWidth, thumbWidthUnit);
+
+    // Update displayed values
+    this.updateDisplayedValues();
+  }
+
+  protected getSliderValues() {
+    return {
+      min: parseFloat(this.minInputTarget.min),
+      max: parseFloat(this.maxInputTarget.max),
+      step: parseFloat(this.minInputTarget.step),
+      minValue: parseFloat(this.minInputTarget.value),
+      maxValue: parseFloat(this.maxInputTarget.value),
+    };
+  }
+
+  protected getThumbWidthVariable(): string {
+    return getComputedStyle(this.minInputTarget).getPropertyValue('--ux-search-range-slider-thumb-width');
+  }
+
+  protected calculatePositions(
+    values: ReturnType<typeof this.getSliderValues>,
+    method: 'floor' | 'ceil',
+  ): { mid: number; range: number } {
+    const { min, max, step, minValue, maxValue } = values;
     const midValue = (maxValue - minValue) / 2;
     const mid = minValue + Math[method](midValue / step) * step;
-
     const range = max - min;
 
-    const thumbWidthVariable = getComputedStyle(this.minInputTarget).getPropertyValue(
-      '--ux-search-range-slider-thumb-width',
-    );
+    return { mid, range };
+  }
 
-    const thumbWidth = parseFloat(thumbWidthVariable);
-    const thumbWidthUnit = thumbWidthVariable.replace(/^[\d.]+/, ''); // px, em, rem...
-
+  protected updateLayout(mid: number, range: number, min: number, max: number, thumbWidthVariable: string) {
     const leftWidth = ((mid - min) / range) * 100;
     const rightWidth = ((max - mid) / range) * 100;
 
@@ -71,7 +100,17 @@ export default class extends Controller<HTMLElement> {
 
     this.minInputTarget.max = mid.toFixed(this.precisionValue);
     this.maxInputTarget.min = mid.toFixed(this.precisionValue);
+  }
 
+  protected updateGradients(
+    mid: number,
+    min: number,
+    max: number,
+    minValue: number,
+    maxValue: number,
+    thumbWidth: number,
+    thumbWidthUnit: string,
+  ) {
     const minFill = (minValue - min) / (mid - min) || 0;
     const maxFill = (maxValue - mid) / (max - mid) || 0;
 
@@ -86,8 +125,9 @@ export default class extends Controller<HTMLElement> {
       '--ux-search-range-slider-max-gradient-position',
       `calc(${(maxFill * 100).toFixed(this.precisionValue)}% + ${maxFillThumb}${thumbWidthUnit})`,
     );
+  }
 
-    // Update displayed values
+  protected updateDisplayedValues() {
     if (this.hasMinValueTarget) {
       this.minValueTarget.innerHTML = `${this.leadingValue}${this.minInputTarget.value}${this.trailingValue}`;
     }
