@@ -164,13 +164,13 @@ readonly class QueryBuilderHelper
             $qb->setParameter($parameterName, array_values($filter->getValues()));
         }
 
-        if ($filter instanceof RangeFilter && $filter->getMax()) {
+        if ($filter instanceof RangeFilter && null !== $filter->getMax()) {
             $parameterName = u(\sprintf('%s_%s_max', $alias, $property))->snake()->toString();
             $qb->andWhere(\sprintf('%s.%s <= :%s ', $alias, $property, $parameterName));
             $qb->setParameter($parameterName, $filter->getMax());
         }
 
-        if ($filter instanceof RangeFilter && $filter->getMin()) {
+        if ($filter instanceof RangeFilter && null !== $filter->getMin()) {
             $parameterName = u(\sprintf('%s_%s_min', $alias, $property))->snake()->toString();
             $qb->andWhere(\sprintf('%s.%s >= :%s', $alias, $property, $parameterName));
             $qb->setParameter($parameterName, $filter->getMin());
