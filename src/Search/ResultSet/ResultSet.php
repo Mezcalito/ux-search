@@ -22,13 +22,13 @@ class ResultSet
     /** @var Hit[] */
     private array $hits = [];
 
-    public int $totalResults = 0;
+    private int $totalResults = 0;
 
     /** @var FacetTermDistribution[] */
-    public array $facetDistributions = [];
+    private array $facetDistributions = [];
 
     /** @var FacetStat[] */
-    public array $facetStats = [];
+    private array $facetStats = [];
 
     public function getIndexUid(): ?string
     {
