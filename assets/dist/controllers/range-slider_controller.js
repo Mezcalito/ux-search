@@ -32,6 +32,12 @@ class default_1 extends Controller {
         const thumbWidthVariable = this.getThumbWidthVariable();
         const thumbWidth = parseFloat(thumbWidthVariable);
         const thumbWidthUnit = thumbWidthVariable.replace(/^[\d.]+/, '');
+        if (min === max) {
+            this.handleSingleValue(thumbWidthVariable);
+            this.updateDisplayedValues();
+            return;
+        }
+        this.enableInputs();
         const { mid, range } = this.calculatePositions(values, method);
         this.updateLayout(mid, range, min, max, thumbWidthVariable);
         this.updateGradients(mid, min, max, values.minValue, values.maxValue, thumbWidth, thumbWidthUnit);
@@ -79,6 +85,21 @@ class default_1 extends Controller {
         if (this.hasMaxValueTarget) {
             this.maxValueTarget.innerHTML = `${this.leadingValue}${this.maxInputTarget.value}${this.trailingValue}`;
         }
+    }
+    handleSingleValue(thumbWidthVariable) {
+        this.minInputTarget.style.flexBasis = `calc(100% + ${thumbWidthVariable})`;
+        this.maxInputTarget.style.flexBasis = `calc(0% + ${thumbWidthVariable})`;
+        this.element.style.setProperty('--ux-search-range-slider-min-gradient-position', '0%');
+        this.element.style.setProperty('--ux-search-range-slider-max-gradient-position', '100%');
+        this.disableInputs();
+    }
+    enableInputs() {
+        this.minInputTarget.disabled = false;
+        this.maxInputTarget.disabled = false;
+    }
+    disableInputs() {
+        this.minInputTarget.disabled = true;
+        this.maxInputTarget.disabled = true;
     }
     submit() {
         this.formTarget.requestSubmit();

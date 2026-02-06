@@ -52,6 +52,16 @@ export default class extends Controller<HTMLElement> {
     const thumbWidth = parseFloat(thumbWidthVariable);
     const thumbWidthUnit = thumbWidthVariable.replace(/^[\d.]+/, '');
 
+    // Handle edge case: min === max (single value, no range)
+    if (min === max) {
+      this.handleSingleValue(thumbWidthVariable);
+      this.updateDisplayedValues();
+      return;
+    }
+
+    // Re-enable inputs if they were disabled
+    this.enableInputs();
+
     // Calculate positions
     const { mid, range } = this.calculatePositions(values, method);
 
@@ -134,6 +144,29 @@ export default class extends Controller<HTMLElement> {
     if (this.hasMaxValueTarget) {
       this.maxValueTarget.innerHTML = `${this.leadingValue}${this.maxInputTarget.value}${this.trailingValue}`;
     }
+  }
+
+  protected handleSingleValue(thumbWidthVariable: string) {
+    // Place handlers at edges
+    this.minInputTarget.style.flexBasis = `calc(100% + ${thumbWidthVariable})`;
+    this.maxInputTarget.style.flexBasis = `calc(0% + ${thumbWidthVariable})`;
+
+    // Fill gradient completely
+    this.element.style.setProperty('--ux-search-range-slider-min-gradient-position', '0%');
+    this.element.style.setProperty('--ux-search-range-slider-max-gradient-position', '100%');
+
+    // Disable inputs to prevent interaction
+    this.disableInputs();
+  }
+
+  protected enableInputs() {
+    this.minInputTarget.disabled = false;
+    this.maxInputTarget.disabled = false;
+  }
+
+  protected disableInputs() {
+    this.minInputTarget.disabled = true;
+    this.maxInputTarget.disabled = true;
   }
 
   submit() {
