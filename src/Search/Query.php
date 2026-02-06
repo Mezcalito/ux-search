@@ -19,7 +19,7 @@ class Query
 {
     private string $queryString = '';
 
-    /** @var FilterInterface[] */
+    /** @var array<string, FilterInterface> */
     private array $activeFilters = [];
 
     private int $currentPage = 1;

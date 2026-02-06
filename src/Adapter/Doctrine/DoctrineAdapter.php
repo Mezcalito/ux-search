@@ -104,7 +104,7 @@ readonly class DoctrineAdapter implements AdapterInterface
 
             $values = $checkedFacets + $uncheckedFacets;
 
-            $distributions[] = (new FacetTermDistribution())
+            $distributions[$facet->getProperty()] = (new FacetTermDistribution())
                 ->setProperty($facet->getProperty())
                 ->setValues($values)
                 ->setCheckedValues($checkedValues);
@@ -137,7 +137,7 @@ readonly class DoctrineAdapter implements AdapterInterface
                 continue;
             }
 
-            $stats[] = (new FacetStat(
+            $stats[$facet->getProperty()] = (new FacetStat(
                 property: $facet->getProperty(),
                 min: $rs['min'] ?? 0,
                 max: $rs['max'] ?? 0,
