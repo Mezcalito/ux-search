@@ -197,7 +197,16 @@ readonly class QueryBuilderHelper
             return;
         }
 
-        [$sort, $order] = explode(':', $activeSort);
+        if (!str_contains($activeSort, ':')) {
+            return;
+        }
+
+        [$sort, $order] = explode(':', $activeSort, 2);
+
+        if (!\in_array(strtoupper($order), ['ASC', 'DESC'], true)) {
+            return;
+        }
+
         $qb->orderBy($sort, $order);
     }
 
