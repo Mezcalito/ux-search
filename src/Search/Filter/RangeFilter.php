@@ -49,6 +49,6 @@ class RangeFilter extends AbstractFilter
 
     public function hasValues(): bool
     {
-        return $this->min || $this->max;
+        return null !== $this->min || null !== $this->max;
     }
 }

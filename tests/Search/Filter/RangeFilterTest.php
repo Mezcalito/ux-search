@@ -70,4 +70,25 @@ class RangeFilterTest extends TestCase
 
         $this->assertTrue($filter->hasValues());
     }
+
+    public function testHasValuesWhenMinIsZero(): void
+    {
+        $filter = new RangeFilter('price', 0, 100);
+
+        $this->assertTrue($filter->hasValues());
+    }
+
+    public function testHasValuesWhenMaxIsZero(): void
+    {
+        $filter = new RangeFilter('price', -10, 0);
+
+        $this->assertTrue($filter->hasValues());
+    }
+
+    public function testHasValuesWhenBothAreZero(): void
+    {
+        $filter = new RangeFilter('price', 0, 0);
+
+        $this->assertTrue($filter->hasValues());
+    }
 }

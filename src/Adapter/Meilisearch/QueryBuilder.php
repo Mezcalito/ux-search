@@ -104,11 +104,11 @@ class QueryBuilder
                     $formated[] = $or;
                     break;
                 case RangeFilter::class:
-                    if ($filter->getMin()) {
+                    if (null !== $filter->getMin()) {
                         $formated[] = \sprintf('%s >= %d', $filter->getProperty(), $filter->getMin());
                     }
 
-                    if ($filter->getMax()) {
+                    if (null !== $filter->getMax()) {
                         $formated[] = \sprintf('%s <= %d', $filter->getProperty(), $filter->getMax());
                     }
 

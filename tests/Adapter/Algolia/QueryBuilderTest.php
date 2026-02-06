@@ -86,4 +86,60 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(1, $result);
         $this->assertEquals('products', $result['requests'][0]['indexName']);
     }
+
+    public function testBuildWithZeroValueRangeFilter(): void
+    {
+        $query = $this->createMock(Query::class);
+        $search = $this->createMock(SearchInterface::class);
+
+        $query->method('getActiveFilters')->willReturn([
+            new RangeFilter('stock', 0, 100),
+        ]);
+
+        $query->method('getActiveHitsPerPage')->willReturn(10);
+        $query->method('getCurrentPage')->willReturn(1);
+        $query->method('getQueryString')->willReturn('');
+
+        $search->method('getIndexName')->willReturn('products');
+        $search->method('getFacets')->willReturn([
+            new RangeFilter('stock', null, null),
+        ]);
+        $search->method('getResolvedAdapterParameters')->willReturn([]);
+
+        $queryBuilder = new QueryBuilder();
+
+        $result = $queryBuilder->build($query, $search);
+
+        $this->assertIsArray($result);
+        $this->assertStringContainsString('stock >= 0', $result['requests'][0]['filters']);
+        $this->assertStringContainsString('stock <= 100', $result['requests'][0]['filters']);
+    }
+
+    public function testBuildWithZeroMaxValueRangeFilter(): void
+    {
+        $query = $this->createMock(Query::class);
+        $search = $this->createMock(SearchInterface::class);
+
+        $query->method('getActiveFilters')->willReturn([
+            new RangeFilter('discount', -10, 0),
+        ]);
+
+        $query->method('getActiveHitsPerPage')->willReturn(10);
+        $query->method('getCurrentPage')->willReturn(1);
+        $query->method('getQueryString')->willReturn('');
+
+        $search->method('getIndexName')->willReturn('products');
+        $search->method('getFacets')->willReturn([
+            new RangeFilter('discount', null, null),
+        ]);
+        $search->method('getResolvedAdapterParameters')->willReturn([]);
+
+        $queryBuilder = new QueryBuilder();
+
+        $result = $queryBuilder->build($query, $search);
+
+        $this->assertIsArray($result);
+        $this->assertStringContainsString('discount >= -10', $result['requests'][0]['filters']);
+        $this->assertStringContainsString('discount <= 0', $result['requests'][0]['filters']);
+    }
 }
