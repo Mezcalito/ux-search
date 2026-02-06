@@ -121,24 +121,35 @@ readonly class QueryBuilderHelper
         return $qb;
     }
 
+    /**
+     * Extracts alias and property from a dot-notation property string.
+     *
+     * If the property contains a dot (e.g., "category.name"), it returns the parts as [alias, property].
+     * Otherwise, it assumes the default alias 'o' is used (matching the QUERY_BUILDER_ALIAS parameter default).
+     *
+     * Note: This assumes the QUERY_BUILDER_ALIAS is 'o' when no alias is specified in the property.
+     * If a custom alias is configured, properties must use dot notation (e.g., "customAlias.property").
+     */
     private function extractAliasAndProperty(string $property): array
     {
         if (str_contains($property, '.')) {
             return explode('.', $property);
         }
 
-        return ['o', $property];
+        return [$this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS), $property];
     }
 
     private function updateQueryBuilderAssociations(QueryBuilder $qb, string $alias): void
     {
-        if ('o' === $alias) {
+        $baseAlias = $this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS);
+
+        if ($baseAlias === $alias) {
             return;
         }
 
         $metadata = $this->manager->getClassMetadata($this->search->getIndexName());
         if (\array_key_exists($alias, $metadata->associationMappings) && !\in_array($alias, $qb->getAllAliases(), true)) {
-            $qb->leftJoin('o.'.$alias, $alias);
+            $qb->leftJoin($baseAlias.'.'.$alias, $alias);
         }
     }
 
