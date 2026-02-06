@@ -87,6 +87,34 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals('products', $result['requests'][0]['indexName']);
     }
 
+    public function testBuildWithFloatRangeFilter(): void
+    {
+        $query = $this->createMock(Query::class);
+        $search = $this->createMock(SearchInterface::class);
+
+        $query->method('getActiveFilters')->willReturn([
+            new RangeFilter('price', 19.99, 99.95),
+        ]);
+
+        $query->method('getActiveHitsPerPage')->willReturn(10);
+        $query->method('getCurrentPage')->willReturn(1);
+        $query->method('getQueryString')->willReturn('');
+
+        $search->method('getIndexName')->willReturn('products');
+        $search->method('getFacets')->willReturn([
+            new RangeFilter('price', null, null),
+        ]);
+        $search->method('getResolvedAdapterParameters')->willReturn([]);
+
+        $queryBuilder = new QueryBuilder();
+
+        $result = $queryBuilder->build($query, $search);
+
+        $this->assertIsArray($result);
+        $this->assertStringContainsString('price >= 19.99', $result['requests'][0]['filters']);
+        $this->assertStringContainsString('price <= 99.95', $result['requests'][0]['filters']);
+    }
+
     public function testBuildWithZeroValueRangeFilter(): void
     {
         $query = $this->createMock(Query::class);

@@ -241,6 +241,46 @@ class QueryBuilderTest extends TestCase
         ], $priceFacetQuery->toArray());
     }
 
+    public function testFloatRangeFilter(): void
+    {
+        $this->search->method('getFacets')->willReturn([
+            new Facet('price', 'Price'),
+        ]);
+
+        $query = (new Query())
+            ->addActiveFilter(new RangeFilter('price', 19.99, 99.95))
+        ;
+
+        $searchQueries = $this->queryBuilder->build($query, $this->search);
+
+        $this->assertCount(2, $searchQueries);
+
+        $mainSearchQuery = $searchQueries[0];
+
+        $this->assertInstanceOf(SearchQuery::class, $mainSearchQuery);
+        $this->assertEquals([
+            'indexUid' => 'test',
+            'filter' => [
+                'price >= 19.99',
+                'price <= 99.95',
+            ],
+            'q' => '',
+            'sort' => [],
+            'hitsPerPage' => 12,
+            'page' => 1,
+            'attributesToRetrieve' => ['*'],
+            'attributesToCrop' => [],
+            'cropLength' => 10,
+            'cropMarker' => '...',
+            'attributesToHighlight' => [],
+            'highlightPreTag' => '<em>',
+            'highlightPostTag' => '</em>',
+            'showRankingScore' => true,
+            'facets' => ['price'],
+            'distinct' => 'product_id',
+        ], $mainSearchQuery->toArray());
+    }
+
     public function testZeroValueRangeFilter(): void
     {
         $this->search->method('getFacets')->willReturn([
