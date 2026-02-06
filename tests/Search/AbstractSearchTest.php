@@ -150,4 +150,35 @@ class AbstractSearchTest extends TestCase
         $this->search->setUrlFormater($customUrlFormater);
         $this->assertSame($customUrlFormater, $this->search->getUrlFormater());
     }
+
+    public function testCreateQueryWithEmptyAvailableHitsPerPage(): void
+    {
+        $this->search->setAvailableHitsPerPage([]);
+        $query = $this->search->createQuery();
+
+        $this->assertSame(12, $query->getActiveHitsPerPage());
+    }
+
+    public function testCreateQueryWithEmptyAvailableSorts(): void
+    {
+        $query = $this->search->createQuery();
+
+        $this->assertNull($query->getActiveSort());
+    }
+
+    public function testReset(): void
+    {
+        $this->search->addAvailableSort('price:asc', 'Price ↑');
+        $this->search->addAvailableSort('name:desc', 'Name ↓');
+        $this->search->addFacet('category', 'Category');
+        $this->search->addFacet('brand', 'Brand');
+
+        $this->assertCount(2, $this->search->getAvailableSorts());
+        $this->assertCount(2, $this->search->getFacets());
+
+        $this->search->reset();
+
+        $this->assertCount(0, $this->search->getAvailableSorts());
+        $this->assertCount(0, $this->search->getFacets());
+    }
 }
