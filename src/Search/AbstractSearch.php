@@ -170,12 +170,11 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
     {
         $query = new Query();
 
-        if ($this->availableHitsPerPage) {
+        if ([] !== $this->availableHitsPerPage) {
             $query->setActiveHitsPerPage(current($this->availableHitsPerPage));
         }
 
-        if ($this->availableSorts) {
-            /** @var Sort $defaultSort */
+        if ([] !== $this->availableSorts) {
             $defaultSort = current($this->availableSorts);
             $query->setActiveSort($defaultSort->getKey());
         }
