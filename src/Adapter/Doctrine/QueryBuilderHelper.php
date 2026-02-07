@@ -69,7 +69,7 @@ readonly class QueryBuilderHelper
         $this->updateQueryBuilderAssociations($qb, $alias);
 
         $qb
-            ->select(\sprintf('%s.%s as value, count(%s.%s) AS total', $alias, $property, $alias, $property))
+            ->select(\sprintf('%s.%s as value, count(DISTINCT %s) AS total', $alias, $property, $this->getIdentifierField()))
             ->orderBy('total', 'desc')
             ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
