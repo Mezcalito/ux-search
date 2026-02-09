@@ -233,7 +233,7 @@ readonly class QueryBuilderHelper
             $orX->add(\sprintf('%s like :queryString', $fieldName));
         }
 
-        $qb->add('where', $orX);
+        $qb->andWhere($orX);
 
         $qb->setParameter('queryString', \sprintf('%%%s%%', $this->query->getQueryString()));
     }
