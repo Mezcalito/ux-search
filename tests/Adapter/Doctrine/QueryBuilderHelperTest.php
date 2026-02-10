@@ -82,7 +82,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
         $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT o.brand as value, count(o.brand) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total desc', $dql);
+        $this->assertEquals('SELECT o.brand as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total desc', $dql);
     }
 
     public function testFacetStatsQuery()
@@ -101,7 +101,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
         $dql = $this->helper->getFacetTermQuery($this->search->getFacet('bar.name'))->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT bar.name as value, count(bar.name) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar GROUP BY bar.name ORDER BY total desc', $dql);
+        $this->assertEquals('SELECT bar.name as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar GROUP BY bar.name ORDER BY total desc', $dql);
     }
 
     public function testResultsQueryIgnoresInvalidSort()
