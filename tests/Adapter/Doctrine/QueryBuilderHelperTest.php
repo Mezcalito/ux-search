@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
+use Doctrine\ORM\QueryBuilder;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\QueryBuilderHelper;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
@@ -151,5 +152,101 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.price <= :o_price_max  AND o.price >= :o_price_min ORDER BY o.price asc', $dql);
         $this->assertEquals(-10, $qb->getParameter('o_price_min')->getValue());
         $this->assertEquals(0, $qb->getParameter('o_price_max')->getValue());
+    }
+
+    public function testQueryStringPreservesExistingWhereConditions()
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::SEARCH_FIELDS => ['o.brand'],
+            DoctrineAdapter::QUERY_BUILDER => static function (QueryBuilder $qb) {
+                $qb->andWhere('o.type = :type')
+                    ->setParameter('type', 'vinyl');
+            },
+        ]);
+        $this->query->setQueryString('test');
+        $this->helper = new QueryBuilderHelper($this->entityManager, $this->query, $this->search);
+
+        $qb = $this->helper->getResultsQuery();
+        $dql = $qb->getQuery()->getDQL();
+
+        $this->assertStringContainsString('o.type = :type', $dql);
+        $this->assertStringContainsString('o.brand like :queryString', $dql);
+        $this->assertEquals('vinyl', $qb->getParameter('type')->getValue());
+        $this->assertEquals('%test%', $qb->getParameter('queryString')->getValue());
+    }
+
+    public function testQueryStringPreservesMultipleExistingWhereParameters()
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::SEARCH_FIELDS => ['o.brand'],
+            DoctrineAdapter::QUERY_BUILDER => static function (QueryBuilder $qb) {
+                $qb->andWhere('o.type = :type')
+                    ->andWhere('o.price > :minPrice')
+                    ->setParameter('type', 'vinyl')
+                    ->setParameter('minPrice', 10);
+            },
+        ]);
+        $this->query->setQueryString('search');
+        $this->helper = new QueryBuilderHelper($this->entityManager, $this->query, $this->search);
+
+        $qb = $this->helper->getResultsQuery();
+        $dql = $qb->getQuery()->getDQL();
+
+        $this->assertStringContainsString('o.type = :type', $dql);
+        $this->assertStringContainsString('o.price > :minPrice', $dql);
+        $this->assertStringContainsString('o.brand like :queryString', $dql);
+        $this->assertEquals('vinyl', $qb->getParameter('type')->getValue());
+        $this->assertEquals(10, $qb->getParameter('minPrice')->getValue());
+        $this->assertEquals('%search%', $qb->getParameter('queryString')->getValue());
+    }
+
+    public function testQueryStringWithExistingWhereAndFilters()
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::SEARCH_FIELDS => ['o.brand'],
+            DoctrineAdapter::QUERY_BUILDER => static function (QueryBuilder $qb) {
+                $qb->andWhere('o.type = :type')
+                    ->setParameter('type', 'vinyl');
+            },
+        ]);
+        $this->query->setQueryString('search');
+        $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
+
+        $this->helper = new QueryBuilderHelper($this->entityManager, $this->query, $this->search);
+
+        $qb = $this->helper->getResultsQuery();
+        $dql = $qb->getQuery()->getDQL();
+
+        $this->assertStringContainsString('o.type = :type', $dql);
+        $this->assertStringContainsString('o.brand like :queryString', $dql);
+        $this->assertStringContainsString('o.price <= :o_price_max', $dql);
+        $this->assertStringContainsString('o.price >= :o_price_min', $dql);
+        $this->assertEquals('vinyl', $qb->getParameter('type')->getValue());
+        $this->assertEquals('%search%', $qb->getParameter('queryString')->getValue());
+    }
+
+    public function testTotalResultsQueryPreservesExistingWhereConditions()
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::SEARCH_FIELDS => ['o.brand'],
+            DoctrineAdapter::QUERY_BUILDER => static function (QueryBuilder $qb) {
+                $qb->andWhere('o.type = :type')
+                    ->setParameter('type', 'vinyl');
+            },
+        ]);
+        $this->query->setQueryString('test');
+        $this->helper = new QueryBuilderHelper($this->entityManager, $this->query, $this->search);
+
+        $qb = $this->helper->getTotalResultsQuery();
+        $dql = $qb->getQuery()->getDQL();
+
+        $this->assertStringContainsString('o.type = :type', $dql);
+        $this->assertStringContainsString('o.brand like :queryString', $dql);
+        $this->assertEquals('vinyl', $qb->getParameter('type')->getValue());
+        $this->assertEquals('%test%', $qb->getParameter('queryString')->getValue());
     }
 }
