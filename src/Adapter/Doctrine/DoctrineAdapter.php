@@ -76,6 +76,9 @@ readonly class DoctrineAdapter implements AdapterInterface
         $resolver->setAllowedTypes(self::SEARCH_FIELDS, 'string[]');
     }
 
+    /**
+     * @return array<string, FacetTermDistribution>
+     */
     private function getFacetDistributions(Query $query, SearchInterface $search): array
     {
         $distributions = [];
@@ -113,6 +116,9 @@ readonly class DoctrineAdapter implements AdapterInterface
         return $distributions;
     }
 
+    /**
+     * @return array<string, FacetStat>
+     */
     private function getFacetStats(Query $query, SearchInterface $search): array
     {
         $stats = [];

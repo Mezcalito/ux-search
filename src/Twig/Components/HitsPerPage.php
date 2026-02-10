@@ -23,6 +23,9 @@ class HitsPerPage
     ) {
     }
 
+    /**
+     * @return int[]
+     */
     #[ExposeInTemplate]
     public function getAvailableHitsPerPage(): array
     {

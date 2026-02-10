@@ -40,11 +40,17 @@ class Query
         return $this;
     }
 
+    /**
+     * @return array<string, FilterInterface>
+     */
     public function getActiveFilters(): array
     {
         return $this->activeFilters;
     }
 
+    /**
+     * @param FilterInterface[] $activeFilters
+     */
     public function setActiveFilters(array $activeFilters): static
     {
         $this->activeFilters = [];

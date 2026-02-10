@@ -17,6 +17,9 @@ use Mezcalito\UxSearchBundle\Exception\SearchException;
 
 readonly class SearchProvider
 {
+    /**
+     * @param iterable<string, SearchInterface> $searches
+     */
     public function __construct(
         private iterable $searches,
     ) {

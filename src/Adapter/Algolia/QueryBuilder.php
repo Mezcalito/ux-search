@@ -22,6 +22,9 @@ use Mezcalito\UxSearchBundle\Search\SearchInterface;
 
 class QueryBuilder
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function build(Query $query, SearchInterface $search): array
     {
         $indexName = $search->getIndexName();

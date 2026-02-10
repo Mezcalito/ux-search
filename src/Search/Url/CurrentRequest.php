@@ -17,6 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 readonly class CurrentRequest
 {
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function __construct(
         public string $route,
         public array $parameters,

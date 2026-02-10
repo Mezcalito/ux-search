@@ -113,6 +113,11 @@ class DefaultUrlFormater implements UrlFormaterInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
+     */
     private function clearParameters(array $params, SearchInterface $search): array
     {
         $searchableParameterKeys = $this->getSearchableParameterKeys($search);
@@ -120,6 +125,9 @@ class DefaultUrlFormater implements UrlFormaterInterface
         return array_filter($params, static fn ($key) => !\in_array($key, $searchableParameterKeys), \ARRAY_FILTER_USE_KEY);
     }
 
+    /**
+     * @return string[]
+     */
     private function getSearchableParameterKeys(SearchInterface $search): array
     {
         $keys = [self::PAGE, self::SORT_BY];

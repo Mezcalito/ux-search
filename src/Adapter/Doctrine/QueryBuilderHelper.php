@@ -112,6 +112,7 @@ readonly class QueryBuilderHelper
 
     private function createBaseQueryBuilder(): QueryBuilder
     {
+        /** @phpstan-ignore argument.templateType */
         $qb = $this->manager
             ->getRepository($this->search->getIndexName())
             ->createQueryBuilder($this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS));
@@ -129,6 +130,8 @@ readonly class QueryBuilderHelper
      *
      * Note: This assumes the QUERY_BUILDER_ALIAS is 'o' when no alias is specified in the property.
      * If a custom alias is configured, properties must use dot notation (e.g., "customAlias.property").
+     *
+     * @return array{0: string, 1: string}
      */
     private function extractAliasAndProperty(string $property): array
     {

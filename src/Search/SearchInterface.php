@@ -18,22 +18,40 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 interface SearchInterface
 {
+    /**
+     * @param array<string, mixed> $options
+     */
     public function create(array $options = []): static;
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function build(array $options = []): void;
 
     public function getIndexName(): ?string;
 
     public function getAdapterName(): ?string;
 
+    /**
+     * @return int[]
+     */
     public function getAvailableHitsPerPage(): array;
 
+    /**
+     * @param int[] $availableHitsPerPage
+     */
     public function setAvailableHitsPerPage(array $availableHitsPerPage): static;
 
     public function addAvailableSort(?string $key, string $label): static;
 
+    /**
+     * @return Sort[]
+     */
     public function getAvailableSorts(): array;
 
+    /**
+     * @param array<string, mixed> $props
+     */
     public function addFacet(string $property, string $label, ?string $displayComponent = null, array $props = []): static;
 
     /**
@@ -49,14 +67,26 @@ interface SearchInterface
 
     public function addEventListener(string $eventName, callable $listener, int $priority = 0): static;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getAdapterParameters(): array;
 
+    /**
+     * @param array<string, mixed> $adapterParameters
+     */
     public function setAdapterParameters(array $adapterParameters): static;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getResolvedAdapterParameters(): array;
 
     public function getResolvedAdapterParameter(string $name): mixed;
 
+    /**
+     * @param array<string, mixed> $resolvedAdapterParameters
+     */
     public function setResolvedAdapterParameters(array $resolvedAdapterParameters): static;
 
     public function createQuery(): Query;

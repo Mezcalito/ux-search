@@ -42,11 +42,17 @@ class ResultSet
         return $this;
     }
 
+    /**
+     * @return Hit[]
+     */
     public function getHits(): array
     {
         return $this->hits;
     }
 
+    /**
+     * @param Hit[] $hits
+     */
     public function setHits(array $hits): static
     {
         $this->hits = $hits;
@@ -66,11 +72,17 @@ class ResultSet
         return $this;
     }
 
+    /**
+     * @return array<string, FacetTermDistribution>
+     */
     public function getFacetDistributions(): array
     {
         return $this->facetDistributions;
     }
 
+    /**
+     * @param FacetTermDistribution[] $facetDistributions
+     */
     public function setFacetDistributions(array $facetDistributions): static
     {
         $this->facetDistributions = [];
@@ -90,11 +102,17 @@ class ResultSet
         return $this->facetDistributions[$property];
     }
 
+    /**
+     * @return array<string, FacetStat>
+     */
     public function getFacetStats(): array
     {
         return $this->facetStats;
     }
 
+    /**
+     * @param FacetStat[] $facetStats
+     */
     public function setFacetStats(array $facetStats): static
     {
         $this->facetStats = [];

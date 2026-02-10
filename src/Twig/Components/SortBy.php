@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
+use Mezcalito\UxSearchBundle\Search\Sort;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class SortBy
@@ -23,6 +24,9 @@ class SortBy
     ) {
     }
 
+    /**
+     * @return Sort[]
+     */
     #[ExposeInTemplate]
     public function getAvailableSorts(): array
     {

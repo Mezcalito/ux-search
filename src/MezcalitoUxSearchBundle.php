@@ -56,6 +56,9 @@ class MezcalitoUxSearchBundle extends AbstractBundle
         ;
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->import('../config/services.php');

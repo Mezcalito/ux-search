@@ -33,14 +33,19 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     private ?EventDispatcher $eventDispatcher = null;
 
+    /** @var array<string, mixed> */
     private array $adapterParameters = [];
 
+    /** @var array<string, mixed> */
     private array $resolvedAdapterParameters = [];
 
     private bool $urlRewriting = false;
 
     private ?string $urlFormater = null;
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function create(array $options = []): static
     {
         $this->eventDispatcher = new EventDispatcher();
@@ -49,6 +54,9 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function build(array $options = []): void
     {
     }
@@ -71,11 +79,17 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return null;
     }
 
+    /**
+     * @return int[]
+     */
     public function getAvailableHitsPerPage(): array
     {
         return $this->availableHitsPerPage;
     }
 
+    /**
+     * @param int[] $availableHitsPerPage
+     */
     public function setAvailableHitsPerPage(array $availableHitsPerPage): static
     {
         $this->availableHitsPerPage = $availableHitsPerPage;
@@ -90,11 +104,17 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this;
     }
 
+    /**
+     * @return Sort[]
+     */
     public function getAvailableSorts(): array
     {
         return $this->availableSorts;
     }
 
+    /**
+     * @param array<string, mixed> $props
+     */
     public function addFacet(string $property, string $label, ?string $displayComponent = null, array $props = []): static
     {
         $this->facets[] = (new Facet($property, $label, $displayComponent, $props));
@@ -102,6 +122,9 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this;
     }
 
+    /**
+     * @return Facet[]
+     */
     public function getFacets(): array
     {
         return $this->facets;
@@ -137,11 +160,17 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getAdapterParameters(): array
     {
         return $this->adapterParameters;
     }
 
+    /**
+     * @param array<string, mixed> $adapterParameters
+     */
     public function setAdapterParameters(array $adapterParameters): static
     {
         $this->adapterParameters = $adapterParameters;
@@ -149,6 +178,9 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getResolvedAdapterParameters(): array
     {
         return $this->resolvedAdapterParameters;
@@ -159,6 +191,9 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
         return $this->resolvedAdapterParameters[$name] ?? null;
     }
 
+    /**
+     * @param array<string, mixed> $resolvedAdapterParameters
+     */
     public function setResolvedAdapterParameters(array $resolvedAdapterParameters): static
     {
         $this->resolvedAdapterParameters = $resolvedAdapterParameters;

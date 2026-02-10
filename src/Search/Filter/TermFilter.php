@@ -15,16 +15,25 @@ namespace Mezcalito\UxSearchBundle\Search\Filter;
 
 class TermFilter extends AbstractFilter
 {
+    /**
+     * @param array<int, mixed> $values
+     */
     public function __construct(string $property, private array $values = [])
     {
         parent::__construct($property);
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function getValues(): array
     {
         return $this->values;
     }
 
+    /**
+     * @param array<int, mixed> $values
+     */
     public function setValues(array $values): static
     {
         $this->values = $values;

@@ -28,6 +28,11 @@ abstract class AbstractAdapter implements AdapterInterface
 
     abstract public function getFacetStatsKey(): string;
 
+    /**
+     * @param array<string, mixed> $results
+     *
+     * @return array{0: array<string, FacetTermDistribution>, 1: array<int, FacetStat>}
+     */
     protected function getFacets(array $results, SearchInterface $search, Query $query): array
     {
         $facetDistributionKey = $this->getFacetDistributionKey();
@@ -101,6 +106,9 @@ abstract class AbstractAdapter implements AdapterInterface
         return [$facetsDistributions, $facetStats];
     }
 
+    /**
+     * @param array<string, array<mixed, int>> $mergedFacetDistribution
+     */
     protected function hydrateTermDistribution(array $mergedFacetDistribution, Facet $facet, ?FilterInterface $filter): FacetTermDistribution
     {
         $values = $mergedFacetDistribution[$facet->getProperty()] ?? [];

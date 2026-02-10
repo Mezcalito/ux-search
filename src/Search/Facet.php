@@ -15,6 +15,9 @@ namespace Mezcalito\UxSearchBundle\Search;
 
 readonly class Facet
 {
+    /**
+     * @param array<string, mixed> $props
+     */
     public function __construct(
         private string $property,
         private string $label,
@@ -38,6 +41,9 @@ readonly class Facet
         return $this->displayComponent;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getProps(): array
     {
         return $this->props;

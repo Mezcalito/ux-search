@@ -20,6 +20,7 @@ class FacetTermDistribution
     /** @var array<mixed, int> */
     private array $values = [];
 
+    /** @var array<int, mixed> */
     private array $checkedValues = [];
 
     public function getProperty(): string
@@ -34,11 +35,17 @@ class FacetTermDistribution
         return $this;
     }
 
+    /**
+     * @return array<mixed, int>
+     */
     public function getValues(): array
     {
         return $this->values;
     }
 
+    /**
+     * @param array<mixed, int> $values
+     */
     public function setValues(array $values): static
     {
         $this->values = $values;
@@ -46,11 +53,17 @@ class FacetTermDistribution
         return $this;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function getCheckedValues(): array
     {
         return $this->checkedValues;
     }
 
+    /**
+     * @param array<int, mixed> $checkedValues
+     */
     public function setCheckedValues(array $checkedValues): static
     {
         $this->checkedValues = $checkedValues;

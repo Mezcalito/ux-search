@@ -15,17 +15,26 @@ namespace Mezcalito\UxSearchBundle\Search\ResultSet;
 
 class Hit
 {
+    /**
+     * @param array<string, mixed>|object $data
+     */
     public function __construct(
         private array|object $data,
         private float $score,
     ) {
     }
 
+    /**
+     * @return object|array<string, mixed>
+     */
     public function getData(): object|array
     {
         return $this->data;
     }
 
+    /**
+     * @param object|array<string, mixed> $data
+     */
     public function setData(object|array $data): self
     {
         $this->data = $data;

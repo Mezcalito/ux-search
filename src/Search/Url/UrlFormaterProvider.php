@@ -17,6 +17,9 @@ use Mezcalito\UxSearchBundle\Exception\UrlFormaterException;
 
 readonly class UrlFormaterProvider
 {
+    /**
+     * @param iterable<string, UrlFormaterInterface> $formaters
+     */
     public function __construct(
         private iterable $formaters,
     ) {

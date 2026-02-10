@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
+use Mezcalito\UxSearchBundle\Search\Filter\FilterInterface;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class ClearRefinements
@@ -23,6 +24,9 @@ class ClearRefinements
     ) {
     }
 
+    /**
+     * @return array<string, FilterInterface>
+     */
     #[ExposeInTemplate]
     public function getActiveFilters(): array
     {

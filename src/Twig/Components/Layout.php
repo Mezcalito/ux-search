@@ -48,6 +48,9 @@ class Layout
     #[LiveProp]
     public ?string $name = null;
 
+    /**
+     * @var array<string, mixed>
+     */
     #[LiveProp]
     public array $options = [];
 
@@ -66,6 +69,9 @@ class Layout
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     #[PreMount]
     public function onInitialMount(array $data): void
     {

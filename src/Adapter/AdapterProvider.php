@@ -17,6 +17,10 @@ use Mezcalito\UxSearchBundle\Exception\AdapterException;
 
 readonly class AdapterProvider
 {
+    /**
+     * @param array<string, array<string, mixed>> $adapterConfiguration
+     * @param iterable<AdapterFactoryInterface>   $factories
+     */
     public function __construct(
         private string $defaultAdapterName,
         private array $adapterConfiguration,

@@ -38,6 +38,11 @@ abstract class AbstractFacet
         return $this->contextProvider->getCurrentContext()->getSearch()->getFacet($this->property);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     #[PreMount(priority: -100)]
     public function mergeFacetData(array $data): array
     {

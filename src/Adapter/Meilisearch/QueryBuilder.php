@@ -23,6 +23,9 @@ use Mezcalito\UxSearchBundle\Search\SearchInterface;
 
 class QueryBuilder
 {
+    /**
+     * @return array<int, SearchQuery>
+     */
     public function build(Query $query, SearchInterface $search): array
     {
         $options = $search->getResolvedAdapterParameters();
@@ -89,6 +92,8 @@ class QueryBuilder
 
     /**
      * @param FilterInterface[] $filters
+     *
+     * @return array<int, array<int, string>|string>
      */
     private function formatFilters(array $filters): array
     {

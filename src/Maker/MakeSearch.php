@@ -27,6 +27,9 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class MakeSearch extends AbstractMaker
 {
+    /**
+     * @var string[]
+     */
     private array $classesToBeImported = [];
 
     public static function getCommandName(): string
