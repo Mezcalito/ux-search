@@ -34,5 +34,23 @@ export default class extends Controller<HTMLElement> {
     updateFloor: () => void;
     updateCeil: () => void;
     update(method?: 'floor' | 'ceil'): void;
+    protected getSliderValues(): {
+        min: number;
+        max: number;
+        step: number;
+        minValue: number;
+        maxValue: number;
+    };
+    protected getThumbWidthVariable(): string;
+    protected calculatePositions(values: ReturnType<typeof this.getSliderValues>, method: 'floor' | 'ceil'): {
+        mid: number;
+        range: number;
+    };
+    protected updateLayout(mid: number, range: number, min: number, max: number, thumbWidthVariable: string): void;
+    protected updateGradients(mid: number, min: number, max: number, minValue: number, maxValue: number, thumbWidth: number, thumbWidthUnit: string): void;
+    protected updateDisplayedValues(): void;
+    protected handleSingleValue(thumbWidthVariable: string): void;
+    protected enableInputs(): void;
+    protected disableInputs(): void;
     submit(): void;
 }
