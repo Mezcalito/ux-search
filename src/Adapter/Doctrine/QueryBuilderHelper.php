@@ -112,10 +112,8 @@ readonly class QueryBuilderHelper
 
     private function createBaseQueryBuilder(): QueryBuilder
     {
-        /** @phpstan-ignore argument.templateType */
-        $qb = $this->manager
-            ->getRepository($this->search->getIndexName())
-            ->createQueryBuilder($this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS));
+        $repository = $this->manager->getRepository($this->search->getIndexName()); // @phpstan-ignore argument.templateType
+        $qb = $repository->createQueryBuilder($this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS));
 
         $this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER)($qb);
 

@@ -42,7 +42,7 @@ class ContextProviderTest extends TestCase
         $this->contextProvider = new ContextProvider();
     }
 
-    public function testInit()
+    public function testInit(): void
     {
         $query = new Query();
         $this->contextProvider->init($query, $this->search);
@@ -53,7 +53,7 @@ class ContextProviderTest extends TestCase
         $this->assertNull($this->contextProvider->getCurrentContext()->getResults());
     }
 
-    public function testBeforeInit()
+    public function testBeforeInit(): void
     {
         $this->assertFalse($this->contextProvider->hasCurrentContext());
 

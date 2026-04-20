@@ -29,14 +29,14 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->helper = new QueryBuilderHelper($this->entityManager, $this->query, $this->search);
     }
 
-    public function testTotalResultsQuery()
+    public function testTotalResultsQuery(): void
     {
         $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
 
         $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
-    public function testTotalResultsWithFilterQuery()
+    public function testTotalResultsWithFilterQuery(): void
     {
         $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
         $qb = $this->helper->getTotalResultsQuery();
@@ -48,14 +48,14 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals(['A', 'B'], $params->getValue());
     }
 
-    public function testResultsQuery()
+    public function testResultsQuery(): void
     {
         $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
 
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o ORDER BY o.price asc', $dql);
     }
 
-    public function testResultsQueryWithStringQuery()
+    public function testResultsQueryWithStringQuery(): void
     {
         $this->search->setResolvedAdapterParameters([
             ...$this->search->getResolvedAdapterParameters(),
@@ -68,7 +68,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.name like :queryString OR o.description like :queryString ORDER BY o.price asc', $dql);
     }
 
-    public function testResultsQueryWithFilter()
+    public function testResultsQueryWithFilter(): void
     {
         $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
         $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
@@ -76,7 +76,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.price <= :o_price_max  AND o.price >= :o_price_min ORDER BY o.price asc', $dql);
     }
 
-    public function testFacetTermQuery()
+    public function testFacetTermQuery(): void
     {
         $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
         $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
@@ -86,7 +86,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o.brand as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total desc', $dql);
     }
 
-    public function testFacetStatsQuery()
+    public function testFacetStatsQuery(): void
     {
         $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
         $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
@@ -96,7 +96,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT min(o.price) as min, max(o.price) AS max FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min', $dql);
     }
 
-    public function testFacetTermSubEntityQuery()
+    public function testFacetTermSubEntityQuery(): void
     {
         $this->query->addActiveFilter(new TermFilter('bar.name', ['A']));
 
@@ -105,7 +105,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT bar.name as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar GROUP BY bar.name ORDER BY total desc', $dql);
     }
 
-    public function testResultsQueryIgnoresInvalidSort()
+    public function testResultsQueryIgnoresInvalidSort(): void
     {
         $this->query->setActiveSort('o.id; DROP TABLE users--:asc');
 
@@ -114,7 +114,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
-    public function testResultsQueryIgnoresNonWhitelistedSort()
+    public function testResultsQueryIgnoresNonWhitelistedSort(): void
     {
         $this->query->setActiveSort('o.secret_field:asc');
 
@@ -123,7 +123,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
-    public function testResultsQueryAcceptsValidSort()
+    public function testResultsQueryAcceptsValidSort(): void
     {
         $this->query->setActiveSort('o.price:desc');
 
@@ -132,7 +132,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o ORDER BY o.price desc', $dql);
     }
 
-    public function testResultsQueryWithZeroMinValueRangeFilter()
+    public function testResultsQueryWithZeroMinValueRangeFilter(): void
     {
         $this->query->addActiveFilter(new RangeFilter('price', 0, 100));
         $qb = $this->helper->getResultsQuery();
@@ -143,7 +143,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals(100, $qb->getParameter('o_price_max')->getValue());
     }
 
-    public function testResultsQueryWithZeroMaxValueRangeFilter()
+    public function testResultsQueryWithZeroMaxValueRangeFilter(): void
     {
         $this->query->addActiveFilter(new RangeFilter('price', -10, 0));
         $qb = $this->helper->getResultsQuery();
@@ -154,7 +154,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals(0, $qb->getParameter('o_price_max')->getValue());
     }
 
-    public function testQueryStringPreservesExistingWhereConditions()
+    public function testQueryStringPreservesExistingWhereConditions(): void
     {
         $this->search->setResolvedAdapterParameters([
             ...$this->search->getResolvedAdapterParameters(),
@@ -176,7 +176,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('%test%', $qb->getParameter('queryString')->getValue());
     }
 
-    public function testQueryStringPreservesMultipleExistingWhereParameters()
+    public function testQueryStringPreservesMultipleExistingWhereParameters(): void
     {
         $this->search->setResolvedAdapterParameters([
             ...$this->search->getResolvedAdapterParameters(),
@@ -202,7 +202,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('%search%', $qb->getParameter('queryString')->getValue());
     }
 
-    public function testQueryStringWithExistingWhereAndFilters()
+    public function testQueryStringWithExistingWhereAndFilters(): void
     {
         $this->search->setResolvedAdapterParameters([
             ...$this->search->getResolvedAdapterParameters(),
@@ -228,7 +228,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $this->assertEquals('%search%', $qb->getParameter('queryString')->getValue());
     }
 
-    public function testTotalResultsQueryPreservesExistingWhereConditions()
+    public function testTotalResultsQueryPreservesExistingWhereConditions(): void
     {
         $this->search->setResolvedAdapterParameters([
             ...$this->search->getResolvedAdapterParameters(),
