@@ -64,7 +64,7 @@ class MeilisearchAdapterTest extends TestCase
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $searchMock = $this->createMock(SearchInterface::class);
+        $searchMock = $this->createStub(SearchInterface::class);
 
         $invalidParameters = [
             'attributesToRetrieve' => 'invalid_string',
@@ -73,8 +73,8 @@ class MeilisearchAdapterTest extends TestCase
         $searchMock->method('getAdapterParameters')->willReturn($invalidParameters);
 
         $adapter = new MeilisearchAdapter(
-            $this->createMock(Client::class),
-            $this->createMock(QueryBuilder::class)
+            $this->createStub(Client::class),
+            $this->createStub(QueryBuilder::class)
         );
 
         $resolver = new OptionsResolver();

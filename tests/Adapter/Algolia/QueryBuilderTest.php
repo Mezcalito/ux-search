@@ -24,8 +24,8 @@ class QueryBuilderTest extends TestCase
 {
     public function testBuildWithActiveFilters(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveFilters')->willReturn([
             new TermFilter('brand', ['Apple', 'Samsung']),
@@ -55,8 +55,8 @@ class QueryBuilderTest extends TestCase
 
     public function testBuildWithActiveSorting(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveSort')->willReturn('products_price_asc');
         $search->method('getIndexName')->willReturn('products');
@@ -71,8 +71,8 @@ class QueryBuilderTest extends TestCase
 
     public function testBuildWithNoFilters(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveFilters')->willReturn([]);
         $query->method('getCurrentPage')->willReturn(1);
@@ -89,8 +89,8 @@ class QueryBuilderTest extends TestCase
 
     public function testBuildWithFloatRangeFilter(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveFilters')->willReturn([
             new RangeFilter('price', 19.99, 99.95),
@@ -117,8 +117,8 @@ class QueryBuilderTest extends TestCase
 
     public function testBuildWithZeroValueRangeFilter(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveFilters')->willReturn([
             new RangeFilter('stock', 0, 100),
@@ -145,8 +145,8 @@ class QueryBuilderTest extends TestCase
 
     public function testBuildWithZeroMaxValueRangeFilter(): void
     {
-        $query = $this->createMock(Query::class);
-        $search = $this->createMock(SearchInterface::class);
+        $query = $this->createStub(Query::class);
+        $search = $this->createStub(SearchInterface::class);
 
         $query->method('getActiveFilters')->willReturn([
             new RangeFilter('discount', -10, 0),

@@ -23,7 +23,7 @@ class MeilisearchFactoryTest extends TestCase
 {
     public function testSupportReturnsTrueForMeilisearchDsn(): void
     {
-        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
+        $factory = new MeilisearchFactory($this->createStub(ClientInterface::class));
 
         $this->assertTrue($factory->support('meilisearch://localhost:7700'));
         $this->assertFalse($factory->support('algolia://localhost:7700'));
@@ -36,7 +36,7 @@ class MeilisearchFactoryTest extends TestCase
             ->onlyMethods(['createClient'])
             ->getMock();
 
-        $client = $this->createMock(Client::class);
+        $client = $this->createStub(Client::class);
         $factory->expects($this->once())
             ->method('createClient')
             ->with('meilisearch://localhost:7700')
@@ -53,7 +53,7 @@ class MeilisearchFactoryTest extends TestCase
             $this->markTestSkipped('Meilisearch Client is not installed.');
         }
 
-        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
+        $factory = new MeilisearchFactory($this->createStub(ClientInterface::class));
 
         $dsn = 'meilisearch://user@localhost:7700?tls=true';
         $client = $factory->createClient($dsn);
@@ -63,7 +63,7 @@ class MeilisearchFactoryTest extends TestCase
 
     public function testCreateClientWithOptionalHttpClient(): void
     {
-        $factory = new MeilisearchFactory($this->createMock(ClientInterface::class));
+        $factory = new MeilisearchFactory($this->createStub(ClientInterface::class));
         $client = $factory->createClient('meilisearch://localhost:7700');
 
         $this->assertInstanceOf(Client::class, $client);

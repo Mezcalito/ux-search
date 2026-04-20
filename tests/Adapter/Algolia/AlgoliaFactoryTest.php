@@ -34,7 +34,7 @@ class AlgoliaFactoryTest extends TestCase
             ->onlyMethods(['createClient'])
             ->getMock();
 
-        $client = $this->createMock(SearchClient::class);
+        $client = $this->createStub(SearchClient::class);
         $factory->expects($this->once())
             ->method('createClient')
             ->with('algolia://secret@index')

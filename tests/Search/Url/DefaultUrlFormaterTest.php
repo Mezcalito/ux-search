@@ -39,7 +39,7 @@ final class DefaultUrlFormaterTest extends TestCase
         $query->addActiveFilter(new RangeFilter('price', 10.5, 99.9));
         $query->addActiveFilter(new TermFilter('o_type', ['accessories']));
 
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
 
         $urlGenerator->expects($this->once())
@@ -74,7 +74,7 @@ final class DefaultUrlFormaterTest extends TestCase
         $query = new Query();
         $query->setCurrentPage(1);
 
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
 
         $urlGenerator->expects($this->once())
@@ -94,7 +94,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFilters(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -110,7 +110,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('category', 'category'),
             new Facet('price', 'price', RangeInput::class),
@@ -170,7 +170,7 @@ final class DefaultUrlFormaterTest extends TestCase
             'extraParam' => 'value',
         ]);
 
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('category', 'category'),
         ]);
@@ -191,7 +191,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithInvalidSort(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -199,7 +199,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
         $search->method('getAvailableSorts')->willReturn([
             'price' => 'Price',
@@ -213,7 +213,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithNegativePage(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -221,7 +221,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
 
         $formater->applyFilters($currentRequest, $search, $query);
@@ -231,7 +231,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithLongQueryString(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $longQuery = str_repeat('a', 1500);
@@ -240,7 +240,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
 
         $formater->applyFilters($currentRequest, $search, $query);
@@ -251,7 +251,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithEmptyTermValues(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -259,7 +259,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('category', 'Category'),
         ]);
@@ -277,7 +277,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithTooManyTermValues(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $values = array_map(static fn ($i) => 'value'.$i, range(1, 150));
@@ -286,7 +286,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('category', 'Category'),
         ]);
@@ -304,7 +304,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithInvalidRangeMinMax(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -313,7 +313,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('price', 'Price', RangeInput::class),
         ]);
@@ -325,7 +325,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersIgnoresNonExistentFacets(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -334,7 +334,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('category', 'Category'),
         ]);
@@ -346,7 +346,7 @@ final class DefaultUrlFormaterTest extends TestCase
 
     public function testApplyFiltersWithValidRangeValues(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $formater = new DefaultUrlFormater($urlGenerator);
 
         $currentRequest = new CurrentRequest('search_route', [
@@ -355,7 +355,7 @@ final class DefaultUrlFormaterTest extends TestCase
         ]);
 
         $query = new Query();
-        $search = $this->createMock(SearchInterface::class);
+        $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([
             new Facet('price', 'Price', RangeInput::class),
         ]);

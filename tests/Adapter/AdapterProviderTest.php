@@ -27,9 +27,9 @@ class AdapterProviderTest extends TestCase
         $adapterConfiguration = [
             'default' => ['dsn' => 'meilisearch://localhost:7700'],
         ];
-        $adapter = $this->createMock(AdapterInterface::class);
+        $adapter = $this->createStub(AdapterInterface::class);
 
-        $factory = $this->createMock(AdapterFactoryInterface::class);
+        $factory = $this->createStub(AdapterFactoryInterface::class);
         $factory->method('support')->willReturn(true);
         $factory->method('createAdapter')->willReturn($adapter);
 
@@ -45,11 +45,11 @@ class AdapterProviderTest extends TestCase
         $adapterConfiguration = [
             'custom' => ['dsn' => 'meilisearch://custom:7700'],
         ];
-        $adapter = $this->createMock(AdapterInterface::class);
+        $adapter = $this->createStub(AdapterInterface::class);
 
         $factory = $this->createMock(AdapterFactoryInterface::class);
-        $factory->method('support')->with('meilisearch://custom:7700')->willReturn(true);
-        $factory->method('createAdapter')->with('meilisearch://custom:7700')->willReturn($adapter);
+        $factory->expects($this->once())->method('support')->with('meilisearch://custom:7700')->willReturn(true);
+        $factory->expects($this->once())->method('createAdapter')->with('meilisearch://custom:7700')->willReturn($adapter);
 
         $provider = new AdapterProvider('default', $adapterConfiguration, [$factory]);
 
@@ -73,7 +73,7 @@ class AdapterProviderTest extends TestCase
             'default' => ['dsn' => 'unsupported://localhost'],
         ];
 
-        $factory = $this->createMock(AdapterFactoryInterface::class);
+        $factory = $this->createStub(AdapterFactoryInterface::class);
         $factory->method('support')->willReturn(false);
 
         $provider = new AdapterProvider('default', $adapterConfiguration, [$factory]);

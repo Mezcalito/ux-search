@@ -76,7 +76,7 @@ class AlgoliaAdapterTest extends TestCase
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $searchMock = $this->createMock(SearchInterface::class);
+        $searchMock = $this->createStub(SearchInterface::class);
 
         $invalidParameters = [
             'attributesToRetrieve' => 'invalid_string',
@@ -85,8 +85,8 @@ class AlgoliaAdapterTest extends TestCase
         $searchMock->method('getAdapterParameters')->willReturn($invalidParameters);
 
         $adapter = new AlgoliaAdapter(
-            $this->createMock(SearchClient::class),
-            $this->createMock(QueryBuilder::class)
+            $this->createStub(SearchClient::class),
+            $this->createStub(QueryBuilder::class)
         );
 
         $resolver = new OptionsResolver();
@@ -98,7 +98,7 @@ class AlgoliaAdapterTest extends TestCase
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $searchMock = $this->createMock(SearchInterface::class);
+        $searchMock = $this->createStub(SearchInterface::class);
 
         $invalidParameters = [
             'alternativesAsExact' => ['wrong_value'],
@@ -107,8 +107,8 @@ class AlgoliaAdapterTest extends TestCase
         $searchMock->method('getAdapterParameters')->willReturn($invalidParameters);
 
         $adapter = new AlgoliaAdapter(
-            $this->createMock(SearchClient::class),
-            $this->createMock(QueryBuilder::class)
+            $this->createStub(SearchClient::class),
+            $this->createStub(QueryBuilder::class)
         );
 
         $resolver = new OptionsResolver();
@@ -120,7 +120,7 @@ class AlgoliaAdapterTest extends TestCase
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $searchMock = $this->createMock(SearchInterface::class);
+        $searchMock = $this->createStub(SearchInterface::class);
 
         $invalidParameters = [
             'advancedSyntaxFeatures' => ['wrong_value'],
@@ -129,8 +129,8 @@ class AlgoliaAdapterTest extends TestCase
         $searchMock->method('getAdapterParameters')->willReturn($invalidParameters);
 
         $adapter = new AlgoliaAdapter(
-            $this->createMock(SearchClient::class),
-            $this->createMock(QueryBuilder::class)
+            $this->createStub(SearchClient::class),
+            $this->createStub(QueryBuilder::class)
         );
 
         $resolver = new OptionsResolver();

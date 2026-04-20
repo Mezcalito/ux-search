@@ -66,4 +66,6 @@ static: ## Run static analysis tools
 	$(PHP) -d memory_limit=-1 vendor/bin/rector
 
 test: ## Run tests
-	$(DOCKER_COMP) exec -e XDEBUG_MODE=coverage  -w /srv/app  php vendor/bin/phpunit --coverage-html coverage
+	$(DOCKER_COMP) exec -e XDEBUG_MODE=coverage  -w /srv/app  php vendor/bin/phpunit --display-warnings --display-phpunit-notices --display-deprecations --display-phpunit-deprecations
+
+

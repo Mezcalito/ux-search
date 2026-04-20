@@ -22,8 +22,8 @@ final class UrlFormaterProviderTest extends TestCase
 {
     public function testGetUrlFormaterReturnsCorrectFormater(): void
     {
-        $mockFormater1 = $this->createMock(UrlFormaterInterface::class);
-        $mockFormater2 = $this->createMock(UrlFormaterInterface::class);
+        $mockFormater1 = $this->createStub(UrlFormaterInterface::class);
+        $mockFormater2 = $this->createStub(UrlFormaterInterface::class);
 
         $formaters = [
             'App\\UrlFormaterOne' => $mockFormater1,

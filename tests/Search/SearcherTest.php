@@ -79,11 +79,12 @@ class SearcherTest extends TestCase
 
         $adapter = $this->createMock(AdapterInterface::class);
         $adapter
+            ->expects($this->once())
             ->method('search')
             ->with($query, $search)
             ->willReturn($resultSet);
 
-        $adapterProvider = $this->createMock(AdapterProvider::class);
+        $adapterProvider = $this->createStub(AdapterProvider::class);
         $adapterProvider
             ->method('getAdapter')
             ->willReturn($adapter);

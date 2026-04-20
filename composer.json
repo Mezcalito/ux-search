@@ -29,7 +29,7 @@
     "meilisearch/meilisearch-php": "^1.10",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-symfony": "^2.0",
-    "phpunit/phpunit": "^11.4",
+    "phpunit/phpunit": "^12.5",
     "rector/rector": "^2.3",
     "symfony/asset-mapper": "^6.4|^7.0|^8.0",
     "symfony/framework-bundle": "^6.4|^7.0|^8.0",

@@ -39,7 +39,7 @@ class DoctrineFactoryTest extends TestCase
 
     public function testCreateAdapterWithValidDsn(): void
     {
-        $entityManagerMock = $this->createMock(EntityManager::class);
+        $entityManagerMock = $this->createStub(EntityManager::class);
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $managerRegistryMock->expects($this->once())
             ->method('getManager')
@@ -64,7 +64,7 @@ class DoctrineFactoryTest extends TestCase
 
     public function testCreateAdapterThrowsDoctrineAdapterExceptionForInvalidManager(): void
     {
-        $invalidManager = $this->createMock(ObjectManager::class);
+        $invalidManager = $this->createStub(ObjectManager::class);
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $managerRegistryMock->expects($this->once())
             ->method('getManager')
