@@ -124,7 +124,12 @@ return static function (ContainerConfigurator $container) {
         ->set(DefaultUrlFormater::class)
             ->arg('$urlGenerator', service(UrlGeneratorInterface::class))
             ->tag('mezcalito_ux_search.url_formater')
-        ->set('maker.maker.make_search', MakeSearch::class)
-            ->tag('maker.command')
     ;
+
+    if (class_exists(\Symfony\Bundle\MakerBundle\Maker\AbstractMaker::class)) {
+        $container->services()
+            ->set('maker.maker.make_search', MakeSearch::class)
+                ->tag('maker.command')
+        ;
+    }
 };
