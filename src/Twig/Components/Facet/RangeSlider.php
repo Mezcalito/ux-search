@@ -18,6 +18,11 @@ use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class RangeSlider extends AbstractFacet
 {
+    public static function usesFacetStats(): bool
+    {
+        return true;
+    }
+
     public float|string $step = 1;
 
     public string $leading = '';

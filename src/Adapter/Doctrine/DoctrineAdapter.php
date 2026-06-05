@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
+use Mezcalito\UxSearchBundle\Search\Facet;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
@@ -25,6 +26,7 @@ use Mezcalito\UxSearchBundle\Search\ResultSet\FacetTermDistribution;
 use Mezcalito\UxSearchBundle\Search\ResultSet\Hit;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Twig\Components\Facet\AbstractFacet;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 readonly class DoctrineAdapter implements AdapterInterface
@@ -37,6 +39,26 @@ readonly class DoctrineAdapter implements AdapterInterface
 
     public const string SEARCH_FIELDS = 'searchFields';
 
+    /**
+     * When true (default), total and facet counts use count(DISTINCT <identifier>),
+     * which is required for correct counts when a facet or filter introduces a
+     * to-many join (row fan-out). When the facets/filters are plain columns on the
+     * base entity, the DISTINCT is redundant against the primary key and forces a
+     * full sort of the table on every count query; set this to false to emit a
+     * plain count(<identifier>) and avoid that cost. See mezcalito/ux-search#46.
+     */
+    public const string COUNT_DISTINCT = 'countDistinct';
+
+    /**
+     * When true (default), the results paginator runs in fetch-join-collection mode,
+     * which wraps the query in a DISTINCT id / ROW_NUMBER() output walker. That is
+     * required only when the query fetch-joins a to-many collection; for a plain
+     * single-table search it forces a far more expensive paginated query. Set this to
+     * false when the search does not fetch-join any collection to use a simple
+     * LIMIT/OFFSET instead. See mezcalito/ux-search#46.
+     */
+    public const string FETCH_JOIN_COLLECTION = 'fetchJoinCollection';
+
     public function __construct(private EntityManagerInterface $manager)
     {
     }
@@ -45,7 +67,10 @@ readonly class DoctrineAdapter implements AdapterInterface
     {
         $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
-        $paginator = new Paginator($helper->getResultsQuery()->getQuery(), fetchJoinCollection: true);
+        $paginator = new Paginator(
+            $helper->getResultsQuery()->getQuery(),
+            fetchJoinCollection: $search->getResolvedAdapterParameter(self::FETCH_JOIN_COLLECTION),
+        );
         $hits = [];
         foreach ($paginator as $item) {
             $hits[] = new Hit($item, 1);
@@ -68,12 +93,16 @@ readonly class DoctrineAdapter implements AdapterInterface
             self::QUERY_BUILDER_ALIAS => 'o',
             self::QUERY_BUILDER => static function (QueryBuilder $queryBuilder) {},
             self::SEARCH_FIELDS => [],
+            self::COUNT_DISTINCT => true,
+            self::FETCH_JOIN_COLLECTION => true,
         ]);
 
         $resolver->setAllowedTypes(self::MAX_FACET_VALUES_PARAM, 'int');
         $resolver->setAllowedTypes(self::QUERY_BUILDER_ALIAS, 'string');
         $resolver->setAllowedTypes(self::QUERY_BUILDER, 'Closure');
         $resolver->setAllowedTypes(self::SEARCH_FIELDS, 'string[]');
+        $resolver->setAllowedTypes(self::COUNT_DISTINCT, 'bool');
+        $resolver->setAllowedTypes(self::FETCH_JOIN_COLLECTION, 'bool');
     }
 
     /**
@@ -86,6 +115,13 @@ readonly class DoctrineAdapter implements AdapterInterface
         $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
         foreach ($search->getFacets() as $facet) {
+            // Range facets render from min/max stats only; skip the term-distribution
+            // query they never consume (it can be a huge GROUP BY on a high-cardinality
+            // numeric column). See mezcalito/ux-search#46.
+            if ($this->facetUsesStats($facet)) {
+                continue;
+            }
+
             $filter = $query->getActiveFilter($facet->getProperty());
             $checkedValues = [];
             if ($filter instanceof TermFilter) {
@@ -117,6 +153,20 @@ readonly class DoctrineAdapter implements AdapterInterface
     }
 
     /**
+     * Whether a facet renders from min/max stats (a range facet) rather than a term
+     * distribution, based on its display component. Facets with no component (or a
+     * non-range component) default to a term distribution.
+     */
+    private function facetUsesStats(Facet $facet): bool
+    {
+        $component = $facet->getDisplayComponent();
+
+        return null !== $component
+            && is_subclass_of($component, AbstractFacet::class)
+            && $component::usesFacetStats();
+    }
+
+    /**
      * @return array<string, FacetStat>
      */
     private function getFacetStats(Query $query, SearchInterface $search): array
@@ -126,6 +176,13 @@ readonly class DoctrineAdapter implements AdapterInterface
         $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
         foreach ($search->getFacets() as $facet) {
+            // Only range facets consume stats; list facets never do, so skip the
+            // min/max query for them (it is a full scan, e.g. min()/max() on a text
+            // column). See mezcalito/ux-search#46.
+            if (!$this->facetUsesStats($facet)) {
+                continue;
+            }
+
             $filter = $query->getActiveFilter($facet->getProperty());
 
             $userMin = null;

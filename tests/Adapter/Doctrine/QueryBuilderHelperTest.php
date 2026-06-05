@@ -33,7 +33,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
     {
         $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+        $this->assertEquals('SELECT count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
     public function testTotalResultsWithFilterQuery(): void
@@ -44,8 +44,32 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $dql = $qb->getQuery()->getDQL();
         $params = $qb->getParameter('o_brand_terms');
 
-        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
+        $this->assertEquals('SELECT count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
         $this->assertEquals(['A', 'B'], $params->getValue());
+    }
+
+    public function testTotalResultsQueryWithoutCountDistinct(): void
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::COUNT_DISTINCT => false,
+        ]);
+
+        $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+    }
+
+    public function testFacetTermQueryWithoutCountDistinct(): void
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::COUNT_DISTINCT => false,
+        ]);
+
+        $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o.brand as value, count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o GROUP BY o.brand ORDER BY total desc', $dql);
     }
 
     public function testResultsQuery(): void
