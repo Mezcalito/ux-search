@@ -54,6 +54,34 @@ class DoctrineAdapterTest extends AbstractDoctrineTestCase
         $this->assertEquals(13, $resultSet->getFacetStat('o.price')->getMax());
     }
 
+    public function testSearchWithoutFetchJoinCollectionAndCountDistinct(): void
+    {
+        $this->createDatabase([
+            new Foo('A', '1', 10),
+            new Foo('A', '1', 11),
+            new Foo('B', '2', 12),
+            new Foo('C', '2', 13),
+        ]);
+
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::COUNT_DISTINCT => false,
+            DoctrineAdapter::FETCH_JOIN_COLLECTION => false,
+        ]);
+
+        $resultSet = $this->adapter->search($this->query, $this->search);
+
+        $this->assertInstanceOf(ResultSet::class, $resultSet);
+        $this->assertEquals(4, $resultSet->getTotalResults());
+        $this->assertCount(4, $resultSet->getHits());
+
+        $this->assertEquals([
+            'A' => 2,
+            'B' => 1,
+            'C' => 1,
+        ], $resultSet->getFacetDistribution('o.type')->getValues());
+    }
+
     public function testSearchWithFilter(): void
     {
         $this->createDatabase([

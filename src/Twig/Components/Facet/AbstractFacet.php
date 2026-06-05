@@ -26,6 +26,18 @@ abstract class AbstractFacet
     {
     }
 
+    /**
+     * Whether this facet renders from min/max stats (a range facet) instead of a
+     * term distribution. Range facets only consume getFacetStatsQuery; list facets
+     * only consume getFacetTermQuery. Adapters use this to skip the query a facet
+     * does not consume rather than computing both for every facet. See
+     * mezcalito/ux-search#46.
+     */
+    public static function usesFacetStats(): bool
+    {
+        return false;
+    }
+
     #[ExposeInTemplate]
     public function getLabel(): string
     {

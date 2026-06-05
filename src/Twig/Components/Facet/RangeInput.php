@@ -18,6 +18,11 @@ use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class RangeInput extends AbstractFacet
 {
+    public static function usesFacetStats(): bool
+    {
+        return true;
+    }
+
     #[ExposeInTemplate]
     public function getFacetStat(): FacetStat
     {

@@ -36,7 +36,7 @@ readonly class QueryBuilderHelper
     public function getTotalResultsQuery(): QueryBuilder
     {
         $qb = $this->createBaseQueryBuilder()
-            ->select(\sprintf('count(DISTINCT (%s)) AS total', $this->getIdentifierField()));
+            ->select(\sprintf('%s AS total', $this->buildCountExpression($this->getIdentifierField())));
 
         $this->applyQueryString($qb);
 
@@ -69,7 +69,7 @@ readonly class QueryBuilderHelper
         $this->updateQueryBuilderAssociations($qb, $alias);
 
         $qb
-            ->select(\sprintf('%s.%s as value, count(DISTINCT %s) AS total', $alias, $property, $this->getIdentifierField()))
+            ->select(\sprintf('%s.%s as value, %s AS total', $alias, $property, $this->buildCountExpression($this->getIdentifierField())))
             ->orderBy('total', 'desc')
             ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
@@ -152,6 +152,23 @@ readonly class QueryBuilderHelper
         if (\array_key_exists($alias, $metadata->associationMappings) && !\in_array($alias, $qb->getAllAliases(), true)) {
             $qb->leftJoin($baseAlias.'.'.$alias, $alias);
         }
+    }
+
+    /**
+     * Builds the count expression for total/facet queries.
+     *
+     * Uses count(DISTINCT ...) when the COUNT_DISTINCT adapter parameter is enabled
+     * (required when a facet/filter introduces a to-many join), otherwise a plain
+     * count(...) which avoids the redundant table sort the DISTINCT forces against a
+     * unique identifier. See mezcalito/ux-search#46.
+     */
+    private function buildCountExpression(string $identifierField): string
+    {
+        if ($this->search->getResolvedAdapterParameter(DoctrineAdapter::COUNT_DISTINCT)) {
+            return \sprintf('count(DISTINCT %s)', $identifierField);
+        }
+
+        return \sprintf('count(%s)', $identifierField);
     }
 
     private function getIdentifierField(): string
