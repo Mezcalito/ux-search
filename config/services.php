@@ -52,6 +52,7 @@ return static function (ContainerConfigurator $container) {
         ->set(Searcher::class)
             ->arg('$adapterProvider', service(AdapterProvider::class))
             ->arg('$contextProvider', service(ContextProvider::class))
+            ->arg('$eventDispatcher', service('event_dispatcher'))
         ->set(QueryBuilder::class)
         ->set(ContextProvider::class)
         ->set(AdapterProvider::class)

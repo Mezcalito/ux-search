@@ -19,21 +19,28 @@ use Mezcalito\UxSearchBundle\Event\PostSearchEvent;
 use Mezcalito\UxSearchBundle\Event\PreSearchEvent;
 use Mezcalito\UxSearchBundle\EventSubscriber\ContextSubscriber;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 readonly class Searcher
 {
     public function __construct(
         private AdapterProvider $adapterProvider,
         private ContextProvider $contextProvider,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
     public function search(Query $query, SearchInterface $search): ResultSet\ResultSet
     {
-        $eventDispatcher = $search->getEventDispatcher();
+        $searchEventDispatcher = $search->getEventDispatcher();
         $search->addEventSubscriber(new ContextSubscriber($this->contextProvider));
 
-        $eventDispatcher->dispatch(new PreSearchEvent($query, $search));
+        // Dispatch on the search's own dispatcher (per-search subscribers, e.g.
+        // ContextSubscriber) and on the global dispatcher so application/bundle
+        // subscribers can hook search events the usual way.
+        $preEvent = new PreSearchEvent($query, $search);
+        $searchEventDispatcher->dispatch($preEvent);
+        $this->eventDispatcher->dispatch($preEvent);
 
         $adapter = $this->adapterProvider->getAdapter($search->getAdapterName());
 
@@ -43,7 +50,9 @@ readonly class Searcher
 
         $results = $adapter->search($query, $search);
 
-        $eventDispatcher->dispatch(new PostSearchEvent($query, $search, $results));
+        $postEvent = new PostSearchEvent($query, $search, $results);
+        $searchEventDispatcher->dispatch($postEvent);
+        $this->eventDispatcher->dispatch($postEvent);
 
         return $results;
     }
