@@ -96,7 +96,7 @@ class SearcherTest extends TestCase
 
         $search->method('getEventDispatcher')->willReturn($eventDispatcher);
 
-        $searcher = new Searcher($adapterProvider, $contextProvider);
+        $searcher = new Searcher($adapterProvider, $contextProvider, new EventDispatcher());
 
         $rs = $searcher->search($query, $search);
 
