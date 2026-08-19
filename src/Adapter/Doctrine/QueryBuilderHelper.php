@@ -70,7 +70,7 @@ readonly class QueryBuilderHelper
 
         $qb
             ->select(\sprintf('%s.%s as value, count(DISTINCT %s) AS total', $alias, $property, $this->getIdentifierField()))
-            ->orderBy('total', 'desc')
+            ->orderBy('total', 'DESC')
             ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
 
@@ -219,7 +219,7 @@ readonly class QueryBuilderHelper
             return;
         }
 
-        $qb->orderBy($sort, $order);
+        $qb->orderBy($sort, strtoupper($order));
     }
 
     private function applyQueryString(QueryBuilder $qb): void
