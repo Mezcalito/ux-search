@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Adapter\Doctrine;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Mezcalito\UxSearchBundle\Adapter\AdapterFactoryInterface;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
@@ -41,7 +41,7 @@ readonly class DoctrineFactory implements AdapterFactoryInterface
 
         $manager = $this->managerRegistry->getManager($managerName);
 
-        if (!$manager instanceof EntityManager) {
+        if (!$manager instanceof EntityManagerInterface) {
             throw DoctrineAdapterException::isNotOrmManager($managerName);
         }
 
