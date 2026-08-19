@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Tools\DsnParser;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -57,11 +56,12 @@ abstract class AbstractDoctrineTestCase extends TestCase
     {
         $paths = [__DIR__.'/../../Fixture/Doctrine'];
 
-        $dsnParser = new DsnParser();
-        $connectionParams = $dsnParser->parse('pdo-sqlite:///:memory:');
+        $connectionParams = ['driver' => 'pdo_sqlite', 'memory' => true];
 
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, true);
-        $config->enableNativeLazyObjects(true);
+        if (\PHP_VERSION_ID >= 80400 && method_exists($config, 'enableNativeLazyObjects')) {
+            $config->enableNativeLazyObjects(true);
+        }
 
         $connection = DriverManager::getConnection($connectionParams, $config);
 

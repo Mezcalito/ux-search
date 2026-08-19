@@ -15,6 +15,7 @@ namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
+use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class Pagination
@@ -23,7 +24,25 @@ class Pagination
 
     public function __construct(
         private readonly ContextProvider $contextProvider,
+        private readonly UrlFormaterProvider $urlFormaterProvider,
     ) {
+    }
+
+    public function getPageUrl(int $page): string
+    {
+        $context = $this->contextProvider->getCurrentContext();
+        $currentRequest = $context->getCurrentRequest();
+
+        if (!$currentRequest instanceof \Mezcalito\UxSearchBundle\Search\Url\CurrentRequest || !$context->getSearch()->hasUrlRewriting()) {
+            return '?page='.$page;
+        }
+
+        $query = clone $context->getQuery();
+        $query->setCurrentPage($page);
+
+        return $this->urlFormaterProvider
+            ->getUrlFormater($context->getSearch()->getUrlFormater())
+            ->generateUrl($currentRequest, $context->getSearch(), $query);
     }
 
     #[ExposeInTemplate]
@@ -35,9 +54,49 @@ class Pagination
     #[ExposeInTemplate]
     public function getEndRange(): int
     {
-        $endRange = min($this->contextProvider->getCurrentContext()->getQuery()->getCurrentPage() + $this->range, $this->getTotalPage() - $this->range);
+        return min($this->contextProvider->getCurrentContext()->getQuery()->getCurrentPage() + $this->range, $this->getTotalPage());
+    }
 
-        return 0 == $endRange ? $this->getTotalPage() : $endRange;
+    /**
+     * Pages to render, where null marks an ellipsis.
+     *
+     * @return list<int|null>
+     */
+    #[ExposeInTemplate]
+    public function getPages(): array
+    {
+        $total = $this->getTotalPage();
+        $page = min(max($this->getPage(), 1), max($total, 1));
+
+        $start = max(1, $page - $this->range);
+        $end = min($total, $page + $this->range);
+
+        $pages = [];
+
+        if ($start > 1) {
+            $pages[] = 1;
+            if (3 === $start) {
+                $pages[] = 2;
+            } elseif ($start > 3) {
+                $pages[] = null;
+            }
+        }
+
+        foreach (range($start, $end) as $i) {
+            $pages[] = $i;
+        }
+
+        if ($end < $total) {
+            if ($end === $total - 2) {
+                $pages[] = $total - 1;
+            } elseif ($end < $total - 2) {
+                $pages[] = null;
+            }
+
+            $pages[] = $total;
+        }
+
+        return $pages;
     }
 
     #[ExposeInTemplate]

@@ -16,6 +16,7 @@ namespace Mezcalito\UxSearchBundle\Context;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
 
 class Context
 {
@@ -24,6 +25,8 @@ class Context
     private SearchInterface $search;
 
     private ?ResultSet $results = null;
+
+    private ?CurrentRequest $currentRequest = null;
 
     public function getQuery(): Query
     {
@@ -57,6 +60,18 @@ class Context
     public function setResults(?ResultSet $results): static
     {
         $this->results = $results;
+
+        return $this;
+    }
+
+    public function getCurrentRequest(): ?CurrentRequest
+    {
+        return $this->currentRequest;
+    }
+
+    public function setCurrentRequest(?CurrentRequest $currentRequest): static
+    {
+        $this->currentRequest = $currentRequest;
 
         return $this;
     }

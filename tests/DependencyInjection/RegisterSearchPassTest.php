@@ -16,7 +16,7 @@ namespace Mezcalito\UxSearchBundle\Tests\DependencyInjection;
 use Mezcalito\UxSearchBundle\DependencyInjection\RegisterSearchPass;
 use Mezcalito\UxSearchBundle\Search\SearchProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -46,7 +46,7 @@ class RegisterSearchPassTest extends TestCase
         $updatedDefinition = $container->getDefinition(SearchProvider::class);
 
         $iteratorArgument = $updatedDefinition->getArgument('$searches');
-        $this->assertInstanceOf(IteratorArgument::class, $iteratorArgument);
+        $this->assertInstanceOf(ServiceLocatorArgument::class, $iteratorArgument);
 
         $arguments = $iteratorArgument->getValues();
 
@@ -70,7 +70,7 @@ class RegisterSearchPassTest extends TestCase
         $updatedDefinition = $container->getDefinition(SearchProvider::class);
 
         $argument = $updatedDefinition->getArgument('$searches');
-        $this->assertInstanceOf(IteratorArgument::class, $argument);
+        $this->assertInstanceOf(ServiceLocatorArgument::class, $argument);
         $this->assertEmpty($argument->getValues());
     }
 }

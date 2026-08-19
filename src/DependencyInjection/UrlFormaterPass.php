@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\DependencyInjection;
 
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -35,7 +35,7 @@ class UrlFormaterPass implements CompilerPassInterface
 
         $container
             ->getDefinition(UrlFormaterProvider::class)
-            ->setArgument('$formaters', new IteratorArgument($formaters))
+            ->setArgument('$formaters', new ServiceLocatorArgument($formaters))
         ;
     }
 }

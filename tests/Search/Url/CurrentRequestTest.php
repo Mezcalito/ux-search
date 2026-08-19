@@ -34,7 +34,7 @@ class CurrentRequestTest extends TestCase
     {
         $route = 'test_route';
         $queryParams = ['param1' => 'value1', 'param2' => 'value2'];
-        $attributes = ['_route' => $route, 'param3' => 'value3', '_controller' => 'test_controller'];
+        $attributes = ['_route' => $route, '_route_params' => ['param3' => 'value3'], '_controller' => 'test_controller'];
 
         $request = new Request($queryParams, [], $attributes);
 
@@ -50,7 +50,7 @@ class CurrentRequestTest extends TestCase
     {
         $route = 'test_route';
         $queryParams = ['param1' => 'value1'];
-        $attributes = ['_route' => $route, '_controller' => 'test_controller', 'param2' => 'value2'];
+        $attributes = ['_route' => $route, '_route_params' => ['_locale' => 'fr', 'param2' => 'value2'], '_controller' => 'test_controller'];
 
         $request = new Request($queryParams, [], $attributes);
 
@@ -60,5 +60,36 @@ class CurrentRequestTest extends TestCase
 
         $this->assertSame($route, $currentRequest->route);
         $this->assertSame($expectedParameters, $currentRequest->parameters);
+    }
+
+    public function testFromRequestIgnoresResolvedAttributes(): void
+    {
+        $queryParams = ['param1' => 'value1'];
+        $attributes = [
+            '_route' => 'test_route',
+            '_route_params' => ['id' => '42'],
+            'entity' => new \stdClass(),
+            'secret' => 'sensitive',
+        ];
+
+        $request = new Request($queryParams, [], $attributes);
+
+        $currentRequest = CurrentRequest::fromRequest($request);
+
+        $this->assertSame(['id' => '42', 'param1' => 'value1'], $currentRequest->parameters);
+    }
+
+    public function testFromRequestFiltersNonScalarRouteParams(): void
+    {
+        $attributes = [
+            '_route' => 'test_route',
+            '_route_params' => ['id' => '42', 'object' => new \stdClass()],
+        ];
+
+        $request = new Request([], [], $attributes);
+
+        $currentRequest = CurrentRequest::fromRequest($request);
+
+        $this->assertSame(['id' => '42'], $currentRequest->parameters);
     }
 }

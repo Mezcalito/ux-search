@@ -61,19 +61,19 @@ class MeilisearchAdapter extends AbstractAdapter
 
         $results = $this->client->multiSearch($queries);
 
-        $resultsToProcess = $results['results'][0];
+        $resultsToProcess = $results['results'][0] ?? [];
 
         $hits = [];
-        foreach ($resultsToProcess['hits'] as $hit) {
-            $hits[] = new Hit($hit, $hit['_rankingScore']);
+        foreach ($resultsToProcess['hits'] ?? [] as $hit) {
+            $hits[] = new Hit($hit, (float) ($hit['_rankingScore'] ?? 1));
         }
 
         [$facetsDistributions, $facetStats] = $this->getFacets($results, $search, $query);
 
         return (new ResultSet())
-            ->setIndexUid($resultsToProcess['indexUid'])
+            ->setIndexUid((string) ($resultsToProcess['indexUid'] ?? ''))
             ->setHits($hits)
-            ->setTotalResults($resultsToProcess['totalHits'])
+            ->setTotalResults((int) ($resultsToProcess['totalHits'] ?? $resultsToProcess['estimatedTotalHits'] ?? \count($hits)))
             ->setFacetDistributions($facetsDistributions)
             ->setFacetStats($facetStats)
         ;

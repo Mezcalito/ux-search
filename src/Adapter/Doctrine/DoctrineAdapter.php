@@ -17,6 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
+use Mezcalito\UxSearchBundle\Search\Facet;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
@@ -51,14 +52,12 @@ readonly class DoctrineAdapter implements AdapterInterface
             $hits[] = new Hit($item, 1);
         }
 
-        $total = $helper->getTotalResultsQuery()->getQuery()->getSingleScalarResult();
-
         return (new ResultSet())
             ->setIndexUid($search->getIndexName())
             ->setHits($hits)
-            ->setFacetDistributions($this->getFacetDistributions($query, $search))
-            ->setFacetStats($this->getFacetStats($query, $search))
-            ->setTotalResults($total);
+            ->setFacetDistributions($this->getFacetDistributions($helper, $query, $search))
+            ->setFacetStats($this->getFacetStats($helper, $query, $search))
+            ->setTotalResults($paginator->count());
     }
 
     public function configureParameters(OptionsResolver $resolver): void
@@ -79,11 +78,9 @@ readonly class DoctrineAdapter implements AdapterInterface
     /**
      * @return array<string, FacetTermDistribution>
      */
-    private function getFacetDistributions(Query $query, SearchInterface $search): array
+    private function getFacetDistributions(QueryBuilderHelper $helper, Query $query, SearchInterface $search): array
     {
         $distributions = [];
-
-        $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
         foreach ($search->getFacets() as $facet) {
             $filter = $query->getActiveFilter($facet->getProperty());
@@ -119,13 +116,15 @@ readonly class DoctrineAdapter implements AdapterInterface
     /**
      * @return array<string, FacetStat>
      */
-    private function getFacetStats(Query $query, SearchInterface $search): array
+    private function getFacetStats(QueryBuilderHelper $helper, Query $query, SearchInterface $search): array
     {
         $stats = [];
 
-        $helper = new QueryBuilderHelper($this->manager, $query, $search);
-
         foreach ($search->getFacets() as $facet) {
+            if (!$this->mayHaveNumericStats($search, $facet)) {
+                continue;
+            }
+
             $filter = $query->getActiveFilter($facet->getProperty());
 
             $userMin = null;
@@ -153,5 +152,41 @@ readonly class DoctrineAdapter implements AdapterInterface
         }
 
         return $stats;
+    }
+
+    /**
+     * Skips the MIN/MAX query for fields mapped to a clearly non-numeric type.
+     * Unknown or custom types still run the query, the string result check applies after.
+     */
+    private function mayHaveNumericStats(SearchInterface $search, Facet $facet): bool
+    {
+        $indexName = $search->getIndexName();
+        if (null === $indexName) {
+            return true;
+        }
+
+        $metadata = $this->manager->getClassMetadata($indexName);
+        $property = $facet->getProperty();
+
+        if (str_contains($property, '.')) {
+            [$association, $field] = explode('.', $property, 2);
+            if (!isset($metadata->associationMappings[$association]) || str_contains($field, '.')) {
+                return true;
+            }
+
+            $metadata = $this->manager->getClassMetadata($metadata->associationMappings[$association]['targetEntity']);
+            $property = $field;
+        }
+
+        if (!$metadata->hasField($property)) {
+            return true;
+        }
+
+        return !\in_array($metadata->getTypeOfField($property), [
+            'string', 'ascii_string', 'text', 'guid', 'uuid', 'ulid', 'binary', 'blob',
+            'boolean', 'json', 'simple_array', 'array', 'enum',
+            'date', 'date_immutable', 'datetime', 'datetime_immutable',
+            'datetimetz', 'datetimetz_immutable', 'time', 'time_immutable',
+        ], true);
     }
 }

@@ -20,8 +20,23 @@ class AdapterException extends \RuntimeException
         return new self(\sprintf('Configuration for name "%s" is not found', $name));
     }
 
-    public static function factoryNotFound(string $name): self
+    public static function factoryNotFound(string $dsn): self
     {
-        return new self(\sprintf('Factory with "%s" support not found', $name));
+        return new self(\sprintf('Factory with "%s" support not found', self::redactDsn($dsn)));
+    }
+
+    public static function invalidDsn(string $dsn): self
+    {
+        return new self(\sprintf('Invalid DSN "%s"', self::redactDsn($dsn)));
+    }
+
+    public static function searchFailed(?string $indexName, \Throwable $previous): self
+    {
+        return new self(\sprintf('Search failed for index "%s"', $indexName ?? ''), 0, $previous);
+    }
+
+    private static function redactDsn(string $dsn): string
+    {
+        return preg_replace('#(//)[^@/]+@#', '$1***@', $dsn) ?? $dsn;
     }
 }

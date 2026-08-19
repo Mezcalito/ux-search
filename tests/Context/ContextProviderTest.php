@@ -61,4 +61,14 @@ class ContextProviderTest extends TestCase
 
         $this->contextProvider->getCurrentContext();
     }
+
+    public function testReset(): void
+    {
+        $this->contextProvider->init(new Query(), $this->search);
+        $this->assertTrue($this->contextProvider->hasCurrentContext());
+
+        $this->contextProvider->reset();
+
+        $this->assertFalse($this->contextProvider->hasCurrentContext());
+    }
 }

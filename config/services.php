@@ -37,6 +37,7 @@ use Mezcalito\UxSearchBundle\Twig\Components\SearchInput;
 use Mezcalito\UxSearchBundle\Twig\Components\SortBy;
 use Mezcalito\UxSearchBundle\Twig\Components\TotalHits;
 use Mezcalito\UxSearchBundle\Twig\UxSearchExtension;
+use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\UX\LiveComponent\LiveResponder;
@@ -52,8 +53,11 @@ return static function (ContainerConfigurator $container) {
         ->set(Searcher::class)
             ->arg('$adapterProvider', service(AdapterProvider::class))
             ->arg('$contextProvider', service(ContextProvider::class))
+            ->arg('$logger', service('logger')->nullOnInvalid())
+            ->tag('monolog.logger', ['channel' => 'mezcalito_ux_search'])
         ->set(QueryBuilder::class)
         ->set(ContextProvider::class)
+            ->tag('kernel.reset', ['method' => 'reset'])
         ->set(AdapterProvider::class)
             ->arg('$defaultAdapterName', param('mezcalito_ux_search.default_adapter'))
             ->arg('$adapterConfiguration', param('mezcalito_ux_search.adapters'))
@@ -65,6 +69,7 @@ return static function (ContainerConfigurator $container) {
             ->arg('$requestStack', service(RequestStack::class))
             ->arg('$urlFormaterProvider', service(UrlFormaterProvider::class))
             ->arg('$serializer', service('serializer'))
+            ->arg('$contextProvider', service(ContextProvider::class))
             ->call('setLiveResponder', [service(LiveResponder::class)])
             ->tag('twig.component', [
                 'key' => 'Mezcalito:UxSearch:Layout',
@@ -92,6 +97,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('twig.component', ['key' => 'Mezcalito:UxSearch:HitsPerPage'])
         ->set(Pagination::class)
             ->arg('$contextProvider', service(ContextProvider::class))
+            ->arg('$urlFormaterProvider', service(UrlFormaterProvider::class))
             ->tag('twig.component', [
                 'key' => 'Mezcalito:UxSearch:Pagination',
                 'expose_public_props' => true,
@@ -125,7 +131,12 @@ return static function (ContainerConfigurator $container) {
         ->set(DefaultUrlFormater::class)
             ->arg('$urlGenerator', service(UrlGeneratorInterface::class))
             ->tag('mezcalito_ux_search.url_formater')
-        ->set('maker.maker.make_search', MakeSearch::class)
-            ->tag('maker.command')
     ;
+
+    if (class_exists(AbstractMaker::class)) {
+        $container->services()
+            ->set('maker.maker.make_search', MakeSearch::class)
+                ->tag('maker.command')
+        ;
+    }
 };

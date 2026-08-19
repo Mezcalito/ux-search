@@ -60,12 +60,16 @@ assets/build:
 ## —— CI —————————————————————————————————————————————————————————————————————
 ci: static test
 
-static: ## Run static analysis tools
+static: ## Run static analysis tools (check only)
 	$(PHP) -d memory_limit=-1 vendor/bin/phpstan analyse
+	$(PHP) -d memory_limit=-1 vendor/bin/php-cs-fixer fix --dry-run --diff
+	$(PHP) -d memory_limit=-1 vendor/bin/rector --dry-run
+
+fix: ## Apply coding standards and Rector fixes
 	$(PHP) -d memory_limit=-1 vendor/bin/php-cs-fixer fix
 	$(PHP) -d memory_limit=-1 vendor/bin/rector
 
 test: ## Run tests
-	$(DOCKER_COMP) exec -e XDEBUG_MODE=coverage  -w /srv/app  php vendor/bin/phpunit --display-warnings --display-phpunit-notices --display-deprecations --display-phpunit-deprecations
+	$(DOCKER_COMP) exec -e XDEBUG_MODE=coverage  -w /srv/app  php vendor/bin/phpunit
 
 

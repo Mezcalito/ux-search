@@ -16,6 +16,7 @@ namespace Mezcalito\UxSearchBundle\Adapter\Meilisearch;
 use Meilisearch\Client;
 use Mezcalito\UxSearchBundle\Adapter\AdapterFactoryInterface;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
+use Mezcalito\UxSearchBundle\Exception\AdapterException;
 use Psr\Http\Client\ClientInterface;
 
 readonly class MeilisearchFactory implements AdapterFactoryInterface
@@ -41,6 +42,10 @@ readonly class MeilisearchFactory implements AdapterFactoryInterface
         }
 
         $parsedDsn = parse_url($dsn);
+        if (false === $parsedDsn) {
+            throw AdapterException::invalidDsn($dsn);
+        }
+
         parse_str($parsedDsn['query'] ?? '', $params);
 
         $tls = !isset($params['tls']) || 'true' === $params['tls'];

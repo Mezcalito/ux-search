@@ -19,6 +19,9 @@ use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Event\PostSearchEvent;
 use Mezcalito\UxSearchBundle\Event\PreSearchEvent;
 use Mezcalito\UxSearchBundle\EventSubscriber\ContextSubscriber;
+use Mezcalito\UxSearchBundle\Exception\AdapterException;
+use Mezcalito\UxSearchBundle\Search\AbstractSearch;
+use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Mezcalito\UxSearchBundle\Search\Searcher;
@@ -108,5 +111,104 @@ class SearcherTest extends TestCase
         $this->assertSame([8], $availableHitsPerPageOnPreSearch);
         $this->assertEquals('modifiedOnPostSearchSubscriber', $rs->getIndexUid());
         $this->assertEquals(['attributesToCrop' => ['description']], $search->getResolvedAdapterParameters());
+    }
+
+    public function testSearchSanitizesClientWritableQueryValues(): void
+    {
+        $search = new class extends AbstractSearch {
+            public function build(array $options = []): void
+            {
+                $this->addAvailableSort('price', 'Price');
+                $this->setAvailableHitsPerPage([12, 24]);
+                $this->addFacet('category', 'Category');
+            }
+        };
+        $search->create();
+
+        $query = new Query();
+        $query->setActiveSort('another_index');
+        $query->setActiveHitsPerPage(1000000);
+        $query->setCurrentPage(-3);
+        $query->addActiveFilter(new TermFilter('category'))->getActiveFilter('category')->addValue('books');
+        $query->addActiveFilter(new TermFilter('o.price = 0 OR o.secret'));
+
+        $this->createSearcher()->search($query, $search);
+
+        $this->assertSame('price', $query->getActiveSort());
+        $this->assertSame(12, $query->getActiveHitsPerPage());
+        $this->assertSame(1, $query->getCurrentPage());
+        $this->assertSame(['category'], array_keys($query->getActiveFilters()));
+    }
+
+    public function testSearchResetsSortWhenNoSortConfigured(): void
+    {
+        $search = new class extends AbstractSearch {};
+        $search->create();
+
+        $query = new Query();
+        $query->setActiveSort('another_index');
+
+        $this->createSearcher()->search($query, $search);
+
+        $this->assertNull($query->getActiveSort());
+    }
+
+    public function testSearchKeepsValidQueryValues(): void
+    {
+        $search = new class extends AbstractSearch {
+            public function build(array $options = []): void
+            {
+                $this->addAvailableSort('price', 'Price');
+                $this->setAvailableHitsPerPage([12, 24]);
+                $this->addFacet('category', 'Category');
+            }
+        };
+        $search->create();
+
+        $query = new Query();
+        $query->setActiveSort('price');
+        $query->setActiveHitsPerPage(24);
+        $query->setCurrentPage(3);
+        $query->addActiveFilter(new TermFilter('category'));
+
+        $this->createSearcher()->search($query, $search);
+
+        $this->assertSame('price', $query->getActiveSort());
+        $this->assertSame(24, $query->getActiveHitsPerPage());
+        $this->assertSame(3, $query->getCurrentPage());
+        $this->assertSame(['category'], array_keys($query->getActiveFilters()));
+    }
+
+    public function testSearchWrapsAdapterFailures(): void
+    {
+        $search = new class extends AbstractSearch {};
+        $search->create();
+
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('search')->willThrowException(new \RuntimeException('engine unreachable'));
+
+        $adapterProvider = $this->createStub(AdapterProvider::class);
+        $adapterProvider->method('getAdapter')->willReturn($adapter);
+
+        $searcher = new Searcher($adapterProvider, $this->createStub(ContextProvider::class));
+
+        try {
+            $searcher->search(new Query(), $search);
+            $this->fail('Expected AdapterException');
+        } catch (AdapterException $adapterException) {
+            $this->assertInstanceOf(\RuntimeException::class, $adapterException->getPrevious());
+            $this->assertSame('engine unreachable', $adapterException->getPrevious()->getMessage());
+        }
+    }
+
+    private function createSearcher(): Searcher
+    {
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('search')->willReturn(new ResultSet());
+
+        $adapterProvider = $this->createStub(AdapterProvider::class);
+        $adapterProvider->method('getAdapter')->willReturn($adapter);
+
+        return new Searcher($adapterProvider, $this->createStub(ContextProvider::class));
     }
 }

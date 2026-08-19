@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Twig\Components;
 
+use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Search\AbstractSearch;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
@@ -75,13 +76,16 @@ final class LayoutUrlRewritingTest extends TestCase
     private function createLayout(bool $enabled): TestableLayout
     {
         $search = new class extends AbstractSearch {
+            public bool $rewriting = false;
+
             public function build(array $options = []): void
             {
+                if ($this->rewriting) {
+                    $this->enableUrlRewriting()->setUrlFormater(TestUrlFormater::class);
+                }
             }
         };
-        if ($enabled) {
-            $search->enableUrlRewriting()->setUrlFormater(TestUrlFormater::class);
-        }
+        $search->rewriting = $enabled;
 
         $provider = new SearchProvider(['listing' => $search]);
 
@@ -108,7 +112,7 @@ final class LayoutUrlRewritingTest extends TestCase
 
         $serializer = new Serializer($normalizers, $encoders);
 
-        return new TestableLayout($provider, $searcher, $stack, $urlFormaterProvider, $serializer);
+        return new TestableLayout($provider, $searcher, $stack, $urlFormaterProvider, $serializer, new ContextProvider());
     }
 }
 

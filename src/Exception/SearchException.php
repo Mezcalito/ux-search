@@ -24,4 +24,9 @@ class SearchException extends \RuntimeException
     {
         return new self(\sprintf('Search with name "%s" is not found', $name));
     }
+
+    public static function componentNotMounted(): self
+    {
+        return new self('The search component is not mounted: query or search is missing');
+    }
 }

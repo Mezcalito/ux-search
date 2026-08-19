@@ -14,20 +14,29 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Search;
 
 use Mezcalito\UxSearchBundle\Exception\SearchException;
+use Psr\Container\ContainerInterface;
 
 readonly class SearchProvider
 {
     /**
-     * @param iterable<string, SearchInterface> $searches
+     * @param ContainerInterface|iterable<string, SearchInterface> $searches
      */
     public function __construct(
-        private iterable $searches,
+        private ContainerInterface|iterable $searches,
     ) {
     }
 
     public function getSearch(string $name): SearchInterface
     {
-        /** @var SearchInterface $search */
+        if ($this->searches instanceof ContainerInterface) {
+            if (!$this->searches->has($name)) {
+                throw SearchException::nameNotFound($name);
+            }
+
+            /* @var SearchInterface */
+            return $this->searches->get($name);
+        }
+
         foreach ($this->searches as $searchName => $search) {
             if ($name === $searchName) {
                 return $search;
