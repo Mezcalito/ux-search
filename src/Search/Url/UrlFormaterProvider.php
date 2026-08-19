@@ -14,20 +14,29 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Search\Url;
 
 use Mezcalito\UxSearchBundle\Exception\UrlFormaterException;
+use Psr\Container\ContainerInterface;
 
 readonly class UrlFormaterProvider
 {
     /**
-     * @param iterable<string, UrlFormaterInterface> $formaters
+     * @param ContainerInterface|iterable<string, UrlFormaterInterface> $formaters
      */
     public function __construct(
-        private iterable $formaters,
+        private ContainerInterface|iterable $formaters,
     ) {
     }
 
     public function getUrlFormater(string $fqcn): UrlFormaterInterface
     {
-        /** @var UrlFormaterInterface $formater */
+        if ($this->formaters instanceof ContainerInterface) {
+            if (!$this->formaters->has($fqcn)) {
+                throw UrlFormaterException::urlFormaterNotFound($fqcn);
+            }
+
+            /* @var UrlFormaterInterface */
+            return $this->formaters->get($fqcn);
+        }
+
         foreach ($this->formaters as $urlFormaterName => $formater) {
             if ($fqcn === $urlFormaterName) {
                 return $formater;

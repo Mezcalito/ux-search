@@ -16,7 +16,7 @@ namespace Mezcalito\UxSearchBundle\Tests\DependencyInjection;
 use Mezcalito\UxSearchBundle\DependencyInjection\UrlFormaterPass;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -44,7 +44,7 @@ final class UrlFormaterPassTest extends TestCase
 
         $this->assertTrue($container->hasDefinition(UrlFormaterProvider::class));
 
-        $expectedArgument = new IteratorArgument([
+        $expectedArgument = new ServiceLocatorArgument([
             'app.url_formater_one' => new Reference('app.url_formater_one'),
             'app.url_formater_two' => new Reference('app.url_formater_two'),
         ]);

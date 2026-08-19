@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\DependencyInjection;
 
 use Mezcalito\UxSearchBundle\Search\SearchProvider;
-use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
+use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -34,7 +34,7 @@ class RegisterSearchPass implements CompilerPassInterface
 
         $container
             ->getDefinition(SearchProvider::class)
-            ->setArgument('$searches', new IteratorArgument($listSearchTypes))
+            ->setArgument('$searches', new ServiceLocatorArgument($listSearchTypes))
         ;
     }
 }

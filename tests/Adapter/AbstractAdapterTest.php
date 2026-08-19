@@ -44,7 +44,7 @@ class AbstractAdapterTest extends TestCase
         $this->assertSame(['books' => 3, 'movies' => 2], $distributions['category']->getValues());
         $this->assertSame(['acme' => 5], $distributions['brand']->getValues());
 
-        $statsByProperty = self::indexStats($stats);
+        $statsByProperty = $this->indexStats($stats);
         $this->assertSame(10, $statsByProperty['price']->getMin());
         $this->assertSame(90, $statsByProperty['price']->getMax());
     }
@@ -58,7 +58,7 @@ class AbstractAdapterTest extends TestCase
 
         $this->assertSame([], $distributions['category']->getValues());
 
-        $statsByProperty = self::indexStats($stats);
+        $statsByProperty = $this->indexStats($stats);
         $this->assertSame(0, $statsByProperty['category']->getMin());
         $this->assertSame(0, $statsByProperty['category']->getMax());
     }
@@ -95,7 +95,7 @@ class AbstractAdapterTest extends TestCase
 
         [, $stats] = $this->createAdapter()->exposeGetFacets($results, $search, $query);
 
-        $statsByProperty = self::indexStats($stats);
+        $statsByProperty = $this->indexStats($stats);
         $this->assertSame(20.0, $statsByProperty['price']->getUserMin());
         $this->assertSame(50.0, $statsByProperty['price']->getUserMax());
     }
@@ -153,7 +153,7 @@ class AbstractAdapterTest extends TestCase
      *
      * @return array<string, FacetStat>
      */
-    private static function indexStats(array $stats): array
+    private function indexStats(array $stats): array
     {
         $indexed = [];
         foreach ($stats as $stat) {
