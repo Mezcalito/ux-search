@@ -17,6 +17,7 @@ use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Search\Sort;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class DefaultUrlFormater implements UrlFormaterInterface
@@ -70,8 +71,8 @@ class DefaultUrlFormater implements UrlFormaterInterface
         }
 
         if ($s = $currentRequest->parameters[self::SORT_BY] ?? null) {
-            $availableSorts = $search->getAvailableSorts();
-            if (isset($availableSorts[(string) $s])) {
+            $availableSortKeys = array_map(static fn (Sort $sort) => $sort->getKey(), $search->getAvailableSorts());
+            if (\in_array((string) $s, $availableSortKeys, true)) {
                 $query->setActiveSort((string) $s);
             }
         }

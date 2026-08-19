@@ -18,6 +18,7 @@ use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Search\Sort;
 use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
 use Mezcalito\UxSearchBundle\Search\Url\DefaultUrlFormater;
 use Mezcalito\UxSearchBundle\Twig\Components\Facet\RangeInput;
@@ -118,8 +119,8 @@ final class DefaultUrlFormaterTest extends TestCase
             new Facet('o.popularity', 'popularity', RangeInput::class),
         ]);
         $search->method('getAvailableSorts')->willReturn([
-            'popularity' => 'Popularity',
-            'price' => 'Price',
+            new Sort('popularity', 'Popularity'),
+            new Sort('price', 'Price'),
         ]);
 
         $formater->applyFilters($currentRequest, $search, $query);
@@ -202,8 +203,8 @@ final class DefaultUrlFormaterTest extends TestCase
         $search = $this->createStub(SearchInterface::class);
         $search->method('getFacets')->willReturn([]);
         $search->method('getAvailableSorts')->willReturn([
-            'price' => 'Price',
-            'name' => 'Name',
+            new Sort('price', 'Price'),
+            new Sort('name', 'Name'),
         ]);
 
         $formater->applyFilters($currentRequest, $search, $query);
