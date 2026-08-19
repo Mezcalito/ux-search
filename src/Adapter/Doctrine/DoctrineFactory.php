@@ -37,7 +37,7 @@ readonly class DoctrineFactory implements AdapterFactoryInterface
         }
 
         $parsedDsn = parse_url($dsn);
-        $managerName = $parsedDsn['host'] ?? 'default';
+        $managerName = false !== $parsedDsn ? ($parsedDsn['host'] ?? 'default') : 'default';
 
         $manager = $this->managerRegistry->getManager($managerName);
 

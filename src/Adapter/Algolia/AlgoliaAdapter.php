@@ -85,19 +85,19 @@ class AlgoliaAdapter extends AbstractAdapter
 
         $results = $this->client->search($queries);
 
-        $resultsToProcess = $results['results'][0];
+        $resultsToProcess = $results['results'][0] ?? [];
 
         $hits = [];
-        foreach ($resultsToProcess['hits'] as $hit) {
-            $hits[] = new Hit($hit, $hit['_rankingInfo']['userScore']);
+        foreach ($resultsToProcess['hits'] ?? [] as $hit) {
+            $hits[] = new Hit($hit, (float) ($hit['_rankingInfo']['userScore'] ?? 1));
         }
 
         [$facetsDistributions, $facetStats] = $this->getFacets($results, $search, $query);
 
         return (new ResultSet())
-            ->setIndexUid($resultsToProcess['index'])
+            ->setIndexUid((string) ($resultsToProcess['index'] ?? ''))
             ->setHits($hits)
-            ->setTotalResults($resultsToProcess['nbHits'])
+            ->setTotalResults((int) ($resultsToProcess['nbHits'] ?? \count($hits)))
             ->setFacetDistributions($facetsDistributions)
             ->setFacetStats($facetStats)
         ;

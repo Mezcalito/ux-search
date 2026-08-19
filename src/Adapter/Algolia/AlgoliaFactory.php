@@ -16,6 +16,7 @@ namespace Mezcalito\UxSearchBundle\Adapter\Algolia;
 use Algolia\AlgoliaSearch\Api\SearchClient;
 use Mezcalito\UxSearchBundle\Adapter\AdapterFactoryInterface;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
+use Mezcalito\UxSearchBundle\Exception\AdapterException;
 
 readonly class AlgoliaFactory implements AdapterFactoryInterface
 {
@@ -36,6 +37,9 @@ readonly class AlgoliaFactory implements AdapterFactoryInterface
         }
 
         $parsedDsn = parse_url($dsn);
+        if (false === $parsedDsn || !isset($parsedDsn['host'], $parsedDsn['user'])) {
+            throw AdapterException::invalidDsn($dsn);
+        }
 
         return SearchClient::create($parsedDsn['host'], $parsedDsn['user']);
     }

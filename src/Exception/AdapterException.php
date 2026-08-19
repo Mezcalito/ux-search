@@ -25,6 +25,11 @@ class AdapterException extends \RuntimeException
         return new self(\sprintf('Factory with "%s" support not found', self::redactDsn($dsn)));
     }
 
+    public static function invalidDsn(string $dsn): self
+    {
+        return new self(\sprintf('Invalid DSN "%s"', self::redactDsn($dsn)));
+    }
+
     private static function redactDsn(string $dsn): string
     {
         return preg_replace('#(//)[^@/]+@#', '$1***@', $dsn) ?? $dsn;
