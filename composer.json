@@ -9,14 +9,20 @@
   "license": "MIT",
   "require": {
     "php": ">=8.3",
-    "nyholm/psr7": "^1.0",
     "phpdocumentor/reflection-docblock": "^5.4|^6.0",
+    "psr/http-client": "^1.0",
     "symfony/asset": "^6.4|^7.0|^8.0",
     "symfony/config": "^6.4|^7.0|^8.0",
     "symfony/dependency-injection": "^6.4|^7.0|^8.0",
+    "symfony/event-dispatcher": "^6.4|^7.0|^8.0",
     "symfony/http-client": "^6.4|^7.0|^8.0",
+    "symfony/http-foundation": "^6.4|^7.0|^8.0",
+    "symfony/http-kernel": "^6.4|^7.0|^8.0",
     "symfony/options-resolver": "^6.4|^7.0|^8.0",
+    "symfony/routing": "^6.4|^7.0|^8.0",
     "symfony/serializer": "^6.4|^7.0|^8.0",
+    "symfony/service-contracts": "^2.5|^3.0",
+    "symfony/string": "^6.4|^7.0|^8.0",
     "symfony/ux-live-component": "^2.20|^3.0",
     "symfony/ux-twig-component": "^2.20|^3.0",
     "twig/twig": "^3.8"
@@ -27,6 +33,7 @@
     "doctrine/orm": "^3.3",
     "friendsofphp/php-cs-fixer": "^3.64",
     "meilisearch/meilisearch-php": "^1.10",
+    "nyholm/psr7": "^1.0",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-symfony": "^2.0",
     "phpunit/phpunit": "^12.5",
@@ -35,14 +42,16 @@
     "symfony/framework-bundle": "^6.4|^7.0|^8.0",
     "symfony/maker-bundle": "^1.62",
     "symfony/runtime": "^6.4|^7.0|^8.0",
-    "symfony/translation": "^7.2",
+    "symfony/translation": "^6.4|^7.0|^8.0",
     "symfony/var-exporter": "^6.4|^7.0|^8.0",
     "symfony/web-profiler-bundle": "^6.4|^7.0|^8.0"
   },
   "suggest": {
     "algolia/algoliasearch-client-php": "Needed to use Algolia adapter",
     "doctrine/doctrine-bundle": "Needed to use Orm adapter",
-    "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter"
+    "meilisearch/meilisearch-php": "Needed to use Meilisearch adapter",
+    "nyholm/psr7": "PSR-7 implementation needed by the Meilisearch adapter",
+    "symfony/maker-bundle": "Needed to use the make:search command"
   },
   "config": {
     "sort-packages": true,

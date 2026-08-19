@@ -37,6 +37,7 @@ use Mezcalito\UxSearchBundle\Twig\Components\SearchInput;
 use Mezcalito\UxSearchBundle\Twig\Components\SortBy;
 use Mezcalito\UxSearchBundle\Twig\Components\TotalHits;
 use Mezcalito\UxSearchBundle\Twig\UxSearchExtension;
+use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\UX\LiveComponent\LiveResponder;
@@ -128,7 +129,12 @@ return static function (ContainerConfigurator $container) {
         ->set(DefaultUrlFormater::class)
             ->arg('$urlGenerator', service(UrlGeneratorInterface::class))
             ->tag('mezcalito_ux_search.url_formater')
-        ->set('maker.maker.make_search', MakeSearch::class)
-            ->tag('maker.command')
     ;
+
+    if (class_exists(AbstractMaker::class)) {
+        $container->services()
+            ->set('maker.maker.make_search', MakeSearch::class)
+                ->tag('maker.command')
+        ;
+    }
 };
