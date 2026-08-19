@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
+use Mezcalito\UxSearchBundle\Exception\SearchException;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
@@ -96,6 +97,10 @@ class Layout
     #[PreReRender]
     public function onReRender(): void
     {
+        if (null === $this->name || null === $this->query) {
+            throw SearchException::componentNotMounted();
+        }
+
         $this->search = $this->getSearch($this->name)->create($this->options);
         $this->searcher->search($this->query, $this->search);
         $this->shareCurrentRequestWithContext();
@@ -112,22 +117,23 @@ class Layout
     #[LiveAction]
     public function changeCurrentPage(#[LiveArg] int $page): void
     {
-        $this->query->setCurrentPage($page);
+        $this->getQuery()->setCurrentPage($page);
     }
 
     public function resetCurrentPage(string|int|null $previousValue): void
     {
-        $this->query->setCurrentPage(1);
+        $this->getQuery()->setCurrentPage(1);
     }
 
     #[LiveAction]
     public function switchFacetTerm(#[LiveArg] string $property, #[LiveArg] string $value): void
     {
-        $filter = $this->query->getActiveFilter($property);
+        $query = $this->getQuery();
+        $filter = $query->getActiveFilter($property);
 
         if (!$filter instanceof TermFilter) {
             $filter = new TermFilter($property);
-            $this->query->addActiveFilter($filter);
+            $query->addActiveFilter($filter);
         }
 
         if ($filter->hasValue($value)) {
@@ -137,55 +143,57 @@ class Layout
         }
 
         if (!$filter->hasValues()) {
-            $this->query->removeActiveFilter($filter);
+            $query->removeActiveFilter($filter);
         }
 
-        $this->query->setCurrentPage(1);
+        $query->setCurrentPage(1);
     }
 
     #[LiveAction]
     public function toggleFacetTerm(#[LiveArg] string $property, #[LiveArg] string $value): void
     {
-        $filter = $this->query->getActiveFilter($property);
+        $query = $this->getQuery();
+        $filter = $query->getActiveFilter($property);
 
         if (!$filter instanceof TermFilter) {
             $filter = new TermFilter($property);
-            $this->query->addActiveFilter($filter);
+            $query->addActiveFilter($filter);
         }
 
         $filter->toggleValue($value);
 
         if (!$filter->hasValues()) {
-            $this->query->removeActiveFilter($filter);
+            $query->removeActiveFilter($filter);
         }
 
-        $this->query->setCurrentPage(1);
+        $query->setCurrentPage(1);
     }
 
     #[LiveAction]
     public function updateFacetRange(#[LiveArg] string $property, #[LiveArg] float|int|null $min, #[LiveArg] float|int|null $max): void
     {
-        $filter = $this->query->getActiveFilter($property);
+        $query = $this->getQuery();
+        $filter = $query->getActiveFilter($property);
 
         if (!$filter instanceof RangeFilter) {
             $filter = new RangeFilter($property);
-            $this->query->addActiveFilter($filter);
+            $query->addActiveFilter($filter);
         }
 
         $filter->setMin($min);
         $filter->setMax($max);
 
         if (!$filter->hasValues()) {
-            $this->query->removeActiveFilter($filter);
+            $query->removeActiveFilter($filter);
         }
 
-        $this->query->setCurrentPage(1);
+        $query->setCurrentPage(1);
     }
 
     #[LiveAction]
     public function clearRefinements(): void
     {
-        $this->query->setActiveFilters([]);
+        $this->getQuery()->setActiveFilters([]);
     }
 
     private function getSearch(string $name): SearchInterface
@@ -193,8 +201,17 @@ class Layout
         return $this->searchConfigurationProvider->getSearch($name);
     }
 
+    private function getQuery(): Query
+    {
+        return $this->query ?? throw SearchException::componentNotMounted();
+    }
+
     private function getUrlFormater(): UrlFormaterInterface
     {
+        if (null === $this->search) {
+            throw SearchException::componentNotMounted();
+        }
+
         return $this->urlFormaterProvider->getUrlFormater($this->search->getUrlFormater());
     }
 
