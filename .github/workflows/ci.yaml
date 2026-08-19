@@ -8,6 +8,10 @@ on:
     branches:
       - 0.x
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   eslint:
     runs-on: ubuntu-latest
@@ -18,12 +22,30 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
       - name: Lint code
         run: npm run lint -- --max-warnings 0
+
+  assets-dist:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build assets
+        run: npm run build
+      - name: Check assets/dist is up to date
+        run: git diff --exit-code -- assets/dist
 
   php-cs-fixer:
     runs-on: ubuntu-latest
@@ -39,8 +61,6 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3
-        with:
-          dependency-versions: ${{ matrix.dependencies }}
 
       - name: PHP-CS-Fixer
         run: php vendor/bin/php-cs-fixer fix --dry-run --diff --no-ansi
@@ -59,8 +79,6 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3
-        with:
-          dependency-versions: ${{ matrix.dependencies }}
 
       - name: PHPStan
         run: php vendor/bin/phpstan analyse
@@ -79,17 +97,71 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3
-        with:
-          dependency-versions: ${{ matrix.dependencies }}
 
       - name: RectorPHP
         run: php vendor/bin/rector process --dry-run
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Composer audit
+        run: composer audit
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          coverage: pcov
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: PHPUnit with coverage
+        run: vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
 
   phpunit:
     strategy:
       fail-fast: false
       matrix:
         include:
+          # Minimum supported PHP version with lowest dependencies
+          -   os: ubuntu-latest
+              php_version: "8.3"
+              symfony_version: "6.4.*"
+              stability: "stable"
+              composer_args: "--prefer-lowest --prefer-stable"
+          # Minimum supported PHP version with LTS Symfony
+          -   os: ubuntu-latest
+              php_version: "8.3"
+              symfony_version: "7.4.*"
+              stability: "stable"
           # Latest Symfony version support
           -   os: ubuntu-latest
               php_version: "8.4"
@@ -105,6 +177,7 @@ jobs:
               php_version: "8.4"
               symfony_version: "8.1.x-dev"
               stability: "dev"
+              experimental: true
           # Latest Symfony version support with lastest PHP Version
           -   os: ubuntu-latest
               php_version: "8.5"
@@ -125,11 +198,13 @@ jobs:
               php_version: "8.5"
               symfony_version: "8.1.x-dev"
               stability: "dev"
+              experimental: true
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental == true }}
 
     steps:
-      -   uses: actions/checkout@v4
+      -   uses: actions/checkout@v6
 
       -   name: Setup PHP, with composer and extensions
           uses: shivammathur/setup-php@v2
