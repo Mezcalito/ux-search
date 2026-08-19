@@ -59,7 +59,7 @@ abstract class AbstractDoctrineTestCase extends TestCase
         $connectionParams = ['driver' => 'pdo_sqlite', 'memory' => true];
 
         $config = ORMSetup::createAttributeMetadataConfiguration($paths, true);
-        if (method_exists($config, 'enableNativeLazyObjects')) {
+        if (\PHP_VERSION_ID >= 80400 && method_exists($config, 'enableNativeLazyObjects')) {
             $config->enableNativeLazyObjects(true);
         }
 
