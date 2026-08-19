@@ -16,7 +16,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 return static function (ContainerConfigurator $container): void {
     $container->extension('doctrine', [
         'dbal' => [
-            'url' => 'sqlite:///%kernel.project_dir%/var/data.db',
+            'driver' => 'pdo_sqlite',
+            'path' => '%kernel.project_dir%/var/data.db',
             'profiling_collect_backtrace' => '%kernel.debug%',
         ],
         'orm' => [
