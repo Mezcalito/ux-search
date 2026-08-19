@@ -16,6 +16,14 @@ Meilisearch is a powerful open-source search engine that you can self-host. It p
 - You have very small datasets (use Doctrine)
 - You need advanced features like personalization or A/B testing
 
+## Installation
+
+The Meilisearch adapter requires the official PHP client and a PSR-7/PSR-18 implementation (e.g. `nyholm/psr7`):
+
+```bash
+composer require meilisearch/meilisearch-php nyholm/psr7
+```
+
 ## Configuration
 
 ### Configure the Adapter

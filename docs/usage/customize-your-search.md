@@ -413,8 +413,20 @@ public function build(array $options = []): void
 By default, `DefaultUrlFormater` generates URLs like:
 
 ```
-/search?q=laptop&facets[brand][]=Dell&facets[brand][]=HP&facets[price][min]=500&facets[price][max]=1500&sort=price:asc&page=2
+/search?query=laptop&brand=Dell~~HP&priceMin=500&priceMax=1500&sortBy=price:asc&page=2
 ```
+
+The parameters are:
+
+| Parameter          | Description                                                                  |
+|--------------------|------------------------------------------------------------------------------|
+| `query`            | The search query string                                                      |
+| `sortBy`           | Active sort key (must match a key declared with `addAvailableSort()`)        |
+| `page`             | Current page (omitted for page 1)                                            |
+| `<property>`       | Term filter values joined by `~~` (e.g. `brand=Dell~~HP`)                    |
+| `<property>Min` / `<property>Max` | Range filter bounds (e.g. `priceMin=500&priceMax=1500`)       |
+
+Dots in property names are replaced by underscores in the URL (e.g. `p.brand` becomes `p_brand`).
 
 ### Custom URL Formatter
 
@@ -422,92 +434,90 @@ Create a custom formatter to control URL structure:
 
 #### 1. Implement UrlFormaterInterface
 
+Both methods receive a `CurrentRequest`, a value object exposing the current route name (`$currentRequest->route`) and its parameters (`$currentRequest->parameters`). The parameters only contain the raw route parameters (`_route_params`) and the query string, restricted to scalar and array values — resolved entities or other business objects from the request attributes are never exposed.
+
 ```php
 <?php
 
 namespace App\Search\Url;
 
+use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
+use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CustomUrlFormater implements UrlFormaterInterface
 {
-    public function generateUrl(Query $query, SearchInterface $search): string
+    public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
     {
-        // Build clean URL from Query object
-        $parts = [];
-
-        if ($query->getQuery()) {
-            $parts[] = 'q/' . urlencode($query->getQuery());
-        }
-
-        // Add filters
-        foreach ($query->getFilters() as $filter) {
-            $property = str_replace('.', '-', $filter->getProperty());
-            $values = implode(',', $filter->getValues());
-            $parts[] = $property . '/' . urlencode($values);
-        }
-
-        // Add numeric filters
-        foreach ($query->getNumericFilters() as $filter) {
-            $property = str_replace('.', '-', $filter->getProperty());
-            $parts[] = $property . '/' . $filter->getMin() . '-' . $filter->getMax();
-        }
-
-        // Add sort
-        if ($sort = $query->getActiveSort()) {
-            $parts[] = 'sort/' . urlencode($sort);
-        }
-
-        // Add page
-        if ($query->getPage() > 1) {
-            $parts[] = 'page/' . $query->getPage();
-        }
-
-        return '/' . implode('/', $parts);
-        // Example: /q/laptop/brand/Dell,HP/price/500-1500/sort/price:asc/page/2
     }
 
-    public function applyFilters(Request $request, Query $query, SearchInterface $search): void
+    public function generateUrl(CurrentRequest $currentRequest, SearchInterface $search, Query $query): string
     {
-        // Parse URL and apply filters to Query object
-        $path = trim($request->getPathInfo(), '/');
-        $segments = explode('/', $path);
+        $params = [];
 
-        for ($i = 0; $i < count($segments); $i += 2) {
-            $key = $segments[$i] ?? null;
-            $value = $segments[$i + 1] ?? null;
+        if ('' !== $query->getQueryString()) {
+            $params['q'] = $query->getQueryString();
+        }
 
-            if (!$key || !$value) {
-                continue;
+        if ($query->getActiveSort()) {
+            $params['sort'] = $query->getActiveSort();
+        }
+
+        if ($query->getCurrentPage() > 1) {
+            $params['p'] = $query->getCurrentPage();
+        }
+
+        foreach ($query->getActiveFilters() as $filter) {
+            if ($filter instanceof TermFilter) {
+                $params[$filter->getProperty()] = implode(',', $filter->getValues());
             }
 
-            match ($key) {
-                'q' => $query->setQuery(urldecode($value)),
-                'page' => $query->setPage((int) $value),
-                'sort' => $query->setActiveSort(urldecode($value)),
-                'brand', 'category', 'type' => $query->addFilter(
-                    str_replace('-', '.', $key),
-                    explode(',', urldecode($value))
-                ),
-                'price', 'rating' => (function () use ($query, $key, $value) {
-                    [$min, $max] = explode('-', $value);
-                    $query->addNumericFilter(
-                        str_replace('-', '.', $key),
-                        (float) $min,
-                        (float) $max
-                    );
-                })(),
-                default => null,
-            };
+            if ($filter instanceof RangeFilter) {
+                $params[$filter->getProperty()] = $filter->getMin().'-'.$filter->getMax();
+            }
+        }
+
+        return $this->urlGenerator->generate($currentRequest->route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+        // Example: /search?q=laptop&brand=Dell,HP&price=500-1500&sort=price:asc&p=2
+    }
+
+    public function applyFilters(CurrentRequest $currentRequest, SearchInterface $search, Query $query): void
+    {
+        if ($q = $currentRequest->parameters['q'] ?? null) {
+            $query->setQueryString((string) $q);
+        }
+
+        if ($sort = $currentRequest->parameters['sort'] ?? null) {
+            $query->setActiveSort((string) $sort);
+        }
+
+        if ($page = $currentRequest->parameters['p'] ?? null) {
+            $query->setCurrentPage((int) $page);
+        }
+
+        foreach ($search->getFacets() as $facet) {
+            $property = $facet->getProperty();
+
+            if ($value = $currentRequest->parameters[$property] ?? null) {
+                if (str_contains((string) $value, '-')) {
+                    [$min, $max] = explode('-', (string) $value);
+                    $query->addActiveFilter(new RangeFilter($property, (float) $min, (float) $max));
+                } else {
+                    $query->addActiveFilter(new TermFilter($property, explode(',', (string) $value)));
+                }
+            }
         }
     }
 }
 ```
 
 #### 2. Register and Use Custom Formatter
+
+Classes implementing `UrlFormaterInterface` are autoconfigured with the `mezcalito_ux_search.url_formater` tag. Then select the formatter in your search:
 
 ```php
 use App\Search\Url\CustomUrlFormater;
@@ -523,6 +533,20 @@ public function build(array $options = []): void
 ```
 
 Your searches will now generate and parse clean, SEO-friendly URLs.
+
+### Input Sanitization
+
+URL parameters and live component state are client-writable, so the bundle constrains them before executing a search:
+
+- A `sortBy` value not declared with `addAvailableSort()` falls back to the first available sort.
+- A `hitsPerPage` value not declared with `setAvailableHitsPerPage()` falls back to the first available value.
+- A page number below 1 is reset to 1.
+- Filters targeting a property not declared as a facet are removed.
+- `DefaultUrlFormater` also truncates the query string to 1000 characters, keeps at most 100 values per term filter, and ignores range bounds that are non-finite or where min is greater than max.
+
+Custom `UrlFormaterInterface` implementations benefit from the same safety net: values applied in `applyFilters()` are validated against the search configuration before reaching the adapter.
+
+Search execution failures are wrapped in `Mezcalito\UxSearchBundle\Exception\AdapterException` and logged on the `mezcalito_ux_search` Monolog channel.
 
 ---
 

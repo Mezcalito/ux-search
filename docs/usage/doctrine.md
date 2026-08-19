@@ -165,6 +165,10 @@ public function build(array $options = []): void
 }
 ```
 
+## Range Facets
+
+Facet stats (min/max values used by `RangeSlider` and `RangeInput`) are only computed for numeric fields. The adapter inspects the Doctrine field mapping and skips the MIN/MAX query for fields mapped to a clearly non-numeric type (strings, dates, booleans, JSON, etc.). Make sure range facets target numeric columns.
+
 ## Performance Considerations
 
 ### Indexing
@@ -216,6 +220,12 @@ The Doctrine adapter has some limitations compared to dedicated search engines:
 - Reduce the number of search fields
 - Limit the dataset with `QUERY_BUILDER` conditions
 - Consider switching to Algolia or Meilisearch for larger datasets
+
+Note: the total result count is computed by Doctrine's `Paginator` from the same query as the hits, so no separate COUNT query is issued.
+
+### Custom entity manager
+
+The DSN format is `doctrine://entityManagerName`. Any service implementing `EntityManagerInterface` is accepted, including decorated or lazy entity managers.
 
 ### Facets not working
 

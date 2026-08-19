@@ -10,14 +10,21 @@ The `Pagination` component displays a pagination system which lets users navigat
 
 ## Available Variables
 
-| Variable     | Type                | Description                                          |
-|--------------|---------------------|------------------------------------------------------|
-| `page`       | int                 | Current page number (1-indexed)                      |
-| `totalPage`  | int                 | Total number of pages available                      |
-| `range`      | int                 | Number of pages to show on each side of current page |
-| `startRange` | int                 | Starting page number of visible range                |
-| `endRange`   | int                 | Ending page number of visible range                  |
-| `attributes` | ComponentAttributes | HTML attributes for the container                    |
+| Variable     | Type                | Description                                                                    |
+|--------------|---------------------|--------------------------------------------------------------------------------|
+| `page`       | int                 | Current page number (1-indexed)                                                |
+| `totalPage`  | int                 | Total number of pages available                                                |
+| `range`      | int                 | Number of pages to show on each side of current page                           |
+| `pages`      | list<int\|null>     | Precomputed list of pages to render, where `null` marks an ellipsis            |
+| `startRange` | int                 | Starting page number of visible range (still exposed, not used by the default template) |
+| `endRange`   | int                 | Ending page number of visible range (still exposed, not used by the default template)   |
+| `attributes` | ComponentAttributes | HTML attributes for the container                                              |
+
+The component also exposes a helper method callable from Twig:
+
+| Method              | Description                                                                                                         |
+|---------------------|---------------------------------------------------------------------------------------------------------------------|
+| `this.pageUrl(page)` | Returns the URL for the given page. When `enableUrlRewriting()` is active on the search, the URL formater generates a full URL preserving the current query, filters and sort; otherwise it falls back to `?page=N` |
 
 ## Blocks Available
 
@@ -36,7 +43,7 @@ The `Pagination` component displays a pagination system which lets users navigat
                     <li class="ux-search-pagination__item">
                         <a
                             class="ux-search-pagination__link"
-                            href="?page={{ page - 1 }}"
+                            href="{{ this.pageUrl(page - 1) }}"
                             data-action="live#action:prevent"
                             data-live-action-param="changeCurrentPage"
                             data-live-page-param="{{ page - 1 }}"
@@ -48,55 +55,21 @@ The `Pagination` component displays a pagination system which lets users navigat
                     </li>
                 {% endif %}
 
-                {% if startRange > range %}
-                    {% for i in 1..range %}
-                        <li class="ux-search-pagination__item">
-                            {{ _self.link(i, page) }}
-                        </li>
-                    {% endfor %}
-                {% endif %}
-
-                {% if startRange - 1 == 1 %}
+                {% for p in pages %}
                     <li class="ux-search-pagination__item">
-                        {{ _self.link(1, page) }}
-                    </li>
-                {% elseif startRange - 1 == range + 1 %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.link(range + 1, page) }}
-                    </li>
-                {% elseif startRange - 1 >= range + 2 %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.elipsis() }}
-                    </li>
-                {% endif %}
-
-                {% for i in  startRange..endRange %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.link(i, page) }}
+                        {% if p is null %}
+                            {{ _self.elipsis() }}
+                        {% else %}
+                            {{ _self.link(p, page, this.pageUrl(p)) }}
+                        {% endif %}
                     </li>
                 {% endfor %}
-
-                <li class="ux-search-pagination__item">
-                    {% if endRange + range <= totalPage - range %}
-                        {{ _self.elipsis() }}
-                    {% elseif endRange + 1 == totalPage - (range + 1)  %}
-                        {{ _self.link(endRange + 1, page) }}
-                    {% endif %}
-                </li>
-
-                {% if endRange < totalPage %}
-                    {% for i in (totalPage - range + 1)..totalPage %}
-                        <li class="ux-search-pagination__item">
-                            {{ _self.link(i, page) }}
-                        </li>
-                    {% endfor %}
-                {% endif %}
 
                 {% if page < totalPage %}
                     <li class="ux-search-pagination__item">
                         <a
                             class="ux-search-pagination__link{{ page < totalPage ? '' : ' is-disabled'}}"
-                            href="?page={{ page + 1 }}"
+                            href="{{ this.pageUrl(page + 1) }}"
                             data-action="live#action:prevent"
                             data-live-action-param="changeCurrentPage"
                             data-live-page-param="{{ page + 1 }}"
@@ -111,13 +84,13 @@ The `Pagination` component displays a pagination system which lets users navigat
         </nav>
     {% endif -%}
 
-    {%- macro link(iterator, page) %}
+    {%- macro link(iterator, page, url) %}
         {%- if page == iterator %}
             <span class="ux-search-pagination__link is-current">{{ iterator }}</span>
         {% else %}
             <a
                 class="ux-search-pagination__link"
-                href="?page={{ iterator }}"
+                href="{{ url|default('?page=' ~ iterator) }}"
                 data-action="live#action:prevent"
                 data-live-action-param="changeCurrentPage"
                 data-live-page-param="{{ iterator }}"
@@ -135,6 +108,8 @@ The `Pagination` component displays a pagination system which lets users navigat
 
 ## Default HTML Output
 
+When URL rewriting is disabled, links use the `?page=N` fallback shown below. When `enableUrlRewriting()` is active on the search, each `href` contains the full rewritten URL preserving the current query, filters and sort (e.g. `?query=laptop&brand=Dell&page=6`).
+
 ```html
 <nav class="ux-search-pagination">
     <ul class="ux-search-pagination__list">
@@ -148,12 +123,6 @@ The `Pagination` component displays a pagination system which lets users navigat
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=1" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="1">
                 1
-            </a>
-        </li>
-
-        <li class="ux-search-pagination__item">
-            <a class="ux-search-pagination__link" href="?page=2" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="2">
-                2
             </a>
         </li>
 
@@ -176,6 +145,7 @@ The `Pagination` component displays a pagination system which lets users navigat
         <li class="ux-search-pagination__item">
             <span class="ux-search-pagination__link is-current">7</span>
         </li>
+
         <li class="ux-search-pagination__item">
             <a class="ux-search-pagination__link" href="?page=8" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="8">
                 8
@@ -190,12 +160,6 @@ The `Pagination` component displays a pagination system which lets users navigat
 
         <li class="ux-search-pagination__item">
             <span class="ux-search-pagination__link ux-search-pagination__ellipsis">...</span>
-        </li>
-
-        <li class="ux-search-pagination__item">
-            <a class="ux-search-pagination__link" href="?page=3333" data-action="live#action:prevent" data-live-action-param="changeCurrentPage" data-live-page-param="3333">
-                3333
-            </a>
         </li>
 
         <li class="ux-search-pagination__item">

@@ -50,6 +50,19 @@ Install the bundle via Composer:
 composer require mezcalito/ux-search
 ```
 
+Then install the client library for your adapter:
+
+```bash
+# For Algolia
+composer require algolia/algoliasearch-client-php
+
+# For Meilisearch (requires a PSR-7/PSR-18 implementation)
+composer require meilisearch/meilisearch-php nyholm/psr7
+
+# For Doctrine ORM
+composer require doctrine/doctrine-bundle doctrine/orm
+```
+
 If you're **not** using Symfony Flex, you'll need to manually register the bundle in `config/bundles.php`:
 
 ```php
@@ -88,9 +101,10 @@ MEZCALITO_UX_SEARCH_DEFAULT_DSN=doctrine://default
 
 ### 2. Create Your First Search
 
-Use the maker command to generate a search class:
+Use the maker command to generate a search class (requires `symfony/maker-bundle`):
 
 ```bash
+composer require --dev symfony/maker-bundle
 php bin/console make:search
 ```
 

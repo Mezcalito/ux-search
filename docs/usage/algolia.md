@@ -150,6 +150,8 @@ View analytics in your Algolia dashboard to understand:
 - Click-through rates
 - Conversion tracking
 
+Note: the additional queries issued to refresh facet counts (one per active filter) always force `hitsPerPage: 0`, `attributesToRetrieve: []` and `analytics: false`, so they don't fetch hits and never pollute your analytics regardless of `ANALYTICS_PARAM`.
+
 ### Advanced Search Syntax
 
 Enable power users to use advanced operators:

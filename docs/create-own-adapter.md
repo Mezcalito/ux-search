@@ -19,10 +19,16 @@ An adapter consists of two parts:
 ### The Search Flow
 
 1. User submits search query
-2. Bundle calls `factory->createAdapter($dsn)` to get adapter instance
+2. Bundle calls `factory->createAdapter($dsn)` to get adapter instance (memoized per adapter name: the factory is called once, then the same instance is reused for subsequent searches, so adapters must not keep per-request state)
 3. Bundle calls `adapter->search($query, $search)` with search parameters
 4. Adapter returns `ResultSet` with hits, facets, and pagination data
 5. Bundle renders results in Twig components
+
+### Error Handling
+
+Any exception thrown by `adapter->search()` is wrapped in `Mezcalito\UxSearchBundle\Exception\AdapterException` (the original exception is kept as `previous`) and logged on the `mezcalito_ux_search` Monolog channel. Your adapter can throw domain exceptions freely; they will be surfaced consistently.
+
+In your factory, throw `AdapterException::invalidDsn($dsn)` when the DSN is empty or malformed: it redacts credentials from the DSN before including it in the exception message. Never expose the raw DSN in your own exception messages, as it may contain API keys.
 
 ## Step-by-Step Implementation
 
