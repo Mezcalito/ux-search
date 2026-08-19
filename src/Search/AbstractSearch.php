@@ -48,6 +48,7 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
      */
     public function create(array $options = []): static
     {
+        $this->reset();
         $this->eventDispatcher = new EventDispatcher();
         $this->build($options);
 
@@ -243,9 +244,12 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     public function reset(): void
     {
-        unset($this->availableSorts, $this->facets);
-
+        $this->availableHitsPerPage = [12];
         $this->availableSorts = [];
         $this->facets = [];
+        $this->adapterParameters = [];
+        $this->resolvedAdapterParameters = [];
+        $this->urlRewriting = false;
+        $this->urlFormater = null;
     }
 }

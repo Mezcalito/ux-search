@@ -181,4 +181,38 @@ class AbstractSearchTest extends TestCase
         $this->assertCount(0, $this->search->getAvailableSorts());
         $this->assertCount(0, $this->search->getFacets());
     }
+
+    public function testResetRestoresFullState(): void
+    {
+        $this->search->setAvailableHitsPerPage([24, 48]);
+        $this->search->setAdapterParameters(['distinct' => 'sku']);
+        $this->search->setResolvedAdapterParameters(['distinct' => 'sku']);
+        $this->search->enableUrlRewriting();
+        $this->search->setUrlFormater('CustomFormater');
+
+        $this->search->reset();
+
+        $this->assertSame([12], $this->search->getAvailableHitsPerPage());
+        $this->assertSame([], $this->search->getAdapterParameters());
+        $this->assertSame([], $this->search->getResolvedAdapterParameters());
+        $this->assertFalse($this->search->hasUrlRewriting());
+        $this->assertSame(DefaultUrlFormater::class, $this->search->getUrlFormater());
+    }
+
+    public function testCreateTwiceDoesNotDuplicateState(): void
+    {
+        $search = new class extends AbstractSearch {
+            public function build(array $options = []): void
+            {
+                $this->addAvailableSort('price', 'Price');
+                $this->addFacet('category', 'Category');
+            }
+        };
+
+        $search->create();
+        $search->create();
+
+        $this->assertCount(1, $search->getAvailableSorts());
+        $this->assertCount(1, $search->getFacets());
+    }
 }
