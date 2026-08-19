@@ -65,6 +65,7 @@ return static function (ContainerConfigurator $container) {
             ->arg('$requestStack', service(RequestStack::class))
             ->arg('$urlFormaterProvider', service(UrlFormaterProvider::class))
             ->arg('$serializer', service('serializer'))
+            ->arg('$contextProvider', service(ContextProvider::class))
             ->call('setLiveResponder', [service(LiveResponder::class)])
             ->tag('twig.component', [
                 'key' => 'Mezcalito:UxSearch:Layout',
@@ -92,6 +93,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('twig.component', ['key' => 'Mezcalito:UxSearch:HitsPerPage'])
         ->set(Pagination::class)
             ->arg('$contextProvider', service(ContextProvider::class))
+            ->arg('$urlFormaterProvider', service(UrlFormaterProvider::class))
             ->tag('twig.component', [
                 'key' => 'Mezcalito:UxSearch:Pagination',
                 'expose_public_props' => true,

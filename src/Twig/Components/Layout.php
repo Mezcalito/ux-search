@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Twig\Components;
 
+use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
@@ -66,6 +67,7 @@ class Layout
         private readonly UrlFormaterProvider $urlFormaterProvider,
         /** @var Serializer */
         private readonly SerializerInterface $serializer,
+        private readonly ContextProvider $contextProvider,
     ) {
     }
 
@@ -88,6 +90,7 @@ class Layout
         }
 
         $this->searcher->search($this->query, $this->search);
+        $this->shareCurrentRequestWithContext();
     }
 
     #[PreReRender]
@@ -95,6 +98,7 @@ class Layout
     {
         $this->search = $this->getSearch($this->name)->create($this->options);
         $this->searcher->search($this->query, $this->search);
+        $this->shareCurrentRequestWithContext();
 
         $this->dispatchBrowserEvent('ux-search:query:update', $this->serializer->normalize($this->query));
 
@@ -192,5 +196,12 @@ class Layout
     private function getUrlFormater(): UrlFormaterInterface
     {
         return $this->urlFormaterProvider->getUrlFormater($this->search->getUrlFormater());
+    }
+
+    private function shareCurrentRequestWithContext(): void
+    {
+        if ($this->currentRequest && $this->contextProvider->hasCurrentContext()) {
+            $this->contextProvider->getCurrentContext()->setCurrentRequest($this->currentRequest);
+        }
     }
 }

@@ -8,7 +8,7 @@
                     <li class="ux-search-pagination__item">
                         <a
                             class="ux-search-pagination__link"
-                            href="?page={{ page - 1 }}"
+                            href="{{ this.pageUrl(page - 1) }}"
                             data-action="live#action:prevent"
                             data-live-action-param="changeCurrentPage"
                             data-live-page-param="{{ page - 1 }}"
@@ -25,7 +25,7 @@
                         {% if p is null %}
                             {{ _self.elipsis() }}
                         {% else %}
-                            {{ _self.link(p, page) }}
+                            {{ _self.link(p, page, this.pageUrl(p)) }}
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -34,7 +34,7 @@
                     <li class="ux-search-pagination__item">
                         <a
                             class="ux-search-pagination__link{{ page < totalPage ? '' : ' is-disabled'}}"
-                            href="?page={{ page + 1 }}"
+                            href="{{ this.pageUrl(page + 1) }}"
                             data-action="live#action:prevent"
                             data-live-action-param="changeCurrentPage"
                             data-live-page-param="{{ page + 1 }}"
@@ -49,13 +49,13 @@
         </nav>
     {% endif -%}
 
-    {%- macro link(iterator, page) %}
+    {%- macro link(iterator, page, url) %}
         {%- if page == iterator %}
             <span class="ux-search-pagination__link is-current">{{ iterator }}</span>
         {% else %}
             <a
                 class="ux-search-pagination__link"
-                href="?page={{ iterator }}"
+                href="{{ url|default('?page=' ~ iterator) }}"
                 data-action="live#action:prevent"
                 data-live-action-param="changeCurrentPage"
                 data-live-page-param="{{ iterator }}"

@@ -18,6 +18,9 @@ use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
+use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterInterface;
+use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
 use Mezcalito\UxSearchBundle\Twig\Components\Pagination;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\UX\TwigComponent\Test\InteractsWithTwigComponents;
@@ -51,7 +54,40 @@ class PaginationTest extends AbstractComponentTestCase
         $provider->init((new Query())->setCurrentPage($currentPage)->setActiveHitsPerPage(1), $this->createStub(SearchInterface::class));
         $provider->getCurrentContext()->setResults((new ResultSet())->setTotalResults($totalPage));
 
-        $this->assertSame($expected, (new Pagination($provider))->getPages());
+        $pagination = new Pagination($provider, new UrlFormaterProvider([]));
+
+        $this->assertSame($expected, $pagination->getPages());
+    }
+
+    public function testGetPageUrlUsesUrlFormaterWhenRewritingIsEnabled(): void
+    {
+        $search = $this->createStub(SearchInterface::class);
+        $search->method('hasUrlRewriting')->willReturn(true);
+        $search->method('getUrlFormater')->willReturn('FormaterName');
+
+        $formater = $this->createStub(UrlFormaterInterface::class);
+        $formater->method('generateUrl')->willReturnCallback(
+            static fn (CurrentRequest $currentRequest, SearchInterface $search, Query $query) => '/search?page='.$query->getCurrentPage()
+        );
+
+        $provider = new ContextProvider();
+        $provider->init((new Query())->setCurrentPage(1), $search);
+        $provider->getCurrentContext()->setCurrentRequest(new CurrentRequest('search_route', []));
+
+        $pagination = new Pagination($provider, new UrlFormaterProvider(['FormaterName' => $formater]));
+
+        $this->assertSame('/search?page=4', $pagination->getPageUrl(4));
+        $this->assertSame(1, $provider->getCurrentContext()->getQuery()->getCurrentPage());
+    }
+
+    public function testGetPageUrlFallsBackWithoutCurrentRequest(): void
+    {
+        $provider = new ContextProvider();
+        $provider->init(new Query(), $this->createStub(SearchInterface::class));
+
+        $pagination = new Pagination($provider, new UrlFormaterProvider([]));
+
+        $this->assertSame('?page=4', $pagination->getPageUrl(4));
     }
 
     /**

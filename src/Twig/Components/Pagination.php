@@ -15,6 +15,7 @@ namespace Mezcalito\UxSearchBundle\Twig\Components;
 
 use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
+use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
 class Pagination
@@ -23,7 +24,25 @@ class Pagination
 
     public function __construct(
         private readonly ContextProvider $contextProvider,
+        private readonly UrlFormaterProvider $urlFormaterProvider,
     ) {
+    }
+
+    public function getPageUrl(int $page): string
+    {
+        $context = $this->contextProvider->getCurrentContext();
+        $currentRequest = $context->getCurrentRequest();
+
+        if (null === $currentRequest || !$context->getSearch()->hasUrlRewriting()) {
+            return '?page='.$page;
+        }
+
+        $query = clone $context->getQuery();
+        $query->setCurrentPage($page);
+
+        return $this->urlFormaterProvider
+            ->getUrlFormater($context->getSearch()->getUrlFormater())
+            ->generateUrl($currentRequest, $context->getSearch(), $query);
     }
 
     #[ExposeInTemplate]
