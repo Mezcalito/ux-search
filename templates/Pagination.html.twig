@@ -20,49 +20,15 @@
                     </li>
                 {% endif %}
 
-                {% if startRange > range %}
-                    {% for i in 1..range %}
-                        <li class="ux-search-pagination__item">
-                            {{ _self.link(i, page) }}
-                        </li>
-                    {% endfor %}
-                {% endif %}
-
-                {% if startRange - 1 == 1 %}
+                {% for p in pages %}
                     <li class="ux-search-pagination__item">
-                        {{ _self.link(1, page) }}
-                    </li>
-                {% elseif startRange - 1 == range + 1 %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.link(range + 1, page) }}
-                    </li>
-                {% elseif startRange - 1 >= range + 2 %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.elipsis() }}
-                    </li>
-                {% endif %}
-
-                {% for i in  startRange..endRange %}
-                    <li class="ux-search-pagination__item">
-                        {{ _self.link(i, page) }}
+                        {% if p is null %}
+                            {{ _self.elipsis() }}
+                        {% else %}
+                            {{ _self.link(p, page) }}
+                        {% endif %}
                     </li>
                 {% endfor %}
-
-                <li class="ux-search-pagination__item">
-                    {% if endRange + range <= totalPage - range %}
-                        {{ _self.elipsis() }}
-                    {% elseif endRange + 1 == totalPage - (range + 1)  %}
-                        {{ _self.link(endRange + 1, page) }}
-                    {% endif %}
-                </li>
-
-                {% if endRange < totalPage %}
-                    {% for i in (totalPage - range + 1)..totalPage %}
-                        <li class="ux-search-pagination__item">
-                            {{ _self.link(i, page) }}
-                        </li>
-                    {% endfor %}
-                {% endif %}
 
                 {% if page < totalPage %}
                     <li class="ux-search-pagination__item">
