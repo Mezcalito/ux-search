@@ -51,6 +51,13 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(3, $result['requests']); // 1 main query + 2 facet queries
         $this->assertEquals('products', $result['requests'][0]['indexName']);
         $this->assertStringContainsString('brand:"Apple" OR brand:"Samsung" AND price >= 100 AND price <= 500', $result['requests'][0]['filters']);
+
+        foreach ([1, 2] as $facetQueryIndex) {
+            $this->assertSame(0, $result['requests'][$facetQueryIndex]['hitsPerPage']);
+            $this->assertSame([], $result['requests'][$facetQueryIndex]['attributesToRetrieve']);
+            $this->assertSame([], $result['requests'][$facetQueryIndex]['attributesToHighlight']);
+            $this->assertFalse($result['requests'][$facetQueryIndex]['analytics']);
+        }
     }
 
     public function testBuildWithActiveSorting(): void

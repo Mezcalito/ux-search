@@ -68,12 +68,26 @@ class QueryBuilder
                 }
             }
 
-            $queries['requests'][] = [
+            $facetQuery = [
                 'indexName' => $indexName,
                 'query' => $query->getQueryString(),
                 'facets' => [$activeFilter->getProperty()],
                 'filters' => $this->formatFilters($otherFilters),
+                'hitsPerPage' => 0,
+                'attributesToRetrieve' => [],
+                'attributesToHighlight' => [],
+                'analytics' => false,
             ];
+
+            if (isset($options[AlgoliaAdapter::MAX_VALUES_PER_FACET_PARAM])) {
+                $facetQuery[AlgoliaAdapter::MAX_VALUES_PER_FACET_PARAM] = $options[AlgoliaAdapter::MAX_VALUES_PER_FACET_PARAM];
+            }
+
+            if (isset($options[AlgoliaAdapter::SORT_FACET_VALUES_BY_PARAM])) {
+                $facetQuery[AlgoliaAdapter::SORT_FACET_VALUES_BY_PARAM] = $options[AlgoliaAdapter::SORT_FACET_VALUES_BY_PARAM];
+            }
+
+            $queries['requests'][] = $facetQuery;
         }
 
         return $queries;
