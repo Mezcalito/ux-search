@@ -15,34 +15,42 @@ namespace Mezcalito\UxSearchBundle\Adapter;
 
 use Mezcalito\UxSearchBundle\Exception\AdapterException;
 
-readonly class AdapterProvider
+class AdapterProvider
 {
+    /** @var array<string, AdapterInterface> */
+    private array $adapters = [];
+
     /**
      * @param array<string, array<string, mixed>> $adapterConfiguration
      * @param iterable<AdapterFactoryInterface>   $factories
      */
     public function __construct(
-        private string $defaultAdapterName,
-        private array $adapterConfiguration,
-        private iterable $factories,
+        private readonly string $defaultAdapterName,
+        private readonly array $adapterConfiguration,
+        private readonly iterable $factories,
     ) {
     }
 
     public function getAdapter(?string $name = null): AdapterInterface
     {
-        if (null === $name) {
-            $name = $this->defaultAdapterName;
+        $name ??= $this->defaultAdapterName;
+
+        if (isset($this->adapters[$name])) {
+            return $this->adapters[$name];
         }
 
         if (!\array_key_exists($name, $this->adapterConfiguration)) {
             throw AdapterException::configurationNotFound($name);
         }
 
-        $dsn = $this->adapterConfiguration[$name]['dsn'];
+        $dsn = $this->adapterConfiguration[$name]['dsn'] ?? null;
+        if (!\is_string($dsn) || '' === $dsn) {
+            throw AdapterException::invalidDsn((string) $dsn);
+        }
 
         foreach ($this->factories as $factory) {
             if ($factory->support($dsn)) {
-                return $factory->createAdapter($dsn);
+                return $this->adapters[$name] = $factory->createAdapter($dsn);
             }
         }
 

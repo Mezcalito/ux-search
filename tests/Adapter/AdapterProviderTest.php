@@ -67,6 +67,29 @@ class AdapterProviderTest extends TestCase
         $provider->getAdapter('nonexistent');
     }
 
+    public function testGetAdapterIsMemoized(): void
+    {
+        $adapter = $this->createStub(AdapterInterface::class);
+
+        $factory = $this->createMock(AdapterFactoryInterface::class);
+        $factory->method('support')->willReturn(true);
+        $factory->expects($this->once())->method('createAdapter')->willReturn($adapter);
+
+        $provider = new AdapterProvider('default', ['default' => ['dsn' => 'meilisearch://localhost:7700']], [$factory]);
+
+        $this->assertSame($adapter, $provider->getAdapter());
+        $this->assertSame($adapter, $provider->getAdapter());
+    }
+
+    public function testGetAdapterThrowsExceptionOnMissingDsn(): void
+    {
+        $provider = new AdapterProvider('default', ['default' => []], []);
+
+        $this->expectException(AdapterException::class);
+
+        $provider->getAdapter();
+    }
+
     public function testGetAdapterThrowsExceptionIfNoFactorySupportsDsn(): void
     {
         $adapterConfiguration = [
