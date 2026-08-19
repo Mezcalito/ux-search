@@ -30,6 +30,8 @@ readonly class Searcher
 
     public function search(Query $query, SearchInterface $search): ResultSet\ResultSet
     {
+        $this->sanitizeQuery($query, $search);
+
         $eventDispatcher = $search->getEventDispatcher();
         $search->addEventSubscriber(new ContextSubscriber($this->contextProvider));
 
@@ -46,5 +48,33 @@ readonly class Searcher
         $eventDispatcher->dispatch(new PostSearchEvent($query, $search, $results));
 
         return $results;
+    }
+
+    /**
+     * Client-writable query values (sort, hits per page, page, filter properties)
+     * must be constrained to what the search declares before reaching adapters.
+     */
+    private function sanitizeQuery(Query $query, SearchInterface $search): void
+    {
+        $allowedSorts = array_map(static fn (Sort $sort) => $sort->getKey(), $search->getAvailableSorts());
+        if (null !== $query->getActiveSort() && !\in_array($query->getActiveSort(), $allowedSorts, true)) {
+            $query->setActiveSort([] !== $allowedSorts ? current($allowedSorts) : null);
+        }
+
+        $availableHitsPerPage = $search->getAvailableHitsPerPage();
+        if ([] !== $availableHitsPerPage && !\in_array($query->getActiveHitsPerPage(), $availableHitsPerPage, true)) {
+            $query->setActiveHitsPerPage((int) current($availableHitsPerPage));
+        }
+
+        if ($query->getCurrentPage() < 1) {
+            $query->setCurrentPage(1);
+        }
+
+        $facetProperties = array_map(static fn (Facet $facet) => $facet->getProperty(), $search->getFacets());
+        foreach ($query->getActiveFilters() as $filter) {
+            if (!\in_array($filter->getProperty(), $facetProperties, true)) {
+                $query->removeActiveFilter($filter);
+            }
+        }
     }
 }
