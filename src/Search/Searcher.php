@@ -48,14 +48,14 @@ readonly class Searcher
 
         try {
             $results = $adapter->search($query, $search);
-        } catch (\Throwable $exception) {
+        } catch (\Throwable $throwable) {
             $this->logger?->error('Search failed for index "{index}": {message}', [
                 'index' => $search->getIndexName(),
-                'message' => $exception->getMessage(),
-                'exception' => $exception,
+                'message' => $throwable->getMessage(),
+                'exception' => $throwable,
             ]);
 
-            throw AdapterException::searchFailed($search->getIndexName(), $exception);
+            throw AdapterException::searchFailed($search->getIndexName(), $throwable);
         }
 
         $eventDispatcher->dispatch(new PostSearchEvent($query, $search, $results));

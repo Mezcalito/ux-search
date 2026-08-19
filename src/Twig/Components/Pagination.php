@@ -33,7 +33,7 @@ class Pagination
         $context = $this->contextProvider->getCurrentContext();
         $currentRequest = $context->getCurrentRequest();
 
-        if (null === $currentRequest || !$context->getSearch()->hasUrlRewriting()) {
+        if (!$currentRequest instanceof \Mezcalito\UxSearchBundle\Search\Url\CurrentRequest || !$context->getSearch()->hasUrlRewriting()) {
             return '?page='.$page;
         }
 
@@ -92,6 +92,7 @@ class Pagination
             } elseif ($end < $total - 2) {
                 $pages[] = null;
             }
+
             $pages[] = $total;
         }
 

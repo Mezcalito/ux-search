@@ -97,7 +97,7 @@ class Layout
     #[PreReRender]
     public function onReRender(): void
     {
-        if (null === $this->name || null === $this->query) {
+        if (null === $this->name || !$this->query instanceof Query) {
             throw SearchException::componentNotMounted();
         }
 
@@ -208,7 +208,7 @@ class Layout
 
     private function getUrlFormater(): UrlFormaterInterface
     {
-        if (null === $this->search) {
+        if (!$this->search instanceof SearchInterface) {
             throw SearchException::componentNotMounted();
         }
 

@@ -16,14 +16,19 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude([
         'vendor/',
         'node_modules',
+        'coverage',
+        'assets',
+        'tests/TestApplication/var',
+        'tests/TestApplication/assets',
     ])
+    ->notPath('TestApplication/config/reference.php')
 ;
 
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@PHP83Migration' => true,
-        '@PHPUnit84Migration:risky' => true,
+        '@PHPUnit100Migration:risky' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'declare_strict_types' => true,

@@ -195,9 +195,9 @@ class SearcherTest extends TestCase
         try {
             $searcher->search(new Query(), $search);
             $this->fail('Expected AdapterException');
-        } catch (AdapterException $exception) {
-            $this->assertInstanceOf(\RuntimeException::class, $exception->getPrevious());
-            $this->assertSame('engine unreachable', $exception->getPrevious()->getMessage());
+        } catch (AdapterException $adapterException) {
+            $this->assertInstanceOf(\RuntimeException::class, $adapterException->getPrevious());
+            $this->assertSame('engine unreachable', $adapterException->getPrevious()->getMessage());
         }
     }
 

@@ -12,29 +12,26 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
-use Rector\PHPUnit\Set\PHPUnitSetList;
-use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
-use Rector\Symfony\Set\SymfonySetList;
+use Rector\Symfony\Symfony72\Rector\StmtsAwareInterface\PushRequestToRequestStackConstructorRector;
+use Rector\Symfony\Symfony73\Rector\Class_\GetFiltersAndFunctionsToAsTwigAttributeRector;
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->paths([
+return RectorConfig::configure()
+    ->withPaths([
         __DIR__.'/config',
         __DIR__.'/src',
         __DIR__.'/tests',
-    ]);
-
-    $rectorConfig->sets([
+    ])
+    ->withSets([
         SetList::CODE_QUALITY,
         SetList::CODING_STYLE,
-        LevelSetList::UP_TO_PHP_83,
-        SymfonySetList::SYMFONY_64,
-        PHPUnitSetList::PHPUNIT_100,
-    ]);
-
-    $rectorConfig->skip([
+    ])
+    ->withPhpSets(php83: true)
+    ->withComposerBased(symfony: true, phpunit: true)
+    ->withSkip([
         __DIR__.'/tests/TestApplication/*',
-        AddOverrideAttributeToOverriddenMethodsRector::class,
+        // Requires the twig.attribute_extension registration, not available on all supported versions
+        GetFiltersAndFunctionsToAsTwigAttributeRector::class,
+        // RequestStack constructor argument is not available on Symfony 6.4
+        PushRequestToRequestStackConstructorRector::class,
     ]);
-};
