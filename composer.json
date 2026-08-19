@@ -11,6 +11,7 @@
     "php": ">=8.3",
     "phpdocumentor/reflection-docblock": "^5.4|^6.0",
     "psr/http-client": "^1.0",
+    "psr/log": "^2.0|^3.0",
     "symfony/asset": "^6.4|^7.0|^8.0",
     "symfony/config": "^6.4|^7.0|^8.0",
     "symfony/dependency-injection": "^6.4|^7.0|^8.0",

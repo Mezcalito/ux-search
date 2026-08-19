@@ -18,6 +18,8 @@ use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Event\PostSearchEvent;
 use Mezcalito\UxSearchBundle\Event\PreSearchEvent;
 use Mezcalito\UxSearchBundle\EventSubscriber\ContextSubscriber;
+use Mezcalito\UxSearchBundle\Exception\AdapterException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 readonly class Searcher
@@ -25,6 +27,7 @@ readonly class Searcher
     public function __construct(
         private AdapterProvider $adapterProvider,
         private ContextProvider $contextProvider,
+        private ?LoggerInterface $logger = null,
     ) {
     }
 
@@ -43,7 +46,17 @@ readonly class Searcher
         $adapter->configureParameters($optionResolver);
         $search->setResolvedAdapterParameters($optionResolver->resolve($search->getAdapterParameters()));
 
-        $results = $adapter->search($query, $search);
+        try {
+            $results = $adapter->search($query, $search);
+        } catch (\Throwable $exception) {
+            $this->logger?->error('Search failed for index "{index}": {message}', [
+                'index' => $search->getIndexName(),
+                'message' => $exception->getMessage(),
+                'exception' => $exception,
+            ]);
+
+            throw AdapterException::searchFailed($search->getIndexName(), $exception);
+        }
 
         $eventDispatcher->dispatch(new PostSearchEvent($query, $search, $results));
 

@@ -53,6 +53,8 @@ return static function (ContainerConfigurator $container) {
         ->set(Searcher::class)
             ->arg('$adapterProvider', service(AdapterProvider::class))
             ->arg('$contextProvider', service(ContextProvider::class))
+            ->arg('$logger', service('logger')->nullOnInvalid())
+            ->tag('monolog.logger', ['channel' => 'mezcalito_ux_search'])
         ->set(QueryBuilder::class)
         ->set(ContextProvider::class)
             ->tag('kernel.reset', ['method' => 'reset'])

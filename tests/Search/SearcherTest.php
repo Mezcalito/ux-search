@@ -19,6 +19,7 @@ use Mezcalito\UxSearchBundle\Context\ContextProvider;
 use Mezcalito\UxSearchBundle\Event\PostSearchEvent;
 use Mezcalito\UxSearchBundle\Event\PreSearchEvent;
 use Mezcalito\UxSearchBundle\EventSubscriber\ContextSubscriber;
+use Mezcalito\UxSearchBundle\Exception\AdapterException;
 use Mezcalito\UxSearchBundle\Search\AbstractSearch;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\Query;
@@ -176,6 +177,28 @@ class SearcherTest extends TestCase
         $this->assertSame(24, $query->getActiveHitsPerPage());
         $this->assertSame(3, $query->getCurrentPage());
         $this->assertSame(['category'], array_keys($query->getActiveFilters()));
+    }
+
+    public function testSearchWrapsAdapterFailures(): void
+    {
+        $search = new class extends AbstractSearch {};
+        $search->create();
+
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('search')->willThrowException(new \RuntimeException('engine unreachable'));
+
+        $adapterProvider = $this->createStub(AdapterProvider::class);
+        $adapterProvider->method('getAdapter')->willReturn($adapter);
+
+        $searcher = new Searcher($adapterProvider, $this->createStub(ContextProvider::class));
+
+        try {
+            $searcher->search(new Query(), $search);
+            $this->fail('Expected AdapterException');
+        } catch (AdapterException $exception) {
+            $this->assertInstanceOf(\RuntimeException::class, $exception->getPrevious());
+            $this->assertSame('engine unreachable', $exception->getPrevious()->getMessage());
+        }
     }
 
     private function createSearcher(): Searcher
