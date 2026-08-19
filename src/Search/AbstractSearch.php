@@ -43,6 +43,10 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     private ?string $urlFormater = null;
 
+    private ?AsSearch $asSearchAttribute = null;
+
+    private bool $asSearchAttributeResolved = false;
+
     /**
      * @param array<string, mixed> $options
      */
@@ -64,20 +68,23 @@ abstract class AbstractSearch implements SearchInterface, ResetInterface
 
     public function getIndexName(): ?string
     {
-        if ($attribute = (new \ReflectionClass(static::class))->getAttributes(AsSearch::class)) {
-            return $attribute[0]->newInstance()->index;
-        }
-
-        return null;
+        return $this->getAsSearchAttribute()?->index;
     }
 
     public function getAdapterName(): ?string
     {
-        if ($attribute = (new \ReflectionClass(static::class))->getAttributes(AsSearch::class)) {
-            return $attribute[0]->newInstance()->adapter;
+        return $this->getAsSearchAttribute()?->adapter;
+    }
+
+    private function getAsSearchAttribute(): ?AsSearch
+    {
+        if (!$this->asSearchAttributeResolved) {
+            $this->asSearchAttributeResolved = true;
+            $attributes = (new \ReflectionClass(static::class))->getAttributes(AsSearch::class);
+            $this->asSearchAttribute = [] !== $attributes ? $attributes[0]->newInstance() : null;
         }
 
-        return null;
+        return $this->asSearchAttribute;
     }
 
     /**
