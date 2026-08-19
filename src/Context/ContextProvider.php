@@ -16,8 +16,9 @@ namespace Mezcalito\UxSearchBundle\Context;
 use Mezcalito\UxSearchBundle\Exception\ContextException;
 use Mezcalito\UxSearchBundle\Search\Query;
 use Mezcalito\UxSearchBundle\Search\SearchInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class ContextProvider
+class ContextProvider implements ResetInterface
 {
     private ?Context $context = null;
 
@@ -41,5 +42,10 @@ class ContextProvider
         }
 
         return $this->context;
+    }
+
+    public function reset(): void
+    {
+        $this->context = null;
     }
 }

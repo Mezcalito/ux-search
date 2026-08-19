@@ -54,6 +54,7 @@ return static function (ContainerConfigurator $container) {
             ->arg('$contextProvider', service(ContextProvider::class))
         ->set(QueryBuilder::class)
         ->set(ContextProvider::class)
+            ->tag('kernel.reset', ['method' => 'reset'])
         ->set(AdapterProvider::class)
             ->arg('$defaultAdapterName', param('mezcalito_ux_search.default_adapter'))
             ->arg('$adapterConfiguration', param('mezcalito_ux_search.adapters'))
