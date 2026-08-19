@@ -28,8 +28,14 @@ readonly class CurrentRequest
 
     public static function fromRequest(Request $request): self
     {
-        $parameters = array_filter(array_merge($request->attributes->all(), $request->query->all()), static fn ($key) => !str_starts_with((string) $key, '_'), \ARRAY_FILTER_USE_KEY);
+        // Request attributes may hold resolved entities or other business objects:
+        // only raw route parameters and the query string may be exposed to the client.
+        $parameters = array_filter(
+            array_merge($request->attributes->all('_route_params'), $request->query->all()),
+            static fn ($value, $key) => !str_starts_with((string) $key, '_') && (null === $value || \is_scalar($value) || \is_array($value)),
+            \ARRAY_FILTER_USE_BOTH
+        );
 
-        return new self($request->attributes->get('_route'), $parameters);
+        return new self((string) $request->attributes->get('_route', ''), $parameters);
     }
 }
