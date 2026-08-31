@@ -34,7 +34,8 @@
     },
     "importmap": {
       "@hotwired/stimulus": "^3.2.0",
-      "@mezcalito/ux-search": "path:%PACKAGE%/dist/controller.js"
+      "@mezcalito/ux-search": "path:%PACKAGE%/dist/controller.js",
+      "@mezcalito/ux-search/dist/default.min.css": "path:%PACKAGE%/dist/default.min.css"
     }
   },
   "peerDependencies": {

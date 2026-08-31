@@ -21,8 +21,42 @@ class RefinementList extends AbstractFacet
     public int $limit = 10;
 
     #[ExposeInTemplate]
+    public bool $enableSearch = false;
+
+    #[ExposeInTemplate]
+    public string $searchPlaceholder = '';
+
+    public string $sortBy = 'count';
+
+    #[ExposeInTemplate]
+    public bool $enableSort = false;
+
+    #[ExposeInTemplate]
+    public function getSortBy(): string
+    {
+        $query = $this->contextProvider->getCurrentContext()->getQuery();
+
+        return $query->getFacetSortPreference($this->property) ?? $this->sortBy;
+    }
+
+    #[ExposeInTemplate]
     public function getDistribution(): FacetTermDistribution
     {
-        return $this->contextProvider->getCurrentContext()->getResults()->getFacetDistribution($this->property);
+        $distribution = $this->contextProvider->getCurrentContext()->getResults()->getFacetDistribution($this->property);
+        $sortBy = $this->getSortBy();
+        $values = $distribution->getValues();
+
+        // Sort the values based on user preference
+        if ('name' === $sortBy) {
+            // Sort alphabetically by key (facet value name)
+            ksort($values, \SORT_NATURAL | \SORT_FLAG_CASE);
+        } else {
+            // Sort by count (value), highest first
+            arsort($values, \SORT_NUMERIC);
+        }
+
+        $distribution->setValues($values);
+
+        return $distribution;
     }
 }

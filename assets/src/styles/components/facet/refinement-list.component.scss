@@ -3,6 +3,86 @@
   -moz-appearance: none;
 }
 
+.ux-search-refinement-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  .ux-search-refinement-list__title {
+    margin-bottom: 0;
+    float: none;
+  }
+}
+
+.ux-search-refinement-list__sort {
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.ux-search-refinement-list__sort-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--ux-search-color-background);
+  color: var(--ux-search-color-text);
+  border: 1px solid var(--ux-search-color-border-soft);
+  border-radius: var(--ux-search-rounded-sm);
+  padding: 4px 24px 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 10px;
+
+  &:focus {
+    outline-color: var(--ux-search-color-accent);
+  }
+
+  option {
+    background: var(--ux-search-color-background);
+    color: var(--ux-search-color-text);
+  }
+}
+
+.ux-search-refinement-list__search {
+  position: relative;
+  margin-top: var(--ux-search-facet-search-spacing-top, 0.75rem);
+  margin-bottom: var(--ux-search-facet-search-spacing, 1rem);
+}
+
+.ux-search-refinement-list__search-input {
+  width: 100%;
+  padding: var(--ux-search-facet-search-padding, 0.5rem 2.5rem 0.5rem 0.75rem);
+  border: var(--ux-search-facet-search-border, 1px solid #d1d5db);
+  border-radius: var(--ux-search-facet-search-radius, 0.375rem);
+  font-size: var(--ux-search-facet-search-font-size, 0.875rem);
+  color: var(--ux-search-color-text);
+  background-color: var(--ux-search-color-background);
+
+  &:focus {
+    outline: none;
+    border-color: var(--ux-search-facet-search-focus-color, #6b7280);
+    box-shadow: var(--ux-search-facet-search-focus-shadow, 0 0 0 3px rgba(107, 114, 128, 0.1));
+  }
+
+  &::placeholder {
+    color: var(--ux-search-facet-search-placeholder-color, #9ca3af);
+  }
+}
+
+.ux-search-refinement-list__search-icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: var(--ux-search-facet-search-icon-color, #9ca3af);
+  pointer-events: none;
+}
+
 .ux-search-refinement-list__count {
   display: inline-block;
   background-color: var(--ux-search-color-secondary);

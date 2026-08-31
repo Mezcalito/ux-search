@@ -2,7 +2,103 @@
 
 The `RefinementList` component allows users to filter search results based on facet values (terms). It displays a list of checkbox options with result counts, and supports a "show more" feature for facets with many values.
 
-## Usage
+The widget only displays the most relevant facet values for the current search context.
+The sort option only affects the facets that are returned by the engine, not which facets are returned.
+
+| name      | Description |
+|-----------|-------------|
+| label     | -           |
+| search    | -           |
+| list      | -           |
+| show_more | -           |
+
+## Facet Sorting
+
+Enable sorting of facet values by count or name.
+
+### Basic Usage
+
+```php
+$this->addFacet('category', 'Category', props: [
+    'enableSort' => true
+]);
+```
+
+### Custom Default Sort
+
+```php
+$this->addFacet('category', 'Category', props: [
+    'enableSort' => true,
+    'sortBy' => 'name'  // Default: 'count'
+]);
+```
+
+### Features
+
+- Sort by count (descending) - shows most popular items first
+- Sort by name (alphabetical) - A to Z ordering
+- Client-side sorting - instant reordering without server requests
+- State preservation - selected sort order is maintained
+- Works seamlessly with search and "Show More" features
+
+## Facet Search
+
+Enable client-side search filtering for facets with many options.
+
+### Basic Usage
+
+```php
+$this->addFacet('category', 'Category', props: [
+    'enableSearch' => true
+]);
+```
+
+### Custom Placeholder
+
+```php
+$this->addFacet('country', 'Country', props: [
+    'enableSearch' => true,
+    'searchPlaceholder' => 'Find a country...'
+]);
+```
+
+### How It Works
+
+The facet search uses a fuzzy matching algorithm that finds items where all characters of your search query appear in order (but not necessarily consecutively).
+
+**Examples**:
+- Typing "usa" matches "United States", "USA"
+- Typing "doc" matches "Documentary", "Docudrama"
+
+### Features
+
+- Real-time filtering as you type
+- Case-insensitive matching
+- Shows all matching results (removes "Show More" limit)
+- Accessible keyboard navigation
+- Works with Live Components and Turbo
+
+### Customization
+
+Override default styles using CSS variables:
+
+```css
+:root {
+  --ux-search-facet-search-spacing: 1.5rem;
+  --ux-search-facet-search-radius: 0.5rem;
+  --ux-search-facet-search-focus-color: #3b82f6;
+}
+```
+
+Or override the search block in your template:
+
+```twig
+{% block search %}
+    {# Custom search input markup #}
+{% endblock %}
+```
+
+## Default layout
 
 ```twig
 <twig:Mezcalito:UxSearch:Facet:RefinementList property="brand" />
