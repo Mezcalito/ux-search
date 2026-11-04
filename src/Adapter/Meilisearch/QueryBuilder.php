@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Adapter\Meilisearch;
 
+use Meilisearch\Contracts\MultiSearchQuery;
 use Meilisearch\Contracts\SearchQuery;
 use Mezcalito\UxSearchBundle\Exception\UnsupportedFilterException;
 use Mezcalito\UxSearchBundle\Search\Filter\FilterInterface;
@@ -24,7 +25,7 @@ use Mezcalito\UxSearchBundle\Search\SearchInterface;
 class QueryBuilder
 {
     /**
-     * @return array<int, SearchQuery>
+     * @return list<MultiSearchQuery>
      */
     public function build(Query $query, SearchInterface $search): array
     {
@@ -42,8 +43,7 @@ class QueryBuilder
 
         $indexName = $search->getIndexName();
 
-        $meilisearchQuery = (new SearchQuery())
-            ->setIndexUid($indexName)
+        $meilisearchQuery = $this->createMultiSearchQuery($indexName)
             ->setQuery($query->getQueryString())
             ->setFilter($this->formatFilters($query->getActiveFilters()))
             ->setSort($formatedSorting)
@@ -79,8 +79,7 @@ class QueryBuilder
                 }
             }
 
-            $queries[] = (new SearchQuery())
-                ->setIndexUid($indexName)
+            $queries[] = $this->createMultiSearchQuery($indexName)
                 ->setQuery($query->getQueryString())
                 ->setFacets([$activeFilter->getProperty()])
                 ->setFilter($this->formatFilters($otherFilters))
@@ -88,6 +87,21 @@ class QueryBuilder
         }
 
         return $queries;
+    }
+
+    /**
+     * meilisearch/meilisearch-php 2.0.0-beta.8 moved setIndexUid() from SearchQuery to MultiSearchQuery.
+     *
+     * @return MultiSearchQuery
+     */
+    private function createMultiSearchQuery(string $indexUid): MultiSearchQuery|SearchQuery
+    {
+        if (class_exists(MultiSearchQuery::class)) {
+            return (new MultiSearchQuery())->setIndexUid($indexUid);
+        }
+
+        // @phpstan-ignore method.notFound
+        return (new SearchQuery())->setIndexUid($indexUid);
     }
 
     /**

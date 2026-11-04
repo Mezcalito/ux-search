@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Meilisearch;
 
+use Meilisearch\Contracts\MultiSearchQuery;
 use Meilisearch\Contracts\SearchQuery;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\MeilisearchAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Meilisearch\QueryBuilder;
@@ -50,6 +51,14 @@ class QueryBuilderTest extends TestCase
         ]);
     }
 
+    /**
+     * @return class-string
+     */
+    private function expectedQueryClass(): string
+    {
+        return class_exists(MultiSearchQuery::class) ? MultiSearchQuery::class : SearchQuery::class;
+    }
+
     public function testQueryString(): void
     {
         $query = (new Query())
@@ -60,7 +69,7 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(1, $searchQueries);
         $searchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $searchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $searchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'q' => 'my search',
@@ -89,7 +98,7 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(1, $searchQueries);
         $searchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $searchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $searchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [],
@@ -121,7 +130,7 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(1, $searchQueries);
         $searchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $searchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $searchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [],
@@ -154,7 +163,7 @@ class QueryBuilderTest extends TestCase
         $this->assertCount(1, $searchQueries);
         $searchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $searchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $searchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [],
@@ -193,7 +202,7 @@ class QueryBuilderTest extends TestCase
 
         $mainSearchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $mainSearchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $mainSearchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [
@@ -218,6 +227,7 @@ class QueryBuilderTest extends TestCase
         ], $mainSearchQuery->toArray());
 
         $colorFacetQuery = $searchQueries[1];
+        $this->assertInstanceOf($this->expectedQueryClass(), $colorFacetQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'q' => '',
@@ -230,6 +240,7 @@ class QueryBuilderTest extends TestCase
         ], $colorFacetQuery->toArray());
 
         $priceFacetQuery = $searchQueries[2];
+        $this->assertInstanceOf($this->expectedQueryClass(), $priceFacetQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'q' => '',
@@ -257,7 +268,7 @@ class QueryBuilderTest extends TestCase
 
         $mainSearchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $mainSearchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $mainSearchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [
@@ -297,7 +308,7 @@ class QueryBuilderTest extends TestCase
 
         $mainSearchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $mainSearchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $mainSearchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [
@@ -337,7 +348,7 @@ class QueryBuilderTest extends TestCase
 
         $mainSearchQuery = $searchQueries[0];
 
-        $this->assertInstanceOf(SearchQuery::class, $mainSearchQuery);
+        $this->assertInstanceOf($this->expectedQueryClass(), $mainSearchQuery);
         $this->assertEquals([
             'indexUid' => 'test',
             'filter' => [

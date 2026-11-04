@@ -165,7 +165,7 @@ jobs:
           # Latest Symfony version support
           -   os: ubuntu-latest
               php_version: "8.4"
-              symfony_version: "8.0.*"
+              symfony_version: "8.1.*"
               stability: "stable"
           # LTS Symfony version support
           -   os: ubuntu-latest
@@ -175,13 +175,13 @@ jobs:
           # Upcoming Symfony versions
           -   os: ubuntu-latest
               php_version: "8.4"
-              symfony_version: "8.1.x-dev"
+              symfony_version: "8.2.x-dev"
               stability: "dev"
               experimental: true
           # Latest Symfony version support with lastest PHP Version
           -   os: ubuntu-latest
               php_version: "8.5"
-              symfony_version: "8.0.*"
+              symfony_version: "8.1.*"
               stability: "stable"
           # LTS Symfony version support with lastest PHP Version
           -   os: ubuntu-latest
@@ -196,7 +196,7 @@ jobs:
           # Upcoming Symfony versions with lastest PHP Version
           -   os: ubuntu-latest
               php_version: "8.5"
-              symfony_version: "8.1.x-dev"
+              symfony_version: "8.2.x-dev"
               stability: "dev"
               experimental: true
 
