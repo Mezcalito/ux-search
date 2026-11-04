@@ -64,9 +64,7 @@ abstract class AbstractAdapter implements AdapterInterface
             $filter = $query->getActiveFilter($facet->getProperty());
             $facetsDistributions[$facet->getProperty()] = $this->hydrateTermDistribution($mergedFacetDistribution, $facet, $filter);
 
-            if (!isset($mergedFacetStats[$facet->getProperty()])) {
-                $mergedFacetStats[$facet->getProperty()] = ['min' => 0, 'max' => 0];
-            }
+            $mergedFacetStats[$facet->getProperty()] ??= ['min' => 0, 'max' => 0];
         }
 
         foreach ($facetsDistributions as $property => $distribution) {

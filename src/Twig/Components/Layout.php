@@ -24,6 +24,7 @@ use Mezcalito\UxSearchBundle\Search\SearchProvider;
 use Mezcalito\UxSearchBundle\Search\Url\CurrentRequest;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterInterface;
 use Mezcalito\UxSearchBundle\Search\Url\UrlFormaterProvider;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -84,7 +85,7 @@ class Layout
         if ($this->search->hasUrlRewriting()) {
             $mainRequest = $this->requestStack->getMainRequest();
 
-            if ($mainRequest && $mainRequest->attributes->has('_route')) {
+            if ($mainRequest instanceof Request && $mainRequest->attributes->has('_route')) {
                 $this->currentRequest = CurrentRequest::fromRequest($mainRequest);
                 $this->getUrlFormater()->applyFilters($this->currentRequest, $this->search, $this->query);
             }
@@ -107,7 +108,7 @@ class Layout
 
         $this->dispatchBrowserEvent('ux-search:query:update', $this->serializer->normalize($this->query));
 
-        if ($this->search->hasUrlRewriting() && $this->currentRequest) {
+        if ($this->search->hasUrlRewriting() && $this->currentRequest instanceof CurrentRequest) {
             $this->dispatchBrowserEvent('ux-search:url:update', [
                 'url' => $this->getUrlFormater()->generateUrl($this->currentRequest, $this->search, $this->query),
             ]);
@@ -217,7 +218,7 @@ class Layout
 
     private function shareCurrentRequestWithContext(): void
     {
-        if ($this->currentRequest && $this->contextProvider->hasCurrentContext()) {
+        if ($this->currentRequest instanceof CurrentRequest && $this->contextProvider->hasCurrentContext()) {
             $this->contextProvider->getCurrentContext()->setCurrentRequest($this->currentRequest);
         }
     }
