@@ -25,7 +25,7 @@ use Mezcalito\UxSearchBundle\Search\SearchInterface;
 class QueryBuilder
 {
     /**
-     * @return list<MultiSearchQuery>
+     * @return array<int, SearchQuery>
      */
     public function build(Query $query, SearchInterface $search): array
     {
@@ -90,17 +90,16 @@ class QueryBuilder
     }
 
     /**
-     * meilisearch/meilisearch-php 2.0.0-beta.8 moved setIndexUid() from SearchQuery to MultiSearchQuery.
+     * meilisearch/meilisearch-php 2.0 moved setIndexUid() from SearchQuery to MultiSearchQuery.
      *
-     * @return MultiSearchQuery
+     * @return SearchQuery
      */
-    private function createMultiSearchQuery(string $indexUid): MultiSearchQuery|SearchQuery
+    private function createMultiSearchQuery(string $indexUid): object
     {
         if (class_exists(MultiSearchQuery::class)) {
             return (new MultiSearchQuery())->setIndexUid($indexUid);
         }
 
-        // @phpstan-ignore method.notFound
         return (new SearchQuery())->setIndexUid($indexUid);
     }
 

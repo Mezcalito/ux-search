@@ -199,6 +199,13 @@ jobs:
               symfony_version: "8.2.x-dev"
               stability: "dev"
               experimental: true
+          # Upcoming meilisearch-php major version
+          -   os: ubuntu-latest
+              php_version: "8.4"
+              symfony_version: "7.4.*"
+              stability: "stable"
+              meilisearch_version: "^2.0@beta"
+              experimental: true
 
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental == true }}
@@ -225,6 +232,10 @@ jobs:
       -   name: Configure Symfony version for symfony/flex
           if: ${{ matrix.symfony_version }}
           run: composer config extra.symfony.require "${{ matrix.symfony_version }}"
+
+      -   name: Configure meilisearch-php version
+          if: ${{ matrix.meilisearch_version }}
+          run: composer require --dev --no-update "meilisearch/meilisearch-php:${{ matrix.meilisearch_version }}"
 
       -   name: Install dependencies
           run: |
