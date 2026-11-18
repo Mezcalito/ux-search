@@ -42,7 +42,7 @@ class Layout
     use DefaultActionTrait;
 
     #[LiveProp(
-        writable: ['queryString', 'activeSort', 'activeHitsPerPage'],
+        writable: ['queryString', 'activeSort', 'activeHitsPerPage', 'facetSortPreferences'],
         useSerializerForHydration: true,
         onUpdated: ['queryString' => 'resetCurrentPage', 'activeSort' => 'resetCurrentPage', 'activeHitsPerPage' => 'resetCurrentPage']
     )]
@@ -195,6 +195,12 @@ class Layout
     public function clearRefinements(): void
     {
         $this->getQuery()->setActiveFilters([]);
+    }
+
+    #[LiveAction]
+    public function changeFacetSort(#[LiveArg] string $property, #[LiveArg] string $sortBy): void
+    {
+        $this->getQuery()->setFacetSortPreference($property, $sortBy);
     }
 
     private function getSearch(string $name): SearchInterface

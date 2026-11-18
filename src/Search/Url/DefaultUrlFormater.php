@@ -28,6 +28,8 @@ class DefaultUrlFormater implements UrlFormaterInterface
 
     private const string SORT_BY = 'sortBy';
 
+    private const string FACET_SORT = 'facetSort';
+
     public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
     {
     }
@@ -46,6 +48,10 @@ class DefaultUrlFormater implements UrlFormaterInterface
 
         if ($query->getCurrentPage() > 1) {
             $params[self::PAGE] = $query->getCurrentPage();
+        }
+
+        if ([] !== $query->getFacetSortPreferences()) {
+            $params[self::FACET_SORT] = $query->getFacetSortPreferences();
         }
 
         foreach ($query->getActiveFilters() as $filter) {
@@ -82,6 +88,10 @@ class DefaultUrlFormater implements UrlFormaterInterface
             if ($pageNumber >= 1) {
                 $query->setCurrentPage($pageNumber);
             }
+        }
+
+        if (($facetSort = $currentRequest->parameters[self::FACET_SORT] ?? null) && \is_array($facetSort)) {
+            $query->setFacetSortPreferences($facetSort);
         }
 
         foreach ($search->getFacets() as $facet) {
@@ -131,7 +141,7 @@ class DefaultUrlFormater implements UrlFormaterInterface
      */
     private function getSearchableParameterKeys(SearchInterface $search): array
     {
-        $keys = [self::PAGE, self::SORT_BY];
+        $keys = [self::PAGE, self::SORT_BY, self::FACET_SORT];
         foreach ($search->getFacets() as $facet) {
             $propertyInUrl = str_replace('.', '_', $facet->getProperty());
             $keys[] = $propertyInUrl;

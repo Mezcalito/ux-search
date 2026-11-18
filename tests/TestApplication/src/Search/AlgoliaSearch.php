@@ -30,8 +30,8 @@ class AlgoliaSearch extends AbstractSearch
                 AlgoliaAdapter::HIGHLIGHT_PRE_TAG_PARAM => '<strong>',
                 AlgoliaAdapter::HIGHLIGHT_POST_TAG_PARAM => '</strong>',
             ])
-            ->addFacet('type', 'Type', null, ['limit' => 2])
-            ->addFacet('brand', 'Brand')
+            ->addFacet('type', 'Type', null, ['limit' => 2, 'enableSearch' => true, 'enableSort' => true])
+            ->addFacet('brand', 'Brand', props: ['enableSearch' => true, 'enableSort' => true])
             ->addFacet('rating', 'Rating')
             ->addFacet('price_range', 'Price range')
             ->addFacet('price', 'Price', RangeSlider::class)
