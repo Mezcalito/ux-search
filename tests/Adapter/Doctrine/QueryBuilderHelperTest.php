@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\QueryBuilder;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\QueryBuilderHelper;
@@ -21,6 +22,10 @@ use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 
 class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 {
+    use VerifyDeprecations;
+
+    private const string SORT_DIRECTION_DEPRECATION = 'https://github.com/doctrine/orm/issues/11313';
+
     private QueryBuilderHelper $helper;
 
     protected function setUp(): void
@@ -50,6 +55,8 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testResultsQuery(): void
     {
+        $this->expectNoDeprecationWithIdentifier(self::SORT_DIRECTION_DEPRECATION);
+
         $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
 
         $this->assertEquals('SELECT o FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o ORDER BY o.price ASC', $dql);
@@ -78,6 +85,8 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testFacetTermQuery(): void
     {
+        $this->expectNoDeprecationWithIdentifier(self::SORT_DIRECTION_DEPRECATION);
+
         $this->query->addActiveFilter(new TermFilter('brand', ['A', 'B']));
         $this->query->addActiveFilter(new RangeFilter('price', 10, 100));
 
@@ -125,6 +134,8 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
     public function testResultsQueryAcceptsValidSort(): void
     {
+        $this->expectNoDeprecationWithIdentifier(self::SORT_DIRECTION_DEPRECATION);
+
         $this->query->setActiveSort('o.price:desc');
 
         $dql = $this->helper->getResultsQuery()->getQuery()->getDQL();
