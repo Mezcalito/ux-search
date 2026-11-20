@@ -28,7 +28,7 @@ The `TotalHits` component displays the total number of matching search results, 
     <span {{ attributes.defaults({
         'class': 'ux-search-total-hits'
     }) }} >
-        {{ 'results'|trans({'%count%': totalHits}, domain='mezcalito_ux_search') }}
+        {{ 'results'|trans({'%count%': totalHits, '%formatted_count%': totalHits|ux_search_format_number}, domain='mezcalito_ux_search') }}
     </span>
 {% endblock %}
 ```
@@ -38,7 +38,7 @@ The `TotalHits` component displays the total number of matching search results, 
 ```html
 <div class="ux-search__stats">
     <span class="ux-search-total-hits">
-        10000 results
+        10,000 results
     </span>
 </div>
 ```
@@ -47,17 +47,21 @@ This ensures screen readers announce result count changes when users apply filte
 
 ## Internationalization
 
-The default translation key supports pluralization:
+The default translation key supports pluralization. `%count%` holds the raw number and drives the plural selection, while `%formatted_count%` holds the number formatted for the current locale (e.g. `10,000` in English, `10.000` in German, `10 000` in French):
 
 ```yaml
 # translations/mezcalito_ux_search.en.yaml
-results: '{0} No results|{1} 1 result|]1,Inf[ %count% results'
+results: '{0} No results|{1} 1 result|]1,Inf[ %formatted_count% results'
 ```
 
 ```yaml
 # translations/mezcalito_ux_search.fr.yaml
-results: '{0} Aucun résultat|{1} 1 résultat|]1,Inf[ %count% résultats'
+results: '{0} Aucun résultat|{1} 1 résultat|]1,Inf[ %formatted_count% résultats'
 ```
+
+The number is formatted with the `ux_search_format_number` Twig filter. It uses the locale from `\Locale::getDefault()`, which Symfony sets to the request locale. Formatting requires the `intl` PHP extension; without it, the raw number is displayed.
+
+If you override the `content` block, pass both parameters to `trans` (`'%formatted_count%': totalHits|ux_search_format_number`), otherwise the default translations render a literal `%formatted_count%`.
 
 ## Styling
 

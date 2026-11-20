@@ -2,6 +2,6 @@
     <span {{ attributes.defaults({
         'class': 'ux-search-total-hits'
     }) }} >
-        {{ 'results'|trans({'%count%': totalHits}, domain='mezcalito_ux_search') }}
+        {{ 'results'|trans({'%count%': totalHits, '%formatted_count%': totalHits|ux_search_format_number}, domain='mezcalito_ux_search') }}
     </span>
 {% endblock %}

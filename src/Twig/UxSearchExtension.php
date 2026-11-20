@@ -17,10 +17,18 @@ use Mezcalito\UxSearchBundle\Search\Filter\FilterInterface;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class UxSearchExtension extends AbstractExtension
 {
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('ux_search_format_number', $this->formatNumber(...)),
+        ];
+    }
+
     public function getFunctions(): array
     {
         return [
@@ -37,5 +45,16 @@ class UxSearchExtension extends AbstractExtension
     public function isTermFilter(FilterInterface $filter): bool
     {
         return $filter instanceof TermFilter;
+    }
+
+    public function formatNumber(int|float|string $number): string
+    {
+        if (!is_numeric($number) || !class_exists(\NumberFormatter::class)) {
+            return (string) $number;
+        }
+
+        $formatter = new \NumberFormatter(\Locale::getDefault(), \NumberFormatter::DECIMAL);
+
+        return $formatter->format(+$number) ?: (string) $number;
     }
 }

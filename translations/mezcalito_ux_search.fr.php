@@ -17,7 +17,7 @@ return [
     'show_less' => 'Voir moins',
     'remove' => 'Retirer',
     'reset_filters' => 'Réinitialiser',
-    'results' => '{0} 0 résultat|{1} 1 résultat|]1,Inf] %count% résultats',
+    'results' => '{0} 0 résultat|{1} 1 résultat|]1,Inf] %formatted_count% résultats',
     'no_result' => 'Aucun résultat',
     'range' => [
         'min' => 'Min',

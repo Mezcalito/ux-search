@@ -67,7 +67,7 @@ The property is automatically determined when using the generic Facet component:
                     >
                     <label class="ux-search-refinement-list__label" for="{{ property }}-{{ key }}">
                         <span class="ux-search-refinement-list__label-text">{{ key }}</span>
-                        <span class="ux-search-refinement-list__count">{{ value }}</span>
+                        <span class="ux-search-refinement-list__count">{{ value|ux_search_format_number }}</span>
                     </label>
                 </li>
             {% endfor -%}
@@ -114,6 +114,10 @@ The property is automatically determined when using the generic Facet component:
     <button class="ux-search-refinement-list__show-more" type="button" data-ux-search--refinement-list-target="toggle" data-action="ux-search--refinement-list#toggleShowMore">Show more</button>
 </fieldset>
 ```
+
+## Number Formatting
+
+Counts are formatted for the current locale with the `ux_search_format_number` Twig filter (e.g. `1,234` in English, `1.234` in German, `1 234` in French). The locale is taken from `\Locale::getDefault()`, which Symfony sets to the request locale. Formatting requires the `intl` PHP extension; without it, the raw number is displayed. Use the same filter when overriding the `list` block.
 
 ## Configuration
 
