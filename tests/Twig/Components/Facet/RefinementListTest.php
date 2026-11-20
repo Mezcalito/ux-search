@@ -74,4 +74,36 @@ class RefinementListTest extends AbstractComponentTestCase
         $this->assertStringContainsString('<span class="ux-search-refinement-list__label-text">Samsung</span>', $rendered->toString());
         $this->assertStringContainsString('<span class="ux-search-refinement-list__count">20</span>', $rendered->toString());
     }
+
+    public function testCountsAreFormattedForLocale(): void
+    {
+        $previousLocale = \Locale::getDefault();
+        \Locale::setDefault('de');
+
+        try {
+            $search = $this->createStub(SearchInterface::class);
+            $search->method('getFacet')
+                ->willReturn(new Facet('format', 'Format'));
+
+            $context = new Context();
+            $context->setQuery((new Query())->addActiveFilter(new TermFilter('format')));
+            $context->setSearch($search);
+            $context->setResults((new ResultSet())->setFacetDistributions([
+                (new FacetTermDistribution())
+                    ->setProperty('format')
+                    ->setValues(['CD' => 12345]),
+            ]));
+
+            $this->setCurrentContext($context);
+
+            $rendered = $this->renderTwigComponent(
+                name: RefinementList::class,
+                data: ['property' => 'format'],
+            );
+
+            $this->assertStringContainsString('<span class="ux-search-refinement-list__count">12.345</span>', $rendered->toString());
+        } finally {
+            \Locale::setDefault($previousLocale);
+        }
+    }
 }
