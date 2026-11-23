@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\SetList;
-use Rector\Symfony\CodeQuality\Rector\Class_\EventSubscriberToAttributeRector;
 use Rector\Symfony\Symfony72\Rector\StmtsAwareInterface\PushRequestToRequestStackConstructorRector;
 use Rector\Symfony\Symfony73\Rector\Class_\GetFiltersAndFunctionsToAsTwigAttributeRector;
 
@@ -35,6 +34,4 @@ return RectorConfig::configure()
         GetFiltersAndFunctionsToAsTwigAttributeRector::class,
         // RequestStack constructor argument is not available on Symfony 6.4
         PushRequestToRequestStackConstructorRector::class,
-        // Searches register subscribers on their own EventDispatcher via addSubscriber(), which ignores #[AsEventListener]
-        EventSubscriberToAttributeRector::class,
     ]);
