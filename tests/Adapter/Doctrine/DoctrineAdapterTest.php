@@ -18,6 +18,7 @@ use Mezcalito\UxSearchBundle\Search\AbstractSearch;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
 use Mezcalito\UxSearchBundle\Search\ResultSet\ResultSet;
+use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Bar;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\CategoryEnum;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -129,5 +130,23 @@ class DoctrineAdapterTest extends AbstractDoctrineTestCase
             'A' => 1,
             'B' => 1,
         ], $resultSet->getFacetDistribution('custom.type')->getValues());
+    }
+
+    public function testFacetDistributionKeysRowsWithoutAValueAsEmptyString(): void
+    {
+        $acme = new Bar('Acme');
+        $this->createDatabase([
+            $acme,
+            new Foo('A', '1', 10, bar: $acme),
+            new Foo('B', '1', 11),
+            new Foo('C', '2', 12),
+        ]);
+
+        $resultSet = $this->adapter->search($this->query, $this->search);
+
+        $this->assertSame([
+            '' => 2,
+            'Acme' => 1,
+        ], $resultSet->getFacetDistribution('bar.name')->getValues());
     }
 }
