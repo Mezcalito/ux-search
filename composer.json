@@ -38,7 +38,7 @@
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-symfony": "^2.0",
     "phpunit/phpunit": "^12.5",
-    "rector/rector": "^2.3",
+    "rector/rector": "^2.8.2",
     "symfony/asset-mapper": "^6.4|^7.0|^8.0",
     "symfony/framework-bundle": "^6.4|^7.0|^8.0",
     "symfony/maker-bundle": "^1.62",
