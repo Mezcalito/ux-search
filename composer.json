@@ -71,5 +71,12 @@
       "Mezcalito\\UxSearchBundle\\Tests\\": "tests",
       "Mezcalito\\UxSearchBundle\\Tests\\TestApplication\\": "tests/TestApplication/src"
     }
+  },
+  "extra": {
+    "ai-mate": {
+      "skills": [
+        "skills"
+      ]
+    }
   }
 }
