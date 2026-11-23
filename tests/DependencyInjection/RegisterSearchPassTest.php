@@ -28,7 +28,7 @@ class RegisterSearchPassTest extends TestCase
         $container = new ContainerBuilder();
 
         $searchType1 = new Definition();
-        $searchType1->addTag('mezcalito_ux_search.search', ['name' => 'search_1']);
+        $searchType1->addTag('mezcalito_ux_search.search', ['alias' => 'search_1']);
 
         $container->setDefinition('search_service_1', $searchType1);
 

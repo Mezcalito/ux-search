@@ -67,10 +67,16 @@ class MezcalitoUxSearchBundle extends AbstractBundle
         $builder->setParameter('mezcalito_ux_search.adapters', $config['adapters']);
 
         $builder->registerAttributeForAutoconfiguration(AsSearch::class, static function (ChildDefinition $definition, AsSearch $attribute, \Reflector $reflector) {
-            $tagAttributes = get_object_vars($attribute);
-            if (null === $tagAttributes['name'] && $reflector instanceof \ReflectionClass) {
-                $tagAttributes['name'] = strtolower(str_replace('Search', '', $reflector->getShortName()));
+            $alias = $attribute->name;
+            if (null === $alias && $reflector instanceof \ReflectionClass) {
+                $alias = strtolower(str_replace('Search', '', $reflector->getShortName()));
             }
+
+            $tagAttributes = [
+                'alias' => $alias,
+                'index' => $attribute->index,
+                'adapter' => $attribute->adapter,
+            ];
 
             $definition->addTag('mezcalito_ux_search.search', $tagAttributes);
             $definition->addTag('kernel.reset', ['method' => 'reset']);
