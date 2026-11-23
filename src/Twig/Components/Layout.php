@@ -91,7 +91,7 @@ class Layout
             }
         }
 
-        $this->searcher->search($this->query, $this->search);
+        $this->executeSearch($this->query, $this->search);
         $this->shareCurrentRequestWithContext();
     }
 
@@ -103,7 +103,7 @@ class Layout
         }
 
         $this->search = $this->getSearch($this->name)->create($this->options);
-        $this->searcher->search($this->query, $this->search);
+        $this->executeSearch($this->query, $this->search);
         $this->shareCurrentRequestWithContext();
 
         $this->dispatchBrowserEvent('ux-search:query:update', $this->serializer->normalize($this->query));
@@ -195,6 +195,17 @@ class Layout
     public function clearRefinements(): void
     {
         $this->getQuery()->setActiveFilters([]);
+    }
+
+    private function executeSearch(Query $query, SearchInterface $search): void
+    {
+        $resultSet = $this->searcher->search($query, $search);
+
+        $lastPage = (int) ceil($resultSet->getTotalResults() / max($query->getActiveHitsPerPage(), 1));
+        if ($lastPage >= 1 && $query->getCurrentPage() > $lastPage) {
+            $query->setCurrentPage($lastPage);
+            $this->searcher->search($query, $search);
+        }
     }
 
     private function getSearch(string $name): SearchInterface
