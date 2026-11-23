@@ -24,6 +24,7 @@ return [
         'max' => 'Max',
     ],
     'pagination' => [
+        'label' => 'Pagination',
         'previous_page' => 'Page précédente',
         'next_page' => 'Page suivante',
     ],

@@ -1,7 +1,8 @@
 {%- block content %}
     {%- if totalPage > 1 %}
         <nav {{ attributes.defaults({
-            'class': 'ux-search-pagination'
+            'class': 'ux-search-pagination',
+            'aria-label': 'pagination.label'|trans(domain='mezcalito_ux_search')
         }) }} >
             <ul class="ux-search-pagination__list">
                 {% if (page - 1) >= 1 %}
@@ -51,7 +52,7 @@
 
     {%- macro link(iterator, page, url) %}
         {%- if page == iterator %}
-            <span class="ux-search-pagination__link is-current">{{ iterator }}</span>
+            <span class="ux-search-pagination__link is-current" aria-current="page">{{ iterator }}</span>
         {% else %}
             <a
                 class="ux-search-pagination__link"

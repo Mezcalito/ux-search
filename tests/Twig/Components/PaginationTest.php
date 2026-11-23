@@ -41,7 +41,8 @@ class PaginationTest extends AbstractComponentTestCase
         );
 
         $this->assertSame(9, substr_count($rendered->toString(), '<li class="ux-search-pagination__item">'));
-        $this->assertStringContainsString('<span class="ux-search-pagination__link is-current">3</span>', $rendered->toString());
+        $this->assertStringContainsString('<span class="ux-search-pagination__link is-current" aria-current="page">3</span>', $rendered->toString());
+        $this->assertStringContainsString('aria-label="Pagination"', $rendered->toString());
     }
 
     /**
