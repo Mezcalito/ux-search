@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Logging\Middleware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -25,6 +26,7 @@ use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Bar;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo;
 use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\FooSearch;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\AbstractLogger;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractDoctrineTestCase extends TestCase
@@ -36,6 +38,9 @@ abstract class AbstractDoctrineTestCase extends TestCase
     protected Query $query;
 
     protected DoctrineAdapter $adapter;
+
+    /** @var list<string> */
+    protected array $executedSql = [];
 
     protected function setUp(): void
     {
@@ -62,6 +67,21 @@ abstract class AbstractDoctrineTestCase extends TestCase
         if (\PHP_VERSION_ID >= 80400 && method_exists($config, 'enableNativeLazyObjects')) {
             $config->enableNativeLazyObjects(true);
         }
+
+        $logger = new class($this->executedSql) extends AbstractLogger {
+            /** @param list<string> $executedSql */
+            public function __construct(private array &$executedSql)
+            {
+            }
+
+            public function log($level, string|\Stringable $message, array $context = []): void
+            {
+                if (isset($context['sql']) && \is_string($context['sql'])) {
+                    $this->executedSql[] = $context['sql'];
+                }
+            }
+        };
+        $config->setMiddlewares([new Middleware($logger)]);
 
         $connection = DriverManager::getConnection($connectionParams, $config);
 

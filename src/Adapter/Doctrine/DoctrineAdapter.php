@@ -15,6 +15,7 @@ namespace Mezcalito\UxSearchBundle\Adapter\Doctrine;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\CountWalker;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Mezcalito\UxSearchBundle\Adapter\AdapterInterface;
 use Mezcalito\UxSearchBundle\Search\Facet;
@@ -46,7 +47,21 @@ readonly class DoctrineAdapter implements AdapterInterface
     {
         $helper = new QueryBuilderHelper($this->manager, $query, $search);
 
-        $paginator = new Paginator($helper->getResultsQuery()->getQuery(), fetchJoinCollection: true);
+        $queryBuilder = $helper->getResultsQuery();
+        $isSimpleQuery = !QueryBuilderHelper::hasRowFanOut($queryBuilder)
+            && [] === $queryBuilder->getDQLPart('groupBy')
+            && null === $queryBuilder->getDQLPart('having');
+
+        $resultsQuery = $queryBuilder->getQuery();
+        if ($isSimpleQuery) {
+            $resultsQuery->setHint(CountWalker::HINT_DISTINCT, false);
+        }
+
+        $paginator = new Paginator($resultsQuery, fetchJoinCollection: !$isSimpleQuery);
+        if ($isSimpleQuery) {
+            $paginator->setUseOutputWalkers(false);
+        }
+
         $hits = [];
         foreach ($paginator as $item) {
             $hits[] = new Hit($item, 1);

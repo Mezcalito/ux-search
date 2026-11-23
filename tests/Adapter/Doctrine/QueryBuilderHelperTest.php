@@ -19,6 +19,7 @@ use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\QueryBuilderHelper;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
 use Mezcalito\UxSearchBundle\Search\Filter\TermFilter;
+use Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Bar;
 
 class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 {
@@ -38,7 +39,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
     {
         $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
+        $this->assertEquals('SELECT count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o', $dql);
     }
 
     public function testTotalResultsWithFilterQuery(): void
@@ -49,8 +50,41 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
         $dql = $qb->getQuery()->getDQL();
         $params = $qb->getParameter('o_brand_terms');
 
-        $this->assertEquals('SELECT count(DISTINCT (o.id)) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
+        $this->assertEquals('SELECT count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms)', $dql);
         $this->assertEquals(['A', 'B'], $params->getValue());
+    }
+
+    public function testTotalResultsWithJoinedFilterQuery(): void
+    {
+        $this->query->addActiveFilter(new TermFilter('bar.name', ['A']));
+
+        $dql = $this->helper->getTotalResultsQuery()->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o LEFT JOIN o.bar bar WHERE bar.name in (:bar_name_terms)', $dql);
+    }
+
+    public function testFacetTermQueryWithJoinFromQueryBuilderCallable(): void
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::QUERY_BUILDER => static fn (QueryBuilder $qb) => $qb->innerJoin('o.bar', 'b'),
+        ]);
+
+        $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o.brand as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o INNER JOIN o.bar b GROUP BY o.brand ORDER BY total DESC', $dql);
+    }
+
+    public function testFacetTermQueryWithAdditionalFromKeepsDistinct(): void
+    {
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::QUERY_BUILDER => static fn (QueryBuilder $qb) => $qb->from(Bar::class, 'b'),
+        ]);
+
+        $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
+
+        $this->assertEquals('SELECT o.brand as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o, Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Bar b GROUP BY o.brand ORDER BY total DESC', $dql);
     }
 
     public function testResultsQuery(): void
@@ -92,7 +126,7 @@ class QueryBuilderHelperTest extends AbstractDoctrineTestCase
 
         $dql = $this->helper->getFacetTermQuery($this->search->getFacet('o.brand'))->getQuery()->getDQL();
 
-        $this->assertEquals('SELECT o.brand as value, count(DISTINCT o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total DESC', $dql);
+        $this->assertEquals('SELECT o.brand as value, count(o.id) AS total FROM Mezcalito\UxSearchBundle\Tests\Fixtures\Adapter\Doctrine\Foo o WHERE o.brand in (:o_brand_terms) AND o.price <= :o_price_max  AND o.price >= :o_price_min GROUP BY o.brand ORDER BY total DESC', $dql);
     }
 
     public function testFacetStatsQuery(): void

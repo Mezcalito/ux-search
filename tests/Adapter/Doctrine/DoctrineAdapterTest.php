@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Mezcalito\UxSearchBundle\Tests\Adapter\Doctrine;
 
+use Doctrine\ORM\QueryBuilder;
 use Mezcalito\UxSearchBundle\Adapter\Doctrine\DoctrineAdapter;
 use Mezcalito\UxSearchBundle\Search\AbstractSearch;
 use Mezcalito\UxSearchBundle\Search\Filter\RangeFilter;
@@ -53,6 +54,64 @@ class DoctrineAdapterTest extends AbstractDoctrineTestCase
 
         $this->assertEquals(10, $resultSet->getFacetStat('o.price')->getMin());
         $this->assertEquals(13, $resultSet->getFacetStat('o.price')->getMax());
+    }
+
+    public function testSearchWithoutJoinDoesNotUseDistinct(): void
+    {
+        $this->createDatabase([
+            new Foo('A', '1', 10),
+            new Foo('A', '1', 11),
+            new Foo('B', '2', 12),
+        ]);
+        $this->executedSql = [];
+
+        $resultSet = $this->adapter->search($this->query, $this->search);
+
+        $this->assertEquals(3, $resultSet->getTotalResults());
+        $this->assertCount(3, $resultSet->getHits());
+        $this->assertSame(['A' => 2, 'B' => 1], $resultSet->getFacetDistribution('o.type')->getValues());
+        $sqlWithoutJoin = array_filter($this->executedSql, static fn (string $sql): bool => false === stripos($sql, 'JOIN'));
+        $this->assertNotEmpty($sqlWithoutJoin);
+        foreach ($sqlWithoutJoin as $sql) {
+            $this->assertStringNotContainsStringIgnoringCase('DISTINCT', $sql);
+        }
+    }
+
+    public function testSearchWithJoinUsesDistinct(): void
+    {
+        $bar = new Bar('X');
+        $this->createDatabase([
+            $bar,
+            new Foo('A', '1', 10, bar: $bar),
+            new Foo('A', '1', 11, bar: $bar),
+            new Foo('B', '2', 12),
+        ]);
+        $this->query->addActiveFilter(new TermFilter('bar.name', ['X']));
+        $this->executedSql = [];
+
+        $resultSet = $this->adapter->search($this->query, $this->search);
+
+        $this->assertEquals(2, $resultSet->getTotalResults());
+        $this->assertCount(2, $resultSet->getHits());
+        $this->assertNotEmpty(array_filter($this->executedSql, static fn (string $sql): bool => false !== stripos($sql, 'DISTINCT')));
+    }
+
+    public function testSearchWithHavingInQueryBuilderCallable(): void
+    {
+        $this->createDatabase([
+            new Foo('A', '1', 10),
+            new Foo('A', '1', 11),
+            new Foo('B', '2', 12),
+        ]);
+        $this->search->setResolvedAdapterParameters([
+            ...$this->search->getResolvedAdapterParameters(),
+            DoctrineAdapter::QUERY_BUILDER => static fn (QueryBuilder $qb) => $qb->groupBy('o.id')->having('o.price > 10'),
+        ]);
+
+        $resultSet = $this->adapter->search($this->query, $this->search);
+
+        $this->assertEquals(2, $resultSet->getTotalResults());
+        $this->assertCount(2, $resultSet->getHits());
     }
 
     public function testSearchWithFilter(): void

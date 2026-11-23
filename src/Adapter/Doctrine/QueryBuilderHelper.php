@@ -35,14 +35,15 @@ readonly class QueryBuilderHelper
 
     public function getTotalResultsQuery(): QueryBuilder
     {
-        $qb = $this->createBaseQueryBuilder()
-            ->select(\sprintf('count(DISTINCT (%s)) AS total', $this->getIdentifierField()));
+        $qb = $this->createBaseQueryBuilder();
 
         $this->applyQueryString($qb);
 
         foreach ($this->query->getActiveFilters() as $filter) {
             $this->applyFilter($qb, $filter);
         }
+
+        $qb->select(\sprintf('%s AS total', $this->countIdentifier($qb)));
 
         return $qb;
     }
@@ -69,7 +70,6 @@ readonly class QueryBuilderHelper
         $this->updateQueryBuilderAssociations($qb, $alias);
 
         $qb
-            ->select(\sprintf('%s.%s as value, count(DISTINCT %s) AS total', $alias, $property, $this->getIdentifierField()))
             ->orderBy('total', $this->sortDirection('DESC'))
             ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
@@ -83,6 +83,8 @@ readonly class QueryBuilderHelper
 
             $this->applyFilter($qb, $filter);
         }
+
+        $qb->select(\sprintf('%s.%s as value, %s AS total', $alias, $property, $this->countIdentifier($qb)));
 
         return $qb;
     }
@@ -162,6 +164,18 @@ readonly class QueryBuilderHelper
             $this->search->getResolvedAdapterParameter(DoctrineAdapter::QUERY_BUILDER_ALIAS),
             $metadata->getIdentifier()[0]
         );
+    }
+
+    public static function hasRowFanOut(QueryBuilder $qb): bool
+    {
+        return [] !== $qb->getDQLPart('join') || \count($qb->getDQLPart('from')) > 1;
+    }
+
+    private function countIdentifier(QueryBuilder $qb): string
+    {
+        $format = self::hasRowFanOut($qb) ? 'count(DISTINCT %s)' : 'count(%s)';
+
+        return \sprintf($format, $this->getIdentifierField());
     }
 
     private function applyFilter(QueryBuilder $qb, FilterInterface $filter): void
