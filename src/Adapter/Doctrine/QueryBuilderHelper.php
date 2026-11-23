@@ -70,7 +70,7 @@ readonly class QueryBuilderHelper
 
         $qb
             ->select(\sprintf('%s.%s as value, count(DISTINCT %s) AS total', $alias, $property, $this->getIdentifierField()))
-            ->orderBy('total', 'DESC')
+            ->orderBy('total', $this->sortDirection('DESC'))
             ->groupBy(\sprintf('%s.%s', $alias, $property))
             ->setMaxResults($this->search->getResolvedAdapterParameter(DoctrineAdapter::MAX_FACET_VALUES_PARAM));
 
@@ -219,7 +219,29 @@ readonly class QueryBuilderHelper
             return;
         }
 
-        $qb->orderBy($sort, strtoupper($order));
+        $qb->orderBy($sort, $this->sortDirection(strtoupper($order)));
+    }
+
+    /**
+     * Doctrine ORM 3.8 deprecates string directions in favor of the SortDirection enum, which older versions reject.
+     *
+     * @param 'ASC'|'DESC' $direction
+     */
+    private function sortDirection(string $direction): \SortDirection|string
+    {
+        if (!$this->acceptsSortDirectionEnum()) {
+            return $direction;
+        }
+
+        return 'DESC' === $direction ? \SortDirection::Descending : \SortDirection::Ascending;
+    }
+
+    private function acceptsSortDirectionEnum(): bool
+    {
+        static $accepted = null;
+
+        return $accepted ??= enum_exists(\SortDirection::class)
+            && str_contains((string) (new \ReflectionParameter([QueryBuilder::class, 'orderBy'], 'order'))->getType(), 'SortDirection');
     }
 
     private function applyQueryString(QueryBuilder $qb): void
