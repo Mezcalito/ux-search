@@ -26,7 +26,7 @@
                     >
                     <label class="ux-search-refinement-list__label" for="{{ property }}-{{ key }}">
                         <span class="ux-search-refinement-list__label-text">{{ key }}</span>
-                        <span class="ux-search-refinement-list__count">{{ value }}</span>
+                        <span class="ux-search-refinement-list__count">{{ value|ux_search_format_number }}</span>
                     </label>
                 </li>
             {% endfor -%}
